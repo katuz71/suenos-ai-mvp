@@ -12,12 +12,9 @@ import {
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from 'react-i18next';
 import { MysticButton } from '../../src/components/ui/MysticButton';
 import { MysticInput } from '../../src/components/ui/MysticInput';
 import { Colors } from '../../src/constants/Colors';
-import { supabase } from '../../src/services/supabase';
-import { calculateZodiac, formatDateForDB } from '../../src/utils/zodiac';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,12 +22,10 @@ type OnboardingStep = 'intro' | 'input' | 'animation';
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { t } = useTranslation();
   const [step, setStep] = useState<OnboardingStep>('intro');
   const [name, setName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [errors, setErrors] = useState({ name: '', birthDate: '' });
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -79,7 +74,10 @@ export default function OnboardingScreen() {
       ).start();
 
       const timer = setTimeout(() => {
-        router.replace('/(tabs)');
+        router.replace({ 
+          pathname: '/(tabs)/suenos', 
+          params: { name, date: birthDate } 
+        });
       }, 4000);
 
       return () => clearTimeout(timer);
@@ -87,19 +85,28 @@ export default function OnboardingScreen() {
   }, [step]);
 
   const handleDateChange = (text: string) => {
+    // 1. Handle Deletion (Backspace)
+    // If the new text is shorter than the current state, user is deleting. 
+    // Let them delete freely without forcing the mask.
+    if (text.length < birthDate.length) {
+      setBirthDate(text);
+      return;
+    }
+
+    // 2. Handle Typing (Masking)
     const cleaned = text.replace(/[^0-9]/g, '');
     let formatted = cleaned;
 
-    if (cleaned.length >= 2) {
+    if (cleaned.length > 2) {
       formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
     }
-    if (cleaned.length >= 4) {
-      formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4) + '/' + cleaned.slice(4, 8);
+    if (cleaned.length > 4) {
+      formatted = formatted.slice(0, 5) + '/' + cleaned.slice(4, 8);
     }
 
+    // Limit to 10 chars (DD/MM/YYYY)
     if (formatted.length <= 10) {
       setBirthDate(formatted);
-      setErrors({ ...errors, birthDate: '' });
     }
   };
 
@@ -108,28 +115,18 @@ export default function OnboardingScreen() {
     let isValid = true;
 
     if (!name.trim()) {
-      newErrors.name = t('onboarding.nameError');
+      newErrors.name = 'Por favor, ingresa tu nombre';
       isValid = false;
     }
 
     if (!birthDate.trim()) {
-      newErrors.birthDate = t('onboarding.birthDateError');
+      newErrors.birthDate = 'Por favor, ingresa tu fecha de nacimiento';
       isValid = false;
     } else {
       const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
       if (!dateRegex.test(birthDate)) {
-        newErrors.birthDate = t('onboarding.birthDateFormatError');
+        newErrors.birthDate = 'Formato: DD/MM/AAAA';
         isValid = false;
-      } else {
-        const parts = birthDate.split('/');
-        const day = parseInt(parts[0]);
-        const month = parseInt(parts[1]);
-        const year = parseInt(parts[2]);
-        
-        if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2024) {
-          newErrors.birthDate = t('onboarding.birthDateInvalidError');
-          isValid = false;
-        }
       }
     }
 
@@ -137,7 +134,7 @@ export default function OnboardingScreen() {
     return isValid;
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (step === 'intro') {
       setStep('input');
       fadeAnim.setValue(0);
@@ -157,7 +154,6 @@ export default function OnboardingScreen() {
       ]).start();
     } else if (step === 'input') {
       if (validateInputs()) {
-        setIsAnalyzing(true);
         setStep('animation');
         fadeAnim.setValue(0);
         Animated.timing(fadeAnim, {
@@ -165,42 +161,6 @@ export default function OnboardingScreen() {
           duration: 600,
           useNativeDriver: true,
         }).start();
-
-        try {
-          const startTime = Date.now();
-
-          const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
-          
-          if (authError) throw authError;
-          if (!authData.session) throw new Error('No session created');
-
-          const parts = birthDate.split('/');
-          const day = parseInt(parts[0]);
-          const month = parseInt(parts[1]);
-          const zodiacSign = calculateZodiac(day, month);
-          const dbDate = formatDateForDB(birthDate);
-
-          const { error: profileError } = await supabase.from('profiles').upsert({
-            id: authData.session.user.id,
-            display_name: name,
-            birth_date: dbDate,
-            zodiac_sign: zodiacSign,
-          });
-
-          if (profileError) throw profileError;
-
-          const elapsed = Date.now() - startTime;
-          const remainingDelay = Math.max(0, 3000 - elapsed);
-
-          setTimeout(() => {
-            router.replace('/(tabs)');
-          }, remainingDelay);
-        } catch (error) {
-          console.error('Error during onboarding:', error);
-          setIsAnalyzing(false);
-          setErrors({ ...errors, birthDate: t('onboarding.errorConnecting') });
-          setStep('input');
-        }
       }
     }
   };
@@ -232,17 +192,17 @@ export default function OnboardingScreen() {
         >
           <View style={styles.introContainer}>
             <Text style={styles.lunaIcon}>🌙</Text>
-            <Text style={styles.title}>{t('onboarding.welcome')}</Text>
+            <Text style={styles.title}>Bienvenido a Sueños AI</Text>
             <Text style={styles.lunaName}>Luna</Text>
             <Text style={styles.subtitle}>
-              {t('onboarding.subtitle')}
+              Soy la energía que interpreta las señales del universo para ti.
             </Text>
             <Text style={styles.description}>
-              {t('onboarding.description')}
+              Permíteme guiarte a través del misterioso mundo de tus sueños y descubrir los mensajes ocultos que el cosmos tiene para ti.
             </Text>
           </View>
           <MysticButton
-            title={t('onboarding.startButton')}
+            title="Comenzar"
             onPress={handleContinue}
             style={styles.button}
           />
@@ -268,14 +228,14 @@ export default function OnboardingScreen() {
               ]}
             >
               <View style={styles.inputContainer}>
-                <Text style={styles.inputTitle}>{t('onboarding.welcome')}</Text>
+                <Text style={styles.inputTitle}>Cuéntame sobre ti</Text>
                 <Text style={styles.inputSubtitle}>
-                  {t('onboarding.subtitle')}
+                  Para personalizar tu experiencia cósmica
                 </Text>
 
                 <MysticInput
-                  label={t('onboarding.nameLabel')}
-                  placeholder={t('onboarding.namePlaceholder')}
+                  label="Nombre"
+                  placeholder="¿Cómo te llamas?"
                   value={name}
                   onChangeText={(text) => {
                     setName(text);
@@ -287,8 +247,8 @@ export default function OnboardingScreen() {
                 />
 
                 <MysticInput
-                  label={t('onboarding.birthDateLabel')}
-                  placeholder={t('onboarding.birthDatePlaceholder')}
+                  label="Fecha de nacimiento"
+                  placeholder="DD/MM/AAAA"
                   value={birthDate}
                   onChangeText={handleDateChange}
                   error={errors.birthDate}
@@ -298,15 +258,13 @@ export default function OnboardingScreen() {
                 />
 
                 <Text style={styles.zodiacNote}>
-                  ✨ {t('onboarding.subtitle')}
+                  ✨ Tu fecha de nacimiento me ayudará a conectar con tu energía astral
                 </Text>
               </View>
 
               <MysticButton
-                title={t('onboarding.continueButton')}
+                title="Continuar"
                 onPress={handleContinue}
-                loading={isAnalyzing}
-                disabled={isAnalyzing}
                 style={styles.button}
               />
             </Animated.View>
@@ -337,8 +295,9 @@ export default function OnboardingScreen() {
           </Animated.View>
 
           <Animated.View style={{ opacity: fadeAnim }}>
-            <Text style={styles.animationText}>{t('onboarding.analyzingTitle')}</Text>
-            <Text style={styles.animationSubtext}>{t('onboarding.analyzingSubtext')}</Text>
+            <Text style={styles.animationText}>Analizando tu carta astral...</Text>
+            <Text style={styles.animationSubtext}>Conectando con las estrellas...</Text>
+            <Text style={styles.animationSubtext}>Preparando tu experiencia mística...</Text>
           </Animated.View>
         </Animated.View>
       )}

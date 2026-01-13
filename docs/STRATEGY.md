@@ -1,30 +1,41 @@
-# PRODUCT STRATEGY: Sueños AI (Mystic Combine)
+# Sueños AI - Strategy Document
 
-## 1. Core Concept (The "Hybrid" Strategy)
-* **External Marketing (App Store):** We sell "AI Precision", "Speed", "Modern Tech".
-* **Internal Product (App Experience):** We sell "Magic", "Empathy", "Connection".
-* **Target Market:** Spanish speakers in Spain (ES) & USA (US).
+## Vision
+Sueños AI is a dream interpretation app that combines mysticism, astrology, and AI to provide personalized dream analysis with an esoteric, premium aesthetic.
 
-## 2. SEO & Keywords (From Google Planner)
-These keywords MUST be used in the App Store Description and Tags:
-* `significado de los sueños` (Main keyword)
-* `que significa soñar con...`
-* `soñar con dientes` (Teeth - High Priority)
-* `soñar con piojos` (Lice - High Priority)
-* `soñar con embarazo` (Pregnancy)
-* `soñar con serpientes` (Snakes)
+## Core Features
 
-## 3. Monetization (Decoy Pricing)
-* **Weekly:** $1.99 / week (Target). *Selected by default.*
-* **Lifetime:** $39.99 (Anchor). *Makes weekly look cheap.*
-* **Free Trial:** 3 Days (Weekly only).
-* **Ad Model:** "Watch-to-Interpret" (Rewarded Video) for free users.
+### 1. Onboarding Flow
+- **Luna Introduction**: AI persona that guides users through the mystical experience
+- **User Data Collection**: Name and birth date for personalized astrological insights
+- **Magical Animation**: Creates anticipation and sets the mystical tone
 
-## 4. Retention Mechanics
-* **08:30 AM:** Daily Horoscope Push Notification.
-* **Day 2:** Unlock "Tarot" tab (Gamification).
-* **User Investment:** Ask for Zodiac sign during Onboarding.
+### 2. Personalization Strategy
+- **Astrological Integration**: Birth date enables zodiac-based interpretations
+- **User Profile**: Stores preferences and dream history
+- **Cosmic Connection**: Leverages astrology to deepen user engagement
 
-## 5. FORBIDDEN WORDS (In-App Only)
-* **NEVER USE:** "AI", "Bot", "Model", "Algorithm", "GPT", "Assistant".
-* **USE INSTEAD:** "Luna", "Oracle", "Energy", "Stars", "Vision", "Guide".
+### 3. Design Philosophy
+- **Mystic Aesthetic**: Deep purples, gold accents, premium typography
+- **Emotional Engagement**: Animations and transitions create wonder
+- **Trust Building**: Professional design establishes credibility
+
+## Technical Stack
+- **Framework**: React Native with Expo
+- **Navigation**: Expo Router (file-based routing)
+- **Language**: TypeScript for type safety
+- **Styling**: Custom design system with mystic color palette
+
+## User Journey
+1. Welcome by Luna (AI persona)
+2. Collect user information (name, birth date)
+3. Magical loading animation
+4. Enter main app experience
+5. Record and interpret dreams
+6. Build dream journal over time
+
+## Monetization (Future)
+- Freemium model
+- Premium interpretations
+- Astrological reports
+- Dream pattern analysis
