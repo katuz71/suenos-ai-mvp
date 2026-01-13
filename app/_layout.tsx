@@ -36,8 +36,15 @@ export default function RootLayout() {
 
     const inTabs = segments[0] === '(tabs)';
     const inRoot = segments.length === 0;
+    const isPaywall = segments[0] === 'paywall';
+    const isEnergy = segments[0] === 'energy';
 
     if (session) {
+      // Allow access to paywall and energy screens
+      if (isPaywall || isEnergy) {
+        return; // Don't redirect, allow access
+      }
+      
       // If user is logged in and not in tabs, redirect to suenos
       if (!inTabs) {
         router.replace('/(tabs)/suenos');

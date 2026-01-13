@@ -23,14 +23,14 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="horoscope"
+        name="horoscopo"
         options={{
           title: 'Гороскоп',
           tabBarIcon: ({ color, size }) => <Ionicons name="star-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="oracle"
+        name="oraculo"
         options={{
           title: 'Оракул',
           tabBarIcon: ({ color, size }) => <Ionicons name="eye-outline" size={size} color={color} />,

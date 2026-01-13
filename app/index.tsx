@@ -10,6 +10,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -193,6 +194,9 @@ export default function Index() {
           });
 
           if (profileError) throw profileError;
+
+          // Save zodiac sign to AsyncStorage for chat screen
+          await AsyncStorage.setItem('user_zodiac', zodiacSign);
 
           // Success - proceed to animation
           setStep('animation');
