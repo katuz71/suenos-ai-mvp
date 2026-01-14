@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert, Share, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +9,7 @@ import { getOracleAnswer } from '../../src/services/openai';
 import { supabase } from '../../src/services/supabase';
 import { useMonetization } from '../../src/hooks/useMonetization';
 import { useFocusEffect } from '@react-navigation/native';
+import MagicAlert from '../../src/components/MagicAlert';
 
 const { width, height } = Dimensions.get('window');
 
@@ -61,6 +62,7 @@ export default function OracleScreen() {
   const [oracleAnswer, setOracleAnswer] = useState<string>('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [showEnergyAlert, setShowEnergyAlert] = useState(false);
   
   // Анимации для сферы
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -129,7 +131,7 @@ export default function OracleScreen() {
         await fetchProfile();
       };
       refresh();
-    }, [refreshStatus])
+    }, [])
   );
 
   React.useEffect(() => {
@@ -154,7 +156,23 @@ export default function OracleScreen() {
     }
   };
 
+  // --- ПОДЕЛИТЬСЯ ОТВЕТОМ ОРАКУЛА ---
+  const handleShare = async () => {
+    if (!oracleAnswer) return;
+    
+    try {
+      await Share.share({
+        message: `🔮 Ответ Оракула:\n\n${oracleAnswer}\n\n✨ Получено в Suenos AI - Мистический оракул`,
+        url: 'https://suenos-ai.app'
+      });
+    } catch (error) {
+      console.log('Error sharing:', error);
+    }
+  };
+
   const startOracle = async () => {
+    Keyboard.dismiss();
+    
     // Если идет загрузка - игнорируем нажатие
     if (isLoading) return;
 
@@ -166,14 +184,7 @@ export default function OracleScreen() {
 
     // Для бесплатных пользователей проверяем кредиты
     if (credits < 1) {
-      Alert.alert(
-        "Оракул устал",
-        "Нужна энергия для связи с космосом. Посмотри рекламу или купи энергию в магазине.",
-        [
-          { text: "Отмена", style: "cancel" },
-          { text: "Купить энергию", onPress: () => router.push('/energy') }
-        ]
-      );
+      setShowEnergyAlert(true);
       return;
     }
 
@@ -431,6 +442,14 @@ export default function OracleScreen() {
                 <Ionicons name="sparkles" size={40} color="#ffd700" />
               </View>
               <Animated.View style={[styles.answerBox, { opacity: fadeAnim }]}>
+                <View style={styles.answerHeader}>
+                  <Text style={styles.answerTitle}>ОТВЕТ ОРАКУЛА</Text>
+                  {oracleAnswer && (
+                    <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+                      <Ionicons name="share-social-outline" size={24} color="#FFD700" />
+                    </TouchableOpacity>
+                  )}
+                </View>
                 <Text style={styles.answerText}>{oracleAnswer}</Text>
               </Animated.View>
               <TouchableOpacity style={styles.resetButton} onPress={resetOracle}>
@@ -441,6 +460,21 @@ export default function OracleScreen() {
           )}
         </View>
       </View>
+      
+      {/* MagicAlert для энергии */}
+      <MagicAlert 
+        visible={showEnergyAlert}
+        title="Оракул устал"
+        message="Нужна энергия для связи с космосом. Пополнить запасы?"
+        icon="flash"
+        confirmText="Купить энергию"
+        cancelText="Позже"
+        onConfirm={() => {
+          setShowEnergyAlert(false);
+          router.push('/energy');
+        }}
+        onCancel={() => setShowEnergyAlert(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -605,14 +639,32 @@ const styles = StyleSheet.create({
   },
   answerBox: {
     backgroundColor: 'rgba(255, 215, 0, 0.05)',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
+    marginTop: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 215, 0, 0.2)',
-    marginBottom: 20,
-    minHeight: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
+    minHeight: 100,
+  },
+  answerHeader: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 15,
+    justifyContent: 'space-between'
+  },
+  answerTitle: { 
+    fontSize: 18, 
+    fontWeight: '700', 
+    color: '#ffd700',
+    textAlign: 'center',
+    flex: 1
+  },
+  shareButton: { 
+    padding: 8, 
+    borderRadius: 20, 
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    borderWidth: 1, 
+    borderColor: 'rgba(255, 215, 0, 0.2)' 
   },
   answerText: {
     color: '#ffd700',

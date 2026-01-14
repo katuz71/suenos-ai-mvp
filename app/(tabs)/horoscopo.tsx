@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Animated, Alert, LayoutAnimation } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Animated, Alert, LayoutAnimation, Share, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import { useMonetization } from '../../src/hooks/useMonetization';
 import { useFocusEffect } from '@react-navigation/native';
 import { generateDailyHoroscope } from '../../src/services/openai';
 import AdBanner from '../../src/components/AdBanner';
+import MagicAlert from '../../src/components/MagicAlert';
 
 const { width } = Dimensions.get('window');
 
@@ -68,6 +69,7 @@ export default function HoroscopeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [extendedPrediction, setExtendedPrediction] = useState<string>('');
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showEnergyAlert, setShowEnergyAlert] = useState(false);
 
   // Premium пользователи видят всё сразу
   useFocusEffect(
@@ -78,7 +80,7 @@ export default function HoroscopeScreen() {
       }
       // Загружаем профиль и гороскоп при фокусе
       loadProfileAndHoroscope();
-    }, [isPremium, refreshStatus])
+    }, [])
   );
 
   // Генерируем атрибуты на основе знака зодиака и текущей даты
@@ -166,16 +168,11 @@ export default function HoroscopeScreen() {
   };
 
   const handleUnlock = async () => {
+    Keyboard.dismiss();
+    
     // Проверяем баланс
     if (credits < 1) {
-      Alert.alert(
-        "Недостаточно энергии",
-        "У вас нет энергии. Посмотрите рекламу или купите энергию в магазине.",
-        [
-          { text: "Отмена", style: "cancel" },
-          { text: "В магазин", onPress: () => router.push('/energy') }
-        ]
-      );
+      setShowEnergyAlert(true);
       return;
     }
 
@@ -207,6 +204,20 @@ export default function HoroscopeScreen() {
     } catch (error) {
       console.error('Error in handleUnlock:', error);
       Alert.alert('Ошибка', 'Что-то пошло не так');
+    }
+  };
+
+  // --- ПОДЕЛИТЬСЯ ГОРОСКОПОМ ---
+  const handleShare = async () => {
+    if (!dailyPrediction) return;
+    
+    try {
+      await Share.share({
+        message: `🌟 Гороскоп на сегодня для ${userProfile?.zodiac_sign || 'всех знаков'}:\n\n${dailyPrediction}\n\n✨ Предсказано в Suenos AI - Мистический гороскоп`,
+        url: 'https://suenos-ai.app'
+      });
+    } catch (error) {
+      console.log('Error sharing:', error);
     }
   };
 
@@ -335,9 +346,14 @@ export default function HoroscopeScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="moon-outline" size={20} color="#ffd700" />
-            <Text style={[styles.cardTitle, { marginBottom: 0, marginLeft: 10 }]}>
+            <Text style={[styles.cardTitle, { marginBottom: 0, marginLeft: 10, flex: 1 }]}>
               {isPremium ? "Твой полный прогноз" : "Прогноз дня"}
             </Text>
+            {dailyPrediction && (
+              <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+                <Ionicons name="share-social-outline" size={24} color="#FFD700" />
+              </TouchableOpacity>
+            )}
             {isPremium && (
               <View style={styles.premiumBadge}>
                 <Ionicons name="star" size={16} color="#ffd700" />
@@ -416,6 +432,21 @@ export default function HoroscopeScreen() {
         {/* AdBanner - показываем только для не-Premium пользователей */}
         <AdBanner />
       </ScrollView>
+      
+      {/* MagicAlert для энергии */}
+      <MagicAlert 
+        visible={showEnergyAlert}
+        title="Мало энергии"
+        message="Для магии нужна энергия. Пополнить запасы?"
+        icon="flash"
+        confirmText="В магазин"
+        cancelText="Позже"
+        onConfirm={() => {
+          setShowEnergyAlert(false);
+          router.push('/energy');
+        }}
+        onCancel={() => setShowEnergyAlert(false)}
+      />
     </View>
   );
 }
@@ -454,6 +485,14 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
   cardTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginBottom: 15, opacity: 0.8 },
+  shareButton: { 
+    padding: 8, 
+    borderRadius: 20, 
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    borderWidth: 1, 
+    borderColor: 'rgba(255, 215, 0, 0.2)',
+    marginLeft: 8
+  },
   
   energyRow: { marginBottom: 16 },
   energyLabelRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },

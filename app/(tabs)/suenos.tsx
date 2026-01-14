@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   View, Text, StyleSheet, TextInput, TouchableOpacity, 
-  ScrollView, ActivityIndicator, Alert, Dimensions, Modal, RefreshControl, Animated
+  ScrollView, ActivityIndicator, Alert, Dimensions, Modal, RefreshControl, Animated, Share, Keyboard
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import { interpretDream } from '../../src/services/openai';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
 import { useFocusEffect } from '@react-navigation/native';
+import MagicAlert from '../../src/components/MagicAlert';
 
 interface DreamEntry {
   id: string;
@@ -39,6 +40,9 @@ export default function SuenosScreen() {
   // Состояния модального окна
   const [selectedDream, setSelectedDream] = useState<DreamEntry | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
+  const [showEnergyAlert, setShowEnergyAlert] = useState(false);
+  const [emptyInputAlert, setEmptyInputAlert] = useState(false);
 
   // АНИМАЦИЯ БЕЙДЖА ЭНЕРГИИ
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -107,7 +111,7 @@ export default function SuenosScreen() {
     useCallback(() => {
       refreshStatus();
       loadData(false);
-    }, [refreshStatus, loadData])
+    }, [])
   );
 
   // Pull-to-refresh
@@ -119,8 +123,11 @@ export default function SuenosScreen() {
 
   // --- 2. ТОЛКОВАНИЕ СНА ---
   const handleInterpret = async () => {
+    Keyboard.dismiss();
+    
     if (!dreamText.trim()) {
-      Alert.alert("Луна ждет...", "Опиши свой сон, чтобы начать толкование.");
+      setEmptyInputAlert(true);
+      Keyboard.dismiss();
       return;
     }
 
@@ -141,14 +148,7 @@ export default function SuenosScreen() {
 
       // Проверка баланса
       if (!profile.is_premium && profile.credits < 1) {
-        Alert.alert(
-          "Недостаточно энергии", 
-          "Для расшифровки нужна энергия или статус Premium.",
-          [
-            { text: "Отмена", style: "cancel" },
-            { text: "Пополнить", onPress: () => router.push('/energy') }
-          ]
-        );
+        setShowEnergyAlert(true);
         return;
       }
 
@@ -193,31 +193,22 @@ export default function SuenosScreen() {
   };
 
   const handleDeleteDream = (id: string) => {
-    Alert.alert(
-      "Удалить запись?",
-      "Восстановить сон будет невозможно.",
-      [
-        { text: "Отмена", style: "cancel" },
-        { 
-          text: "Удалить", 
-          style: "destructive", 
-          onPress: async () => {
-            try {
-              const { error } = await supabase.from('interpretations').delete().eq('id', id);
-              if (error) throw error;
-              
-              // Успешное удаление
-              setModalVisible(false);
-              setSelectedDream(null);
-              loadData(false); // Обновляем список
-            } catch (e) {
-              console.error(e);
-              Alert.alert("Ошибка", "Не удалось удалить запись. Проверьте интернет.");
-            }
-          }
-        }
-      ]
-    );
+    setDeleteAlertVisible(true);
+  };
+
+  const performDelete = async (id: string) => {
+    try {
+      const { error } = await supabase.from('interpretations').delete().eq('id', id);
+      if (error) throw error;
+      
+      // Успешное удаление
+      setModalVisible(false);
+      setSelectedDream(null);
+      loadData(false); // Обновляем список
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Ошибка", "Не удалось удалить запись. Проверьте интернет.");
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -225,6 +216,20 @@ export default function SuenosScreen() {
     return date.toLocaleDateString('ru-RU', { 
       day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' 
     });
+  };
+
+  // --- ПОДЕЛИТЬСЯ РЕЗУЛЬТАТОМ ---
+  const handleShare = async () => {
+    if (!result) return;
+    
+    try {
+      await Share.share({
+        message: `${result}\n\n✨ Расшифровано в Suenos AI - Мистический толкователь снов`,
+        url: 'https://suenos-ai.app'
+      });
+    } catch (error) {
+      console.log('Error sharing:', error);
+    }
   };
 
   return (
@@ -277,6 +282,7 @@ export default function SuenosScreen() {
             style={[styles.mainButton, loading && { opacity: 0.7 }]} 
             onPress={handleInterpret}
             disabled={loading}
+            activeOpacity={0.8}
           >
             <LinearGradient 
               colors={['#8E2DE2', '#4A00E0']} 
@@ -303,6 +309,9 @@ export default function SuenosScreen() {
             <View style={styles.revelationHeader}>
               <Ionicons name="moon" size={24} color="#ffd700" />
               <Text style={styles.revelationTitle}>ОТКРОВЕНИЕ</Text>
+              <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+                <Ionicons name="share-social-outline" size={24} color="#FFD700" />
+              </TouchableOpacity>
             </View>
             <View style={styles.divider} />
             <Text style={styles.revelationText}>{result}</Text>
@@ -415,7 +424,48 @@ export default function SuenosScreen() {
           </View>
         </View>
       </Modal>
-
+      
+      {/* MagicAlert для удаления */}
+      <MagicAlert 
+        visible={deleteAlertVisible}
+        title="Удалить запись?"
+        message="Это действие нельзя отменить."
+        icon="trash-bin"
+        onConfirm={() => {
+          if (selectedDream) {
+            performDelete(selectedDream.id);
+            setDeleteAlertVisible(false);
+          }
+        }}
+        onCancel={() => setDeleteAlertVisible(false)}
+        confirmText="Удалить"
+        cancelText="Оставить"
+      />
+      
+      {/* MagicAlert для энергии */}
+      <MagicAlert 
+        visible={showEnergyAlert}
+        title="Мало энергии"
+        message="Для магии нужна энергия. Пополнить запасы?"
+        icon="flash"
+        confirmText="В магазин"
+        cancelText="Позже"
+        onConfirm={() => {
+          setShowEnergyAlert(false);
+          router.push('/energy');
+        }}
+        onCancel={() => setShowEnergyAlert(false)}
+      />
+      
+      {/* MagicAlert для пустого ввода */}
+      <MagicAlert 
+        visible={emptyInputAlert}
+        title="Луна молчит"
+        message="Опиши свое видение, чтобы звезды могли ответить."
+        icon="moon"
+        confirmText="Хорошо"
+        onConfirm={() => setEmptyInputAlert(false)}
+      />
     </View>
   );
 }
@@ -458,7 +508,14 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)',
   },
   revelationHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  revelationTitle: { fontSize: 18, fontWeight: '700', color: '#ffd700', marginLeft: 10 },
+  revelationTitle: { fontSize: 18, fontWeight: '700', color: '#ffd700', marginLeft: 10, flex: 1 },
+  shareButton: { 
+    padding: 8, 
+    borderRadius: 20, 
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    borderWidth: 1, 
+    borderColor: 'rgba(255, 215, 0, 0.2)' 
+  },
   divider: { height: 1, backgroundColor: 'rgba(255, 215, 0, 0.2)', marginVertical: 10 },
   revelationText: { fontSize: 15, lineHeight: 24, color: '#fff', fontStyle: 'italic' },
 

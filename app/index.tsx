@@ -17,13 +17,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MysticButton } from '../src/components/ui/MysticButton';
 import { MysticInput } from '../src/components/ui/MysticInput';
 import { supabase } from '../src/services/supabase';
+import MagicAlert from '../src/components/MagicAlert';
 
 const { width, height } = Dimensions.get('window');
 
 type OnboardingStep = 'intro' | 'input' | 'animation';
 
 // БОНУСНАЯ СИСТЕМА
-const handleBonusSystem = async (userId: string) => {
+const handleBonusSystem = async (userId: string, showAlert: (config: any) => void) => {
   try {
     const hasLaunchedApp = await AsyncStorage.getItem('has_launched_app');
     const lastBonusDate = await AsyncStorage.getItem('last_bonus_date');
@@ -60,11 +61,13 @@ const handleBonusSystem = async (userId: string) => {
         await AsyncStorage.setItem('last_bonus_date', today);
         await refreshStatus();
         
-        Alert.alert(
-          "Подарок Звезд! ✨", 
-          "Держи 3 энергии для старта. Добро пожаловать в мир снов!",
-          [{ text: "Спасибо!", style: "default" }]
-        );
+        showAlert({
+          visible: true,
+          title: "Подарок Звезд! ✨",
+          message: "Держи 3 энергии для старта. Добро пожаловать в мир снов!",
+          icon: "star",
+          onConfirm: () => {}
+        });
       } else {
         console.error('Welcome bonus error:', error);
       }
@@ -80,11 +83,13 @@ const handleBonusSystem = async (userId: string) => {
         await AsyncStorage.setItem('last_bonus_date', today);
         await refreshStatus();
         
-        Alert.alert(
-          "Ежедневный дар ✨", 
-          "+1 энергия за возвращение. Продолжай исследовать свои сны!",
-          [{ text: "Отлично!", style: "default" }]
-        );
+        showAlert({
+          visible: true,
+          title: "Ежедневный дар ✨",
+          message: "+1 энергия за возвращение. Продолжай исследовать свои сны!",
+          icon: "sparkles",
+          onConfirm: () => {}
+        });
       } else {
         console.error('Daily bonus error:', error);
       }
@@ -101,6 +106,13 @@ export default function Index() {
   const [birthDate, setBirthDate] = useState('');
   const [errors, setErrors] = useState({ name: '', birthDate: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({ 
+    visible: false, 
+    title: '', 
+    message: '', 
+    icon: 'gift', 
+    onConfirm: () => {} 
+  });
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -271,7 +283,7 @@ export default function Index() {
           await AsyncStorage.setItem('user_zodiac', zodiacSign);
 
           // БОНУСНАЯ СИСТЕМА - ПРИВЕТСТВЕННЫЙ И ЕЖЕДНЕВНЫЙ БОНУСЫ
-          await handleBonusSystem(authData.session.user.id);
+          await handleBonusSystem(authData.session.user.id, setAlertConfig);
 
           // Success - proceed to animation
           setStep('animation');
@@ -427,6 +439,19 @@ export default function Index() {
           </Animated.View>
         </Animated.View>
       )}
+      
+      {/* MagicAlert для бонусов */}
+      <MagicAlert 
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        icon={alertConfig.icon as any}
+        onConfirm={() => {
+          alertConfig.onConfirm();
+          setAlertConfig(prev => ({ ...prev, visible: false }));
+        }}
+        confirmText="Принять"
+      />
     </View>
   );
 }
