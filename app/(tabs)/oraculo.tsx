@@ -1,10 +1,11 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { askOracle } from '../../src/services/openai';
+import * as Haptics from 'expo-haptics';
+import { getOracleAnswer } from '../../src/services/openai';
 import { supabase } from '../../src/services/supabase';
 import { useMonetization } from '../../src/hooks/useMonetization';
 import { useFocusEffect } from '@react-navigation/native';
@@ -53,9 +54,10 @@ const TwinklingStar = ({ index }: { index: number }) => {
 
 export default function OracleScreen() {
   const router = useRouter();
-  const { consumeCredit, credits, refreshStatus } = useMonetization();
+  const { isPremium, credits, refreshStatus } = useMonetization();
   
   const [isPulsing, setIsPulsing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [oracleAnswer, setOracleAnswer] = useState<string>('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -153,13 +155,58 @@ export default function OracleScreen() {
   };
 
   const startOracle = async () => {
-    // Проверяем кредиты
-    const hasAccess = await consumeCredit();
-    if (!hasAccess) {
-      router.push('/energy');
+    // Если идет загрузка - игнорируем нажатие
+    if (isLoading) return;
+
+    // Если Premium - сразу запускаем анимацию и запрос
+    if (isPremium) {
+      await executeOracle();
       return;
     }
 
+    // Для бесплатных пользователей проверяем кредиты
+    if (credits < 1) {
+      Alert.alert(
+        "Оракул устал",
+        "Нужна энергия для связи с космосом. Посмотри рекламу или купи энергию в магазине.",
+        [
+          { text: "Отмена", style: "cancel" },
+          { text: "Купить энергию", onPress: () => router.push('/energy') }
+        ]
+      );
+      return;
+    }
+
+    // Списываем 1 кредит
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const newCredits = credits - 1;
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ credits: newCredits })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error decreasing credits:', error);
+        Alert.alert('Ошибка', 'Не удалось списать энергию');
+        return;
+      }
+
+      // Обновляем статус и запускаем Оракула
+      await refreshStatus();
+      await executeOracle();
+      
+    } catch (error) {
+      console.error('Error in startOracle:', error);
+      Alert.alert('Ошибка', 'Что-то пошло не так');
+    }
+  };
+
+  const executeOracle = async () => {
+    setIsLoading(true);
     setIsPulsing(true);
     setShowAnswer(false);
     setOracleAnswer('');
@@ -214,11 +261,8 @@ export default function OracleScreen() {
 
     // Получаем ответ от оракула
     try {
-      // Вызываем новую функцию askOracle
-      const response = await askOracle({
-        name: userProfile?.display_name || 'Странник',
-        zodiac: userProfile?.zodiac_sign || 'Таинственный знак'
-      });
+      // Вызываем новую функцию getOracleAnswer
+      const response = await getOracleAnswer();
 
       // Останавливаем анимации
       rapidPulse.stop();
@@ -226,10 +270,14 @@ export default function OracleScreen() {
       pulseAnim.setValue(1);
       glowAnim.setValue(0.3);
 
+      // Вибрация при получении ответа
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
       // Показываем ответ с эффектом FadeIn
       setOracleAnswer(response);
       setShowAnswer(true);
       setIsPulsing(false);
+      setIsLoading(false);
       
       // Запускаем анимацию появления
       Animated.timing(fadeAnim, {
@@ -246,6 +294,7 @@ export default function OracleScreen() {
       glowAnim.setValue(0.3);
       
       setIsPulsing(false);
+      setIsLoading(false);
       setOracleAnswer("Оракул молчит. Попробуй позже.");
       setShowAnswer(true);
       
@@ -286,10 +335,27 @@ export default function OracleScreen() {
             <Text style={styles.greeting}>Здравствуй, {userProfile?.display_name || 'Странник'}!</Text>
             <Text style={styles.zodiacText}>{userProfile?.zodiac_sign || 'Таинственный знак'}</Text>
           </View>
-          <View style={styles.energyBadge}>
-            <Ionicons name="sparkles" size={16} color="#ffd700" />
-            <Text style={styles.energyText}>{credits}</Text>
-          </View>
+          
+          {/* КЛИКАБЕЛЬНЫЙ БЕЙДЖ ЭНЕРГИИ */}
+          <TouchableOpacity 
+            onPress={() => router.push('/energy')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(255,215,0,0.3)',
+              marginTop: -20
+            }}
+          >
+            <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
+            <Text style={{ color: '#FFD700', fontWeight: 'bold', fontSize: 16 }}>
+              {isPremium ? '∞' : credits}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* ТЕКСТОВАЯ ПОДСКАЗКА */}

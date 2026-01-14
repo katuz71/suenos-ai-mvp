@@ -1,18 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useMonetization } from '../src/hooks/useMonetization';
+import WatchAdButton from '../src/components/WatchAdButton';
 
 export default function EnergyScreen() {
   const router = useRouter();
-  const { showAd, adLoaded } = useMonetization();
+  const { credits } = useMonetization();
 
-  const handleWatchAd = () => {
-    showAd();
-    // Возвращаемся назад, чтобы пользователь сразу мог продолжить чат
-    router.back();
+  const handlePurchase = (item: string) => {
+    Alert.alert('Скоро', 'Покупки будут доступны в релизе');
   };
 
   return (
@@ -22,123 +21,279 @@ export default function EnergyScreen() {
         style={StyleSheet.absoluteFill} 
       />
       
-      <View style={styles.content}>
+      {/* ХЕДЕР */}
+      <View style={styles.header}>
         <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
-          <Ionicons name="close-outline" size={32} color="rgba(255,255,255,0.5)" />
+          <Ionicons name="close-outline" size={28} color="rgba(255,255,255,0.7)" />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Магазин Энергии</Text>
+        <View style={styles.balanceBadge}>
+          <Ionicons name="sparkles" size={16} color="#ffd700" />
+          <Text style={styles.balanceText}>{credits}</Text>
+        </View>
+      </View>
 
-        <View style={styles.innerContent}>
-          <View style={styles.iconWrapper}>
-            <Ionicons name="sparkles" size={80} color="#ffd700" />
+      {/* КОНТЕНТ */}
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* СЕКЦИЯ "БЕСПЛАТНО" */}
+        <View style={styles.freeSection}>
+          <View style={styles.glassCard}>
+            <View style={styles.cardHeader}>
+              <Ionicons name="gift-outline" size={32} color="#ffd700" />
+              <Text style={styles.cardTitle}>Дар Звезд</Text>
+            </View>
+            <Text style={styles.cardDescription}>
+              Посмотри короткое видение и получи энергию от вселенной
+            </Text>
+            <WatchAdButton />
           </View>
-          
-          <Text style={styles.title}>Энергия иссякла</Text>
-          <Text style={styles.subtitle}>
-            Твоя связь с миром снов ослабла. Восполни энергию, чтобы продолжить путь, или получи безлимитный доступ.
-          </Text>
+        </View>
 
-          {/* Кнопка Рекламы */}
+        {/* СЕКЦИЯ "КУПИТЬ ЭНЕРГИЮ" */}
+        <View style={styles.paidSection}>
+          <Text style={styles.sectionTitle}>Купи энергию</Text>
+          
+          {/* Карточка 1 */}
           <TouchableOpacity 
-            style={[styles.actionButton, !adLoaded && styles.disabledButton]} 
-            onPress={handleWatchAd}
-            disabled={!adLoaded}
+            style={styles.purchaseCard}
+            onPress={() => handlePurchase('small')}
           >
-            <LinearGradient 
-              colors={['#7C3AED', '#2563EB']} 
-              style={styles.gradientButton}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+              style={styles.cardGradient}
             >
-              <View style={styles.btnContent}>
-                 <Ionicons name="sparkles" size={24} color="#fff" />
-                 <Text style={styles.buttonText}>
-                   {adLoaded ? 'Наполнить кристалл энергией (+1 ✨)' : 'Загрузка магии...'}
-                 </Text>
+              <View style={styles.cardContent}>
+                <View style={styles.cardLeft}>
+                  <Ionicons name="star-outline" size={24} color="#ffd700" />
+                  <View>
+                    <Text style={styles.purchaseTitle}>Горсть звезд</Text>
+                    <Text style={styles.purchaseAmount}>+5 энергий</Text>
+                  </View>
+                </View>
+                <Text style={styles.purchasePrice}>$0.99</Text>
               </View>
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* Кнопка Оплаты */}
+          {/* Карточка 2 */}
           <TouchableOpacity 
-            style={styles.premiumButton} 
-            onPress={() => router.push('/paywall')}
+            style={[styles.purchaseCard, styles.popularCard]}
+            onPress={() => handlePurchase('medium')}
           >
-            <LinearGradient 
-              colors={['rgba(255, 215, 0, 0.15)', 'rgba(255, 215, 0, 0.05)']} 
-              style={styles.premiumGradient}
+            <LinearGradient
+              colors={['rgba(255, 215, 0, 0.15)', 'rgba(255, 215, 0, 0.05)']}
+              style={styles.cardGradient}
             >
-              <Text style={styles.premiumText}>Стать Мастером Снов (Безлимит ∞)</Text>
+              <View style={styles.popularBadge}>
+                <Text style={styles.popularBadgeText}>Выгодно</Text>
+              </View>
+              <View style={styles.cardContent}>
+                <View style={styles.cardLeft}>
+                  <Ionicons name="bag-outline" size={24} color="#ffd700" />
+                  <View>
+                    <Text style={styles.purchaseTitle}>Мешок света</Text>
+                    <Text style={styles.purchaseAmount}>+20 энергий</Text>
+                  </View>
+                </View>
+                <Text style={styles.purchasePrice}>$2.99</Text>
+              </View>
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* Текст о восстановлении энергии */}
-          <Text style={styles.restoreText}>
-            Энергия восстанавливается сама каждые 24 часа
-          </Text>
+          {/* Карточка 3 */}
+          <TouchableOpacity 
+            style={styles.purchaseCard}
+            onPress={() => handlePurchase('premium')}
+          >
+            <LinearGradient
+              colors={['rgba(147, 51, 234, 0.2)', 'rgba(147, 51, 234, 0.1)']}
+              style={styles.cardGradient}
+            >
+              <View style={styles.cardContent}>
+                <View style={styles.cardLeft}>
+                  <Ionicons name="infinite-outline" size={24} color="#9333EA" />
+                  <View>
+                    <Text style={styles.purchaseTitle}>Бесконечность</Text>
+                    <Text style={styles.purchaseAmount}>Premium навсегда</Text>
+                  </View>
+                </View>
+                <Text style={styles.purchasePrice}>$9.99</Text>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
-      </View>
+
+        {/* Текст о восстановлении */}
+        <Text style={styles.restoreText}>
+          Энергия восстанавливается сама каждые 24 часа
+        </Text>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f0c29' },
-  content: { flex: 1, paddingTop: Platform.OS === 'ios' ? 60 : 40 },
-  closeButton: { alignSelf: 'flex-end', padding: 20 },
-  innerContent: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30 },
-  iconWrapper: { marginBottom: 25, shadowColor: "#ffd700", shadowOpacity: 0.5, shadowRadius: 15, elevation: 10 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginBottom: 15 },
-  subtitle: { fontSize: 16, color: '#ccc', textAlign: 'center', lineHeight: 24, marginBottom: 40 },
-  
-  // Кнопка рекламы с градиентом
-  actionButton: { 
-    width: '100%', 
-    height: 64, 
-    borderRadius: 32, 
-    marginBottom: 20,
-    overflow: 'hidden'
+  container: { 
+    flex: 1, 
+    backgroundColor: '#0f0c29' 
   },
-  gradientButton: {
-    flex: 1,
+  
+  // ХЕДЕР
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 32,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
   },
-  btnContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginLeft: 10 },
-  disabledButton: { opacity: 0.5 },
-  
-  // Премиум кнопка с золотой обводкой
-  premiumButton: { 
-    width: '100%', 
-    height: 64, 
-    borderRadius: 32, 
+  closeButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#fff',
+    letterSpacing: 0.5,
+  },
+  balanceBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)',
+  },
+  balanceText: {
+    color: '#ffd700',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 6,
+  },
+
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+
+  // СЕКЦИЯ БЕСПЛАТНО
+  freeSection: {
+    marginBottom: 32,
+  },
+  glassCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#ffd700',
+    marginLeft: 12,
+  },
+  cardDescription: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
+    lineHeight: 24,
     marginBottom: 20,
+    textAlign: 'center',
+  },
+
+  // СЕКЦИЯ ПЛАТНО
+  paidSection: {
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: 16,
+    opacity: 0.8,
+  },
+  purchaseCard: {
+    borderRadius: 16,
+    marginBottom: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  popularCard: {
     borderWidth: 2,
     borderColor: 'rgba(255, 215, 0, 0.3)',
-    overflow: 'hidden'
   },
-  premiumGradient: {
-    flex: 1,
+  cardGradient: {
+    padding: 16,
+  },
+  popularBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.4)',
+  },
+  popularBadgeText: {
+    color: '#ffd700',
+    fontSize: 10,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 30,
+    justifyContent: 'space-between',
   },
-  premiumText: { 
-    color: '#ffd700', 
-    fontSize: 18, 
-    fontWeight: 'bold',
-    textAlign: 'center'
+  cardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
-  
+  purchaseTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+    marginLeft: 12,
+  },
+  purchaseAmount: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 2,
+  },
+  purchasePrice: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffd700',
+  },
+
   // Текст о восстановлении
   restoreText: {
     color: 'rgba(255, 255, 255, 0.4)',
     fontSize: 12,
     textAlign: 'center',
     fontStyle: 'italic',
-    marginTop: 10
-  }
+    marginTop: 16,
+  },
 });

@@ -227,9 +227,27 @@ export default function SuenosScreen() {
             <Text style={styles.greeting}>Здравствуй, Рома!</Text>
             <Text style={styles.zodiac}>Лев</Text>
           </View>
-          <View style={styles.starBadge}>
-            <Ionicons name="star" size={24} color="#ffd700" />
-          </View>
+          
+          {/* КЛИКАБЕЛЬНЫЙ БЕЙДЖ ЭНЕРГИИ */}
+          <TouchableOpacity 
+            onPress={() => router.push('/energy')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(255,215,0,0.3)',
+              marginTop: -20
+            }}
+          >
+            <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
+            <Text style={{ color: '#FFD700', fontWeight: 'bold', fontSize: 16 }}>
+              {hasPremium ? '∞' : credits}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Магическая карточка ввода */}

@@ -3,6 +3,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { Slot, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../src/services/supabase';
+import { useDailyBonus } from '../src/hooks/useDailyBonus';
 
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
@@ -11,6 +12,9 @@ export default function RootLayout() {
   const segments = useSegments();
   const router = useRouter();
   const navigationState = useRootNavigationState();
+  
+  // Ежедневный бонус - срабатывает глобально при старте приложения
+  useDailyBonus();
 
   useEffect(() => {
     // Check initial session

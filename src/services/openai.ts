@@ -247,9 +247,160 @@ export const interpretDream = async (
   }
 };
 
+export const generateDailyHoroscope = async (
+  sign: string,
+  name: string
+) => {
+  // Validate inputs
+  if (!sign || sign.trim().length === 0) {
+    throw new Error('Знак зодиака не может быть пустым');
+  }
+
+  if (!name || name.trim().length === 0) {
+    throw new Error('Имя не может быть пустым');
+  }
+
+  if (!process.env.EXPO_PUBLIC_OPENAI_API_KEY) {
+    throw new Error('Ключ API OpenAI не настроен');
+  }
+
+  // Системный промпт для гороскопа
+  const systemPrompt = `
+    Ты мистический астролог. Составь персональный гороскоп на сегодня для знака ${sign}. Имя пользователя: ${name}.
+    
+    Структура ответа:
+    1. Общая энергия дня (2-3 предложения, интригующе).
+    2. Любовь и отношения.
+    3. Карьера и финансы.
+    4. Совет дня.
+    
+    Тон: загадочный, но поддерживающий. Не используй слово 'сон' или 'сновидение'. Это гороскоп.
+    Язык: Русский.
+    Стиль: Мистический, глубокий, эмпатичный.
+    Длина: Средняя (150-200 слов).
+  `;
+
+  // Создаем сообщение пользователя
+  const userMessage = "Составь гороскоп на сегодня";
+
+  console.log(`🔮 [DEBUG] Daily horoscope generation for: ${name} (${sign})`);
+
+  // Call OpenAI API
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage }
+      ],
+      max_tokens: 400,
+      temperature: 0.8,
+      presence_penalty: 0.1,
+      frequency_penalty: 0.1,
+    });
+
+    // Extract and validate response
+    const response = completion.choices[0]?.message?.content;
+    
+    if (!response) {
+      throw new Error('Не получен гороскоп от вселенной');
+    }
+
+    // Check if response is in Russian (basic validation)
+    const russianPattern = /[а-яё]/i;
+    const hasRussianChars = russianPattern.test(response);
+    
+    if (!hasRussianChars) {
+      console.warn('⚠️ [WARNING] Horoscope response contains no Russian characters:', response);
+      throw new Error('Вселенная ответила на непонятном языке. Попробуй еще раз.');
+    }
+
+    return response.trim();
+
+  } catch (error) {
+    console.error('Horoscope API Error:', error);
+    
+    // Handle specific OpenAI errors
+    if (error instanceof Error) {
+      if (error.message.includes('insufficient_quota')) {
+        throw new Error('Вселенная временно перегружена. Попробуй позже.');
+      }
+      
+      if (error.message.includes('invalid_api_key') || error.message.includes('configurada')) {
+        throw new Error('Ошибка подключения к космосу. Проверьте настройки приложения.');
+      }
+      
+      if (error.message.includes('rate_limit_exceeded')) {
+        throw new Error('Слишком много запросов к звёздам. Подожди немного и попробуй снова.');
+      }
+      
+      if (error.message.includes('model_not_found')) {
+        throw new Error('Модель вселенной недоступна. Попробуй позже.');
+      }
+      
+      // Return original error if it's a custom error
+      if (error.message.includes('Вселенная') || error.message.includes('Звёзды')) {
+        throw error;
+      }
+    }
+    
+    // Generic error for unknown issues
+    throw new Error('Связь с астралом прервана. Попробуй снова.');
+  }
+};
+
 // Helper function to validate dream text
 export const validateDreamText = (text: string): boolean => {
   return text && text.trim().length >= 10 && text.trim().length <= 1000;
+};
+
+// Oracle System Prompt - Ancient mystical persona
+const ORACLE_SYSTEM_PROMPT = `
+Ты древний Оракул. Пользователь мысленно задал вопрос (да/нет или о будущем). Дай мистический, короткий (1 предложение), но глубокий ответ.
+Примеры: 'Звезды говорят — да, но будь осторожен', 'Туман скрывает истину, спроси позже', 'То, о чем ты думаешь, скоро сбудется'.
+Не используй слово 'сон'. Варируй ответы: позитивные, негативные, нейтральные.
+`;
+
+// Get Oracle Answer function
+export const getOracleAnswer = async (): Promise<string> => {
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: ORACLE_SYSTEM_PROMPT },
+        { role: "user", content: "Дай мне мистический ответ на мой невысказанный вопрос." }
+      ],
+      max_tokens: 50,
+      temperature: 0.8,
+    });
+
+    const answer = completion.choices[0]?.message?.content?.trim();
+    
+    if (!answer) {
+      throw new Error('Оракул молчит сегодня');
+    }
+    
+    return answer;
+    
+  } catch (error: any) {
+    console.error('Oracle error:', error);
+    
+    // Handle specific OpenAI errors
+    if (error.status === 401) {
+      throw new Error('Оракул не отвечает. Проверь связь с космосом.');
+    }
+    
+    if (error.status === 429) {
+      throw new Error('Оракул устал. Подожди немного.');
+    }
+    
+    if (error.status === 500) {
+      throw new Error('Туман скрыл Оракула. Попробуй позже.');
+    }
+    
+    // Generic error
+    throw new Error('Связь с Оракулом прервана. Попробуй снова.');
+  }
 };
 
 // Export OpenAI client for advanced usage

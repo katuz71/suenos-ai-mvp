@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Animated, Alert, LayoutAnimation, Platform, UIManager } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,9 +8,17 @@ import { useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
 import { useMonetization } from '../../src/hooks/useMonetization';
 import { useFocusEffect } from '@react-navigation/native';
-import { interpretDream } from '../../src/services/openai';
+import { generateDailyHoroscope } from '../../src/services/openai';
+import AdBanner from '../../src/components/AdBanner';
 
 const { width } = Dimensions.get('window');
+
+// Настройка LayoutAnimation для Android
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 // Функция генерации магических атрибутов и энергии дня
 const generateDailyAttributes = (sign: string) => {
@@ -59,12 +68,26 @@ const EnergyItem = ({ label, progress, color, value }: any) => (
 
 export default function HoroscopeScreen() {
   const router = useRouter();
-  const { isPremium, refreshStatus } = useMonetization();
+  const { isPremium, refreshStatus, credits } = useMonetization();
   
   const [userProfile, setUserProfile] = useState<any>(null);
   const [dailyPrediction, setDailyPrediction] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [extendedPrediction, setExtendedPrediction] = useState<string>('');
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  // Premium пользователи видят всё сразу
+  useFocusEffect(
+    useCallback(() => {
+      refreshStatus();
+      if (isPremium) {
+        setIsUnlocked(true);
+      }
+      // Загружаем профиль и гороскоп при фокусе
+      loadProfileAndHoroscope();
+    }, [isPremium, refreshStatus])
+  );
 
   // Генерируем атрибуты на основе знака зодиака и текущей даты
   const generatedAttributes = useMemo(() => {
@@ -81,65 +104,131 @@ export default function HoroscopeScreen() {
     talisman: "Рубин"
   };
 
-  // СИНХРОНИЗАЦИЯ ПРИ ФОКУСЕ НА ВКЛАДКУ
-  useFocusEffect(
-    useCallback(() => {
-      refreshStatus();
-    }, [])
-  );
+  // Функция для очистки текста от Markdown-символов
+  const cleanText = (text: string) => {
+    if (!text) return "";
+    return text
+      .replace(/\*\*/g, "") // Убираем двойные звезды (жирный)
+      .replace(/\*/g, "")   // Убираем одинарные звезды (списки)
+      .replace(/#/g, "")    // Убираем решетки (заголовки)
+      .trim();
+  };
 
-  // Начальная загрузка профиля
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
+  const loadProfileAndHoroscope = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('display_name, zodiac_sign')
-          .eq('id', user.id)
-          .single();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-        setUserProfile(data);
+      const { data } = await supabase
+        .from('profiles')
+        .select('display_name, zodiac_sign')
+        .eq('id', user.id)
+        .single();
+
+      setUserProfile(data);
+      
+      // Загрузка прогноза с кэшированием
+      if (data?.zodiac_sign) {
+        const today = new Date();
+        const dateKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+        const storageKey = `horoscope_${dateKey}_${user.id}`;
         
-        // Загрузка прогноза
-        if (data?.zodiac_sign) {
-          try {
-            const response = await interpretDream("Прогноз на день", {
-              name: data.display_name || 'Странник',
-              zodiac: data.zodiac_sign
-            });
+        try {
+          // Сначала проверяем AsyncStorage
+          const cachedHoroscope = await AsyncStorage.getItem(storageKey);
+          
+          if (cachedHoroscope) {
+            // Если есть кэш - показываем мгновенно
+            setDailyPrediction(cachedHoroscope);
+            setLoading(false);
+          } else {
+            // Если нет кэша - показываем лоадер и генерируем
+            setIsLoading(true);
+            setLoading(false);
+            
+            const response = await generateDailyHoroscope(
+              data.zodiac_sign, 
+              data.display_name || 'Странник'
+            );
             
             setDailyPrediction(response);
-          } catch (error) {
-            console.error('Error getting horoscope:', error);
-            setDailyPrediction("Звёзды предсказывают тебе день наполненный возможностями.");
+            
+            // Сохраняем в AsyncStorage
+            await AsyncStorage.setItem(storageKey, response);
           }
+        } catch (error) {
+          console.error('Error getting horoscope:', error);
+          setDailyPrediction("Звёзды предсказывают тебе день наполненный возможностями.");
         }
       }
     } catch (e) {
       console.log('Error loading profile:', e);
     } finally {
       setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const getExtendedPrediction = async () => {
-    if (isPremium) {
-      // Premium пользователи уже видят расширенный прогноз
+  const handleUnlock = async () => {
+    // Проверяем баланс
+    if (credits < 1) {
+      Alert.alert(
+        "Недостаточно энергии",
+        "У вас нет энергии. Посмотрите рекламу или купите энергию в магазине.",
+        [
+          { text: "Отмена", style: "cancel" },
+          { text: "В магазин", onPress: () => router.push('/energy') }
+        ]
+      );
       return;
-    } else {
-      router.push('/energy');
+    }
+
+    // Списываем 1 кредит
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const newCredits = credits - 1;
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ credits: newCredits })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error decreasing credits:', error);
+        Alert.alert('Ошибка', 'Не удалось списать энергию');
+        return;
+      }
+
+      // Обновляем статус и разблокируем с анимацией
+      await refreshStatus();
+      
+      // Настраиваем анимацию перед разблокировкой
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setIsUnlocked(true);
+      
+    } catch (error) {
+      console.error('Error in handleUnlock:', error);
+      Alert.alert('Ошибка', 'Что-то пошло не так');
     }
   };
 
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#24243e']} style={StyleSheet.absoluteFill} />
+      
+      {/* UI ЗАГРУЗКИ */}
+      {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#ffd700" />
+          <Text style={styles.loadingText}>Составляем карту дня...</Text>
+        </View>
+      )}
       
       <ScrollView 
         showsVerticalScrollIndicator={false}
@@ -151,9 +240,27 @@ export default function HoroscopeScreen() {
             <Text style={styles.greeting}>Здравствуй, {userProfile?.display_name || 'Странник'}!</Text>
             <Text style={styles.zodiacText}>{userProfile?.zodiac_sign || 'Таинственный знак'}</Text>
           </View>
-          <View style={styles.zodiacBadge}>
-            <Ionicons name="star" size={24} color="#ffd700" />
-          </View>
+          
+          {/* КЛИКАБЕЛЬНЫЙ БЕЙДЖ ЭНЕРГИИ */}
+          <TouchableOpacity 
+            onPress={() => router.push('/energy')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(255,215,0,0.3)',
+              marginTop: -20
+            }}
+          >
+            <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
+            <Text style={{ color: '#FFD700', fontWeight: 'bold', fontSize: 16 }}>
+              {isPremium ? '∞' : credits}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* ENERGY CARD */}
@@ -185,41 +292,41 @@ export default function HoroscopeScreen() {
           <Text style={styles.cardTitle}>Магические атрибуты дня</Text>
           
           <View style={styles.magicRow}>
-            <View style={[styles.magicBadge, !isPremium && styles.magicBadgeLocked]}>
-              <Ionicons name="flash-outline" size={20} color={isPremium ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
-              <Text style={[styles.magicBadgeValue, !isPremium && styles.magicBadgeTextLocked]}>
-                {isPremium ? magicAttributes.number : "?"}
+            <View style={[styles.magicBadge, (!isPremium && !isUnlocked) && styles.magicBadgeLocked]}>
+              <Ionicons name="flash-outline" size={20} color={(isPremium || isUnlocked) ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
+              <Text style={[styles.magicBadgeValue, (!isPremium && !isUnlocked) && styles.magicBadgeTextLocked]}>
+                {(isPremium || isUnlocked) ? magicAttributes.number : "?"}
               </Text>
-              <Text style={[styles.magicBadgeLabel, !isPremium && styles.magicBadgeTextLocked]}>
+              <Text style={[styles.magicBadgeLabel, (!isPremium && !isUnlocked) && styles.magicBadgeTextLocked]}>
                 Число
               </Text>
             </View>
             
-            <View style={[styles.magicBadge, !isPremium && styles.magicBadgeLocked]}>
-              <Ionicons name="color-palette-outline" size={20} color={isPremium ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
-              <Text style={[styles.magicBadgeValue, !isPremium && styles.magicBadgeTextLocked]}>
-                {isPremium ? magicAttributes.color : "?"}
+            <View style={[styles.magicBadge, (!isPremium && !isUnlocked) && styles.magicBadgeLocked]}>
+              <Ionicons name="color-palette-outline" size={20} color={(isPremium || isUnlocked) ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
+              <Text style={[styles.magicBadgeValue, (!isPremium && !isUnlocked) && styles.magicBadgeTextLocked]}>
+                {(isPremium || isUnlocked) ? magicAttributes.color : "?"}
               </Text>
-              <Text style={[styles.magicBadgeLabel, !isPremium && styles.magicBadgeTextLocked]}>
+              <Text style={[styles.magicBadgeLabel, (!isPremium && !isUnlocked) && styles.magicBadgeTextLocked]}>
                 Цвет
               </Text>
             </View>
             
-            <View style={[styles.magicBadge, !isPremium && styles.magicBadgeLocked]}>
-              <Ionicons name="diamond-outline" size={20} color={isPremium ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
-              <Text style={[styles.magicBadgeValue, !isPremium && styles.magicBadgeTextLocked]}>
-                {isPremium ? magicAttributes.talisman : "?"}
+            <View style={[styles.magicBadge, (!isPremium && !isUnlocked) && styles.magicBadgeLocked]}>
+              <Ionicons name="diamond-outline" size={20} color={(isPremium || isUnlocked) ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
+              <Text style={[styles.magicBadgeValue, (!isPremium && !isUnlocked) && styles.magicBadgeTextLocked]}>
+                {(isPremium || isUnlocked) ? magicAttributes.talisman : "?"}
               </Text>
-              <Text style={[styles.magicBadgeLabel, !isPremium && styles.magicBadgeTextLocked]}>
+              <Text style={[styles.magicBadgeLabel, (!isPremium && !isUnlocked) && styles.magicBadgeTextLocked]}>
                 Талисман
               </Text>
             </View>
           </View>
           
-          {!isPremium && (
+          {(!isPremium && !isUnlocked) && (
             <Text style={styles.magicLockedText}>
               <Ionicons name="lock-closed" size={14} color="rgba(255, 215, 0, 0.5)" />
-              <Text style={styles.magicLockedTextInner}>Доступно в Premium</Text>
+              <Text style={styles.magicLockedTextInner}>Доступно в Premium или после разблокировки</Text>
             </Text>
           )}
         </View>
@@ -238,26 +345,61 @@ export default function HoroscopeScreen() {
               </View>
             )}
           </View>
-          <Text style={styles.forecastText}>
-            {dailyPrediction}
-          </Text>
+          
+          {/* КОНТЕЙНЕР С ТЕКСТОМ ПРОГНОЗА */}
+          <View style={[styles.forecastContainer, !isUnlocked && styles.forecastContainerLocked]}>
+            <Text style={styles.forecastText}>
+              {/* ЗАМАНКА: показываем первые 150 символов если не разблокировано */}
+              {(!isUnlocked && !isPremium && dailyPrediction) 
+                ? cleanText(dailyPrediction).substring(0, 150) + '...' 
+                : cleanText(dailyPrediction)}
+            </Text>
+            
+            {/* СТЕНА ЭНЕРГИИ - если не разблокировано */}
+            {!isUnlocked && !isPremium && dailyPrediction && (
+              <>
+                {/* Градиент для эффекта размытия */}
+                <LinearGradient
+                  colors={['transparent', '#0f0c29']}
+                  locations={[0, 0.7]}
+                  style={styles.forecastGradient}
+                />
+                
+                {/* Кнопка разблокировки в центре градиента */}
+                <View style={styles.unlockOverlay}>
+                  <TouchableOpacity 
+                    style={styles.unlockButton}
+                    onPress={handleUnlock}
+                  >
+                    <LinearGradient
+                      colors={['#FFB800', '#FF8C00']}
+                      style={styles.unlockButtonGradient}
+                    >
+                      <Text style={[styles.unlockButtonText, { fontSize: 14 }]}>Открыть прогноз + Атрибуты</Text>
+                      <Text style={styles.unlockButtonPrice}>(-1 энергия ✨)</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
           
           {/* Расширенный прогноз для Premium */}
           {isPremium && extendedPrediction && (
             <View style={styles.extendedSection}>
               <View style={styles.divider} />
               <Text style={styles.extendedText}>
-                {extendedPrediction.replace('Глубокий анализ:', '').trim()}
+                {cleanText(extendedPrediction.replace('Глубокий анализ:', '').trim())}
               </Text>
             </View>
           )}
         </View>
 
-        {/* CTA BUTTON - только для не-Premium */}
-        {!isPremium && (
+        {/* ЕДИНАЯ КНОПКА ДЕЙСТВИЯ - только если нет прогноза */}
+        {!dailyPrediction && !loading && !isLoading && (
           <TouchableOpacity 
             style={styles.mainButton}
-            onPress={getExtendedPrediction}
+            onPress={loadProfileAndHoroscope}
           >
             <LinearGradient 
               colors={['#8E2DE2', '#4A00E0']} 
@@ -266,10 +408,13 @@ export default function HoroscopeScreen() {
               style={styles.buttonGradient}
             >
               <Ionicons name="sparkles" size={20} color="#fff" style={{ marginRight: 10 }} />
-              <Text style={styles.buttonText}>Получить глубокий разбор</Text>
+              <Text style={styles.buttonText}>Получить предсказание</Text>
             </LinearGradient>
           </TouchableOpacity>
         )}
+
+        {/* AdBanner - показываем только для не-Premium пользователей */}
+        <AdBanner />
       </ScrollView>
     </View>
   );
@@ -321,6 +466,59 @@ const styles = StyleSheet.create({
     lineHeight: 24, 
     color: 'rgba(255, 255, 255, 0.85)', 
     fontWeight: '400' 
+  },
+
+  // СТЕНА ЭНЕРГИИ
+  forecastContainer: {
+    position: 'relative',
+  },
+  forecastContainerLocked: {
+    maxHeight: 150,
+    overflow: 'hidden',
+  },
+  forecastGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 100,
+  },
+  unlockOverlay: {
+    position: 'absolute',
+    bottom: 30,
+    left: 20,
+    right: 20,
+    alignItems: 'center',
+  },
+  unlockButton: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#FFB800',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
+    width: '100%',
+  },
+  unlockButtonGradient: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 20,
+  },
+  unlockButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  unlockButtonPrice: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 4,
   },
 
   mainButton: { 
@@ -414,13 +612,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 215, 0, 0.15)',
     opacity: 0.6,
   },
-  magicBadgeText: {
-    color: '#ffd700',
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 6,
-    textAlign: 'center',
-  },
   magicBadgeValue: {
     color: '#ffd700',
     fontSize: 16,
@@ -449,5 +640,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 6,
     fontStyle: 'italic',
+  },
+
+  // UI ЗАГРУЗКИ
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(15, 12, 41, 0.9)',
+    zIndex: 1000,
+  },
+  loadingText: {
+    color: '#ffd700',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 16,
+    textAlign: 'center',
   }
 });
