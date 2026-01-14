@@ -179,7 +179,7 @@ export default function HoroscopeScreen() {
             </Text>
             {isPremium && (
               <View style={styles.premiumBadge}>
-                <Ionicons name="crown" size={16} color="#ffd700" />
+                <Ionicons name="star" size={16} color="#ffd700" />
                 <Text style={styles.premiumBadgeText}>Premium</Text>
               </View>
             )}
