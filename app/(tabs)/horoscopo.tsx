@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Animated, Alert, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Animated, Alert, LayoutAnimation } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,14 +13,6 @@ import AdBanner from '../../src/components/AdBanner';
 
 const { width } = Dimensions.get('window');
 
-// Настройка LayoutAnimation для Android
-if (Platform.OS === 'android') {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-}
-
-// Функция генерации магических атрибутов и энергии дня
 const generateDailyAttributes = (sign: string) => {
   const today = new Date();
   const day = today.getDate();
@@ -236,9 +228,17 @@ export default function HoroscopeScreen() {
       >
         {/* HEADER */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Здравствуй, {userProfile?.display_name || 'Странник'}!</Text>
-            <Text style={styles.zodiacText}>{userProfile?.zodiac_sign || 'Таинственный знак'}</Text>
+          <View style={styles.headerTextContainer}>
+            {userProfile ? (
+              <>
+                <Text style={styles.greeting}>Здравствуй, {userProfile.display_name}!</Text>
+                <Text style={styles.zodiacText}>{userProfile.zodiac_sign || 'Таинственный знак'}</Text>
+              </>
+            ) : (
+              <View style={{ height: 50, justifyContent: 'center' }}>
+                <ActivityIndicator size="small" color="#FFD700" />
+              </View>
+            )}
           </View>
           
           {/* КЛИКАБЕЛЬНЫЙ БЕЙДЖ ЭНЕРГИИ */}
@@ -430,6 +430,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 30 
   },
+  headerTextContainer: { flex: 1 },
   greeting: { fontSize: 28, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
   zodiacText: { fontSize: 18, color: '#ffd700', marginTop: 4, fontWeight: '500', opacity: 0.9 },
   zodiacBadge: { 

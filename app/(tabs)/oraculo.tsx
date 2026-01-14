@@ -331,9 +331,17 @@ export default function OracleScreen() {
       <View style={styles.content}>
         {/* ХЕДЕР */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Здравствуй, {userProfile?.display_name || 'Странник'}!</Text>
-            <Text style={styles.zodiacText}>{userProfile?.zodiac_sign || 'Таинственный знак'}</Text>
+          <View style={styles.headerTextContainer}>
+            {userProfile ? (
+              <>
+                <Text style={styles.greeting}>Здравствуй, {userProfile.display_name}!</Text>
+                <Text style={styles.zodiacText}>{userProfile.zodiac_sign || 'Таинственный знак'}</Text>
+              </>
+            ) : (
+              <View style={{ height: 50, justifyContent: 'center' }}>
+                <ActivityIndicator size="small" color="#FFD700" />
+              </View>
+            )}
           </View>
           
           {/* КЛИКАБЕЛЬНЫЙ БЕЙДЖ ЭНЕРГИИ */}
@@ -477,6 +485,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     marginBottom: 60,
   },
+  headerTextContainer: { flex: 1 },
   greeting: {
     fontSize: 28,
     fontWeight: '700',

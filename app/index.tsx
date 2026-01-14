@@ -22,6 +22,78 @@ const { width, height } = Dimensions.get('window');
 
 type OnboardingStep = 'intro' | 'input' | 'animation';
 
+// БОНУСНАЯ СИСТЕМА
+const handleBonusSystem = async (userId: string) => {
+  try {
+    const hasLaunchedApp = await AsyncStorage.getItem('has_launched_app');
+    const lastBonusDate = await AsyncStorage.getItem('last_bonus_date');
+    const today = new Date().toISOString().split('T')[0]; // ГГГГ-ММ-ДД
+
+    // Проверяем, есть ли функция обновления статуса
+    // Если нет, создаем простую версию
+    const refreshStatus = async () => {
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('credits')
+          .eq('id', userId)
+          .single();
+        
+        if (data) {
+          // Сохраняем обновленные кредиты в AsyncStorage
+          await AsyncStorage.setItem('user_credits', data.credits.toString());
+        }
+      } catch (error) {
+        console.error('Error refreshing status:', error);
+      }
+    };
+
+    // ПРИВЕТСТВЕННЫЙ БОНУС (первый запуск)
+    if (!hasLaunchedApp) {
+      const { error } = await supabase.rpc('give_credits', { 
+        user_id: userId, 
+        amount: 3 
+      });
+      
+      if (!error) {
+        await AsyncStorage.setItem('has_launched_app', 'true');
+        await AsyncStorage.setItem('last_bonus_date', today);
+        await refreshStatus();
+        
+        Alert.alert(
+          "Подарок Звезд! ✨", 
+          "Держи 3 энергии для старта. Добро пожаловать в мир снов!",
+          [{ text: "Спасибо!", style: "default" }]
+        );
+      } else {
+        console.error('Welcome bonus error:', error);
+      }
+    }
+    // ЕЖЕДНЕВНЫЙ БОНУС (не первый запуск)
+    else if (lastBonusDate !== today) {
+      const { error } = await supabase.rpc('give_credits', { 
+        user_id: userId, 
+        amount: 1 
+      });
+      
+      if (!error) {
+        await AsyncStorage.setItem('last_bonus_date', today);
+        await refreshStatus();
+        
+        Alert.alert(
+          "Ежедневный дар ✨", 
+          "+1 энергия за возвращение. Продолжай исследовать свои сны!",
+          [{ text: "Отлично!", style: "default" }]
+        );
+      } else {
+        console.error('Daily bonus error:', error);
+      }
+    }
+  } catch (error) {
+    console.error('Bonus system error:', error);
+  }
+};
+
 export default function Index() {
   const router = useRouter();
   const [step, setStep] = useState<OnboardingStep>('intro');
@@ -197,6 +269,9 @@ export default function Index() {
 
           // Save zodiac sign to AsyncStorage for chat screen
           await AsyncStorage.setItem('user_zodiac', zodiacSign);
+
+          // БОНУСНАЯ СИСТЕМА - ПРИВЕТСТВЕННЫЙ И ЕЖЕДНЕВНЫЙ БОНУСЫ
+          await handleBonusSystem(authData.session.user.id);
 
           // Success - proceed to animation
           setStep('animation');
