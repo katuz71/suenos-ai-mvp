@@ -13,8 +13,6 @@ export default function PaywallScreen() {
   const handlePurchase = async () => {
     const success = await buyPremium();
     if (success) {
-      // Принудительное обновление статуса пользователя
-      console.log(" [PAYMENT] Обновление статуса после оплаты...");
       await refreshStatus();
       
       // Небольшая задержка для обновления UI

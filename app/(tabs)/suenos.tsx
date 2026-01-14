@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, Text, StyleSheet, TextInput, TouchableOpacity, 
   ScrollView, ActivityIndicator, Alert, Dimensions, FlatList 
@@ -22,7 +22,7 @@ interface DreamEntry {
 
 export default function SuenosScreen() {
   const router = useRouter();
-  const { credits, hasPremium, consumeCredit } = useMonetization();
+  const { credits, hasPremium, consumeCredit, refreshStatus } = useMonetization();
   const [dreamText, setDreamText] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -30,8 +30,11 @@ export default function SuenosScreen() {
   const [loadingHistory, setLoadingHistory] = useState(true);
 
   // Загрузка истории снов
-  const loadDreamHistory = async () => {
+  const loadDreamHistory = useCallback(async (showLoading = false) => {
     try {
+      if (showLoading) {
+        setLoadingHistory(true);
+      }
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase
@@ -47,13 +50,38 @@ export default function SuenosScreen() {
     } finally {
       setLoadingHistory(false);
     }
-  };
+  }, []);
 
-  // Загрузка при фокусе на вкладку
+  // Начальная загрузка при монтировании
+  useEffect(() => {
+    loadDreamHistory(true); // Показываем загрузку только при первом заходе
+  }, [loadDreamHistory]);
+
+  // Полная синхронизация при фокусе на вкладку (без индикатора загрузки)
   useFocusEffect(
-    React.useCallback(() => {
-      loadDreamHistory();
-    }, [])
+    useCallback(() => {
+      let isActive = true;
+      
+      const syncData = async () => {
+        if (!isActive) return;
+        
+        try {
+          // Не показываем загрузку при фокусе, чтобы избежать дергания
+          await Promise.all([
+            refreshStatus(),  // Тянем свежий профиль из Supabase
+            loadDreamHistory(false) // Загружаем актуальную историю снов без индикатора
+          ]);
+        } catch (error) {
+          // Ошибки логируются только для отладки
+        }
+      };
+      
+      syncData();
+      
+      return () => {
+        isActive = false;
+      };
+    }, [refreshStatus, loadDreamHistory])
   );
 
   const handleInterpret = async () => {
@@ -62,41 +90,91 @@ export default function SuenosScreen() {
       return;
     }
 
-    if (credits <= 0 && !hasPremium) {
-      router.push('/energy');
-      return;
-    }
-
     setLoading(true);
     setResult(null);
 
     try {
-      const response = await interpretDream(dreamText);
-      if (!hasPremium) {
-        await consumeCredit();
+      // Получаем актуальные данные из базы
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        Alert.alert("Ошибка", "Пользователь не найден.");
+        return;
+      }
+
+      // ПРЯМАЯ ПРОВЕРКА БАЗЫ ДАННЫХ
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('display_name, zodiac_sign, is_premium, credits') // Указываем точные названия колонок!
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profile) {
+        Alert.alert("Ошибка", "Не удалось загрузить профиль.");
+        return;
+      }
+
+      console.log('🔍 DB Check - Premium:', profile.is_premium, 'Credits:', profile.credits);
+
+      // ИСПРАВЛЕННАЯ ЛОГИКА ДОСТУПА
+      if (profile.is_premium === true) {
+        // Premium - СРАЗУ разрешаем, игнорируем кредиты
+        console.log('✅ Premium access granted');
+      } else if (!profile.is_premium && profile.credits > 0) {
+        // Обычный пользователь с кредитами - разрешаем
+        console.log('✅ Credits access granted');
+      } else {
+        // Нет Premium и нет кредитов - блокируем
+        console.log('🔒 Access denied - no premium, no credits');
+        Alert.alert(
+          "Недостаточно энергии", 
+          "Для расшифровки нужна энергия или статус Premium.",
+          [
+            { text: "Понятно", style: "cancel" },
+            { text: "Пополнить", onPress: () => router.push('/energy') }
+          ]
+        );
+        return;
+      }
+
+      // Выполняем толкование с персонализацией
+      const response = await interpretDream(dreamText, {
+        name: profile?.display_name || 'Странник', // Мапим display_name -> name
+        zodiac: profile?.zodiac_sign || 'Знак не указан' // Мапим zodiac_sign -> zodiac
+      });
+      
+      // Списываем кредит только если не Premium
+      if (!profile.is_premium) {
+        // Используем RPC для списания кредита
+        const { error: consumeError } = await supabase.rpc('consume_credit', { 
+          user_id: user.id 
+        });
+        
+        if (consumeError) {
+          console.error('Error consuming credit:', consumeError);
+          Alert.alert("Ошибка", "Не удалось списать кредит.");
+          return;
+        }
+        
+        console.log('💳 Credit consumed successfully');
       }
       
       // Сохраняем в базу данных
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from('interpretations').insert({
-            user_id: user.id,
-            dream_text: dreamText,
-            interpretation_text: response,
-            created_at: new Date().toISOString()
-          });
-          
-          // Обновляем историю
-          await loadDreamHistory();
-        }
-      } catch (saveError) {
-        console.error('Error saving dream:', saveError);
-      }
+      await supabase.from('interpretations').insert({
+        user_id: user.id,
+        dream_text: dreamText,
+        interpretation_text: response,
+        created_at: new Date().toISOString()
+      });
+      
+      // Обновляем локальные данные
+      await refreshStatus();
+      await loadDreamHistory(false);
       
       setResult(response);
       setDreamText(''); // Очищаем поле ввода
+      
     } catch (e) {
+      console.error('Interpretation error:', e);
       Alert.alert("Ошибка", "Звезды сегодня туманны. Попробуй позже.");
     } finally {
       setLoading(false);
@@ -197,7 +275,7 @@ export default function SuenosScreen() {
         {result && (
           <View style={styles.revelationCard}>
             <View style={styles.revelationHeader}>
-              <Ionicons name="moon-stars" size={24} color="#ffd700" />
+              <Ionicons name="moon" size={24} color="#ffd700" />
               <Text style={styles.revelationTitle}>ОТКРОВЕНИЕ ЛУНЫ</Text>
             </View>
             <View style={styles.divider} />
@@ -257,7 +335,7 @@ export default function SuenosScreen() {
                 renderItem={renderDreamItem}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.diaryList}
-                nestedScrollEnabled={false}
+                scrollEnabled={false}
               />
             ) : (
               <View style={styles.diaryEmpty}>

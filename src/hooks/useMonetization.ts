@@ -225,7 +225,6 @@ export const useMonetization = () => {
         .single();
 
       if (data) {
-        console.log("🔄 [REFRESH] Обновление статуса пользователя:", data);
         setCredits(data.credits || 0);
         setIsPremium(data.is_premium || false);
       }
