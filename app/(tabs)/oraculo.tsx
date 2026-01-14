@@ -345,7 +345,7 @@ export default function OracleScreen() {
           <View style={styles.headerTextContainer}>
             {userProfile ? (
               <>
-                <Text style={styles.greeting}>Здравствуй, {userProfile.display_name}!</Text>
+                <Text style={styles.greeting}>Здравствуй, {userProfile.display_name || 'Странник'}!</Text>
                 <Text style={styles.zodiacText}>{userProfile.zodiac_sign || 'Таинственный знак'}</Text>
               </>
             ) : (

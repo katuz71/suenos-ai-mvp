@@ -36,12 +36,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     // Wait for navigation and auth check
-    if (!isAuthChecked || !navigationState?.key) return;
+    if (!isAuthChecked || !navigationState) return;
 
-    const inTabs = segments[0] === '(tabs)';
-    const inRoot = segments.length === 0;
-    const isPaywall = segments[0] === 'paywall';
-    const isEnergy = segments[0] === 'energy';
+    const currentSegment = segments[0];
+    const inTabs = currentSegment === '(tabs)';
+    const inRoot = !currentSegment;
+    const isPaywall = currentSegment === 'paywall';
+    const isEnergy = currentSegment === 'energy';
 
     if (session) {
       // Allow access to paywall and energy screens
@@ -59,10 +60,10 @@ export default function RootLayout() {
         router.replace('/');
       }
     }
-  }, [session, isAuthChecked, segments, navigationState?.key]);
+  }, [session, isAuthChecked, segments, navigationState]);
 
   // Show loading spinner while checking auth
-  if (!isAuthChecked || !navigationState?.key) {
+  if (!isAuthChecked || !navigationState) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F172A' }}>
         <ActivityIndicator size="large" color="#A855F7" />

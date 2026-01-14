@@ -21,7 +21,7 @@ interface DreamEntry {
 
 export default function SuenosScreen() {
   const router = useRouter();
-  const { credits, hasPremium, refreshStatus } = useMonetization();
+  const { credits, isPremium, refreshStatus } = useMonetization();
   
   // Данные пользователя
   const [userName, setUserName] = useState<string | null>(null);
@@ -154,7 +154,7 @@ export default function SuenosScreen() {
 
       // ИИ запрос
       const response = await interpretDream(dreamText, {
-        name: userName,
+        name: userName || '',
         zodiac: userZodiac
       });
       
@@ -259,7 +259,7 @@ export default function SuenosScreen() {
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
             <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadge}>
               <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
-              <Text style={styles.energyText}>{hasPremium ? '∞' : credits}</Text>
+              <Text style={styles.energyText}>{isPremium ? '∞' : credits}</Text>
             </TouchableOpacity>
           </Animated.View>
         </View>
@@ -295,7 +295,7 @@ export default function SuenosScreen() {
                 <>
                   <Ionicons name="sparkles" size={20} color="#fff" style={{ marginRight: 10 }} />
                   <Text style={styles.buttonText}>
-                    {hasPremium ? 'ПОЛУЧИТЬ ОТКРОВЕНИЕ' : 'РАСШИФРОВАТЬ (-1 ✨)'}
+                    {isPremium ? 'ПОЛУЧИТЬ ОТКРОВЕНИЕ' : 'РАСШИФРОВАТЬ (-1 ✨)'}
                   </Text>
                 </>
               )}
