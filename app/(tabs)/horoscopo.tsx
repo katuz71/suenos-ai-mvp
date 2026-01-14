@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,52 @@ import { interpretDream } from '../../src/services/openai';
 
 const { width } = Dimensions.get('window');
 
+// Функция генерации магических атрибутов и энергии дня
+const generateDailyAttributes = (sign: string) => {
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth();
+  const year = today.getFullYear();
+  
+  // Уникальное число дня с учетом знака зодиака
+  const zodiacIndex = 'ОвенТелецБлизнецыРакЛевДеваВесыСкорпионСтрелецКозеродВодолейРыбы'.indexOf(sign);
+  const seed = day + month + year + zodiacIndex;
+  
+  const colors = ['Красный', 'Синий', 'Золотой', 'Зеленый', 'Фиолетовый', 'Оранжевый', 'Бирюзовый', 'Розовый'];
+  const talismans = ['Рубин', 'Сапфир', 'Агат', 'Лунный камень', 'Янтарь', 'Аметист', 'Горный хрусталь', 'Обсидиан'];
+  
+  // Генерируем предсказуемые случайные значения на основе даты и знака
+  const random = (multiplier: number, offset: number) => {
+    const x = Math.sin(seed * multiplier) * 10000;
+    return Math.floor((x - Math.floor(x)) * 100) + offset;
+  };
+  
+  return {
+    // Энергия дня (0-100%)
+    love: Math.min(95, Math.max(15, random(123, 0))),      // Любовь: 15-95%
+    power: Math.min(95, Math.max(15, random(456, 0))),     // Сила: 15-95%
+    wisdom: Math.min(95, Math.max(15, random(789, 0))),    // Мудрость: 15-95%
+    
+    // Магические атрибуты
+    number: random(111, 1).toString(),                      // Число: 1-99
+    color: colors[random(222, 0) % colors.length],          // Цвет из массива
+    talisman: talismans[random(333, 0) % talismans.length] // Талисман из массива
+  };
+};
+
+// Вспомогательный компонент для шкал
+const EnergyItem = ({ label, progress, color, value }: any) => (
+  <View style={styles.energyRow}>
+    <View style={styles.energyLabelRow}>
+      <Text style={styles.energyLabel}>{label}</Text>
+      <Text style={styles.energyPercent}>{value || Math.round(progress * 100)}%</Text>
+    </View>
+    <View style={styles.progressBg}>
+      <View style={[styles.progressFill, { width: `${progress * 100}%`, backgroundColor: color }]} />
+    </View>
+  </View>
+);
+
 export default function HoroscopeScreen() {
   const router = useRouter();
   const { isPremium, refreshStatus } = useMonetization();
@@ -19,11 +65,21 @@ export default function HoroscopeScreen() {
   const [dailyPrediction, setDailyPrediction] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [extendedPrediction, setExtendedPrediction] = useState<string>('');
-  const [magicAttributes, setMagicAttributes] = useState<{
-    number: string;
-    color: string;
-    talisman: string;
-  } | null>(null);
+
+  // Генерируем атрибуты на основе знака зодиака и текущей даты
+  const generatedAttributes = useMemo(() => {
+    if (userProfile?.zodiac_sign) {
+      return generateDailyAttributes(userProfile.zodiac_sign);
+    }
+    return null;
+  }, [userProfile?.zodiac_sign]);
+
+  // Используем сгенерированные атрибуты или полученные от ИИ
+  const magicAttributes = generatedAttributes || {
+    number: "1",
+    color: "Красный",
+    talisman: "Рубин"
+  };
 
   // СИНХРОНИЗАЦИЯ ПРИ ФОКУСЕ НА ВКЛАДКУ
   useFocusEffect(
@@ -54,37 +110,11 @@ export default function HoroscopeScreen() {
         if (data?.zodiac_sign) {
           try {
             const response = await interpretDream("Прогноз на день", {
-              mode: 'horoscope',
-              userContext: {
-                zodiac: data.zodiac_sign,
-                name: data.display_name,
-                isPremium: isPremium
-              }
+              name: data.display_name || 'Странник',
+              zodiac: data.zodiac_sign
             });
             
-            // Разбираем ответ на части для Premium
-            if (isPremium && response.includes('Глубокий анализ:')) {
-              const parts = response.split('Глубокий анализ:');
-              const mainPart = parts[0].trim();
-              const analysisPart = parts[1].trim();
-              
-              // Извлекаем магические атрибуты из основной части
-              const magicMatch = mainPart.match(/Магические атрибуты дня:\s*Число дня: (\d+)\s*Цвет дня: (.+)\s*Талисман: (.+)/s);
-              if (magicMatch) {
-                const [, number, color, talisman] = magicMatch;
-                setMagicAttributes({ number, color, talisman });
-                
-                // Убираем магические атрибуты из основного прогноза
-                const cleanMainPart = mainPart.replace(/Магические атрибуты дня:.*?(?=Глубокий анализ:|$)/s, '').trim();
-                setDailyPrediction(cleanMainPart);
-              } else {
-                setDailyPrediction(mainPart);
-              }
-              
-              setExtendedPrediction('Глубокий анализ: ' + analysisPart);
-            } else {
-              setDailyPrediction(response);
-            }
+            setDailyPrediction(response);
           } catch (error) {
             console.error('Error getting horoscope:', error);
             setDailyPrediction("Звёзды предсказывают тебе день наполненный возможностями.");
@@ -130,9 +160,24 @@ export default function HoroscopeScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Энергия дня</Text>
           
-          <EnergyItem label="Любовь" progress={0.85} color="#FF6B6B" />
-          <EnergyItem label="Сила" progress={0.60} color="#FFD93D" />
-          <EnergyItem label="Мудрость" progress={0.75} color="#6BCBFF" />
+          <EnergyItem 
+            label="Любовь" 
+            progress={generatedAttributes ? generatedAttributes.love / 100 : 0.85} 
+            color="#FF6B6B" 
+            value={generatedAttributes ? generatedAttributes.love : 85}
+          />
+          <EnergyItem 
+            label="Сила" 
+            progress={generatedAttributes ? generatedAttributes.power / 100 : 0.60} 
+            color="#FFD93D" 
+            value={generatedAttributes ? generatedAttributes.power : 60}
+          />
+          <EnergyItem 
+            label="Мудрость" 
+            progress={generatedAttributes ? generatedAttributes.wisdom / 100 : 0.75} 
+            color="#6BCBFF" 
+            value={generatedAttributes ? generatedAttributes.wisdom : 75}
+          />
         </View>
 
         {/* MAGIC ATTRIBUTES CARD */}
@@ -142,22 +187,31 @@ export default function HoroscopeScreen() {
           <View style={styles.magicRow}>
             <View style={[styles.magicBadge, !isPremium && styles.magicBadgeLocked]}>
               <Ionicons name="flash-outline" size={20} color={isPremium ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
-              <Text style={[styles.magicBadgeText, !isPremium && styles.magicBadgeTextLocked]}>
-                {isPremium && magicAttributes ? magicAttributes.number : "?"}
+              <Text style={[styles.magicBadgeValue, !isPremium && styles.magicBadgeTextLocked]}>
+                {isPremium ? magicAttributes.number : "?"}
+              </Text>
+              <Text style={[styles.magicBadgeLabel, !isPremium && styles.magicBadgeTextLocked]}>
+                Число
               </Text>
             </View>
             
             <View style={[styles.magicBadge, !isPremium && styles.magicBadgeLocked]}>
               <Ionicons name="color-palette-outline" size={20} color={isPremium ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
-              <Text style={[styles.magicBadgeText, !isPremium && styles.magicBadgeTextLocked]}>
-                {isPremium && magicAttributes ? magicAttributes.color : "?"}
+              <Text style={[styles.magicBadgeValue, !isPremium && styles.magicBadgeTextLocked]}>
+                {isPremium ? magicAttributes.color : "?"}
+              </Text>
+              <Text style={[styles.magicBadgeLabel, !isPremium && styles.magicBadgeTextLocked]}>
+                Цвет
               </Text>
             </View>
             
             <View style={[styles.magicBadge, !isPremium && styles.magicBadgeLocked]}>
               <Ionicons name="diamond-outline" size={20} color={isPremium ? "#ffd700" : "rgba(255, 215, 0, 0.3)"} />
-              <Text style={[styles.magicBadgeText, !isPremium && styles.magicBadgeTextLocked]}>
-                {isPremium && magicAttributes ? magicAttributes.talisman : "?"}
+              <Text style={[styles.magicBadgeValue, !isPremium && styles.magicBadgeTextLocked]}>
+                {isPremium ? magicAttributes.talisman : "?"}
+              </Text>
+              <Text style={[styles.magicBadgeLabel, !isPremium && styles.magicBadgeTextLocked]}>
+                Талисман
               </Text>
             </View>
           </View>
@@ -220,19 +274,6 @@ export default function HoroscopeScreen() {
     </View>
   );
 }
-
-// Вспомогательный компонент для шкал
-const EnergyItem = ({ label, progress, color }: any) => (
-  <View style={styles.energyRow}>
-    <View style={styles.energyLabelRow}>
-      <Text style={styles.energyLabel}>{label}</Text>
-      <Text style={styles.energyPercent}>{Math.round(progress * 100)}%</Text>
-    </View>
-    <View style={styles.progressBg}>
-      <View style={[styles.progressFill, { width: `${progress * 100}%`, backgroundColor: color }]} />
-    </View>
-  </View>
-);
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f0c29' },
@@ -378,6 +419,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     marginTop: 6,
+    textAlign: 'center',
+  },
+  magicBadgeValue: {
+    color: '#ffd700',
+    fontSize: 16,
+    fontWeight: '700',
+    marginTop: 6,
+    textAlign: 'center',
+  },
+  magicBadgeLabel: {
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontSize: 10,
+    fontWeight: '500',
+    marginTop: 2,
     textAlign: 'center',
   },
   magicBadgeTextLocked: {

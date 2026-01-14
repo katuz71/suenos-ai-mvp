@@ -53,6 +53,102 @@ export interface InterpretOptions {
   userContext?: UserContext;
 }
 
+export const askOracle = async (
+  userContext: { name: string; zodiac: string }
+) => {
+  const { name, zodiac } = userContext;
+  
+  // Validate inputs
+  if (!process.env.EXPO_PUBLIC_OPENAI_API_KEY) {
+    throw new Error('Ключ API OpenAI не настроен');
+  }
+
+  // Системный промпт для КРАТКОСТИ и МИСТИКИ
+  const systemPrompt = `
+    Ты — древний магический Оракул. Твоя задача — дать мгновенный совет или предсказание.
+    Пользователь: ${name}, Знак: ${zodiac}.
+    
+    ПРАВИЛА:
+    1. Ответ должен быть ОЧЕНЬ коротким (максимум 2 предложения).
+    2. Стиль: мистический, туманный, но вдохновляющий. Как предсказание в печенье, но глубокое.
+    3. Иногда (не всегда) обращайся по имени.
+    4. Учитывай знак зодиака в метафорах (Лев -> огонь/сила, Рыбы -> вода/интуиция).
+    
+    Примеры ответов:
+    - "Звезды шепчут об удаче, ${name}. Действуй смело, как подобает твоему знаку."
+    - "Ответ, который ты ищешь, находится ближе, чем кажется. Замри и слушай тишину."
+    - "Не торопи события. Даже огню Льва нужно время, чтобы разгореться."
+  `;
+
+  // Создаем короткий запрос
+  const userMessage = "Дай мне предсказание на сегодня.";
+
+  console.log(`🔮 [DEBUG] Oracle consultation for: ${name} (${zodiac})`);
+
+  // Call OpenAI API
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage }
+      ],
+      max_tokens: 60, // Физически ограничиваем длину ответа
+      temperature: 0.9,
+      presence_penalty: 0.2,
+      frequency_penalty: 0.2,
+    });
+
+    // Extract and validate response
+    const response = completion.choices[0]?.message?.content;
+    
+    if (!response) {
+      throw new Error('Оракул молчит');
+    }
+
+    // Check if response is in Russian (basic validation)
+    const russianPattern = /[а-яё]/i;
+    const hasRussianChars = russianPattern.test(response);
+    
+    if (!hasRussianChars) {
+      console.warn('⚠️ [WARNING] Oracle response contains no Russian characters:', response);
+      throw new Error('Оракул говорит на непонятном языке');
+    }
+
+    return response.trim();
+
+  } catch (error) {
+    console.error('Oracle API Error:', error);
+    
+    // Handle specific OpenAI errors
+    if (error instanceof Error) {
+      if (error.message.includes('insufficient_quota')) {
+        throw new Error('Оракул устал. Попробуй позже.');
+      }
+      
+      if (error.message.includes('invalid_api_key') || error.message.includes('configurada')) {
+        throw new Error('Связь с Оракулом потеряна.');
+      }
+      
+      if (error.message.includes('rate_limit_exceeded')) {
+        throw new Error('Оракул медитирует. Подожди немного.');
+      }
+      
+      if (error.message.includes('model_not_found')) {
+        throw new Error('Оракул недоступен.');
+      }
+      
+      // Return original error if it's a custom error
+      if (error.message.includes('Оракул')) {
+        throw error;
+      }
+    }
+    
+    // Generic error for unknown issues
+    throw new Error('Связь с Оракулом прервана.');
+  }
+};
+
 export const interpretDream = async (
   text: string, 
   userContext?: { name: string; zodiac: string }
