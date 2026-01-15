@@ -8,10 +8,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useMonetization } from '../hooks/useMonetization';
 
 export default function AdBanner() {
-  const { hasPremium } = useMonetization();
+  const { isPremium } = useMonetization();
 
   // Если у пользователя премиум, не показываем рекламу
-  if (hasPremium) {
+  if (isPremium) {
     return null;
   }
 

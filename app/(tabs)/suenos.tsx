@@ -166,7 +166,7 @@ const response = await interpretDream(dreamText || '', { // <-- добавили
       // Сохранение
       await supabase.from('interpretations').insert({
         user_id: user.id,
-        dream_text: dreamText,
+        dream_text: dreamText || '',
         interpretation_text: response,
         created_at: new Date().toISOString()
       });
