@@ -152,11 +152,11 @@ export default function SuenosScreen() {
         return;
       }
 
-      // ИИ запрос
-      const response = await interpretDream(dreamText, {
-        name: userName || '',
-        zodiac: userZodiac
-      });
+      // ИИ запрос с защитой от null
+const response = await interpretDream(dreamText || '', { // <-- добавили || ''
+  name: userName || '',
+  zodiac: userZodiac || '' // здесь тоже лучше добавить на всякий случай
+});
       
       // Списание
       if (!profile.is_premium) {

@@ -13,9 +13,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#120d26"
     },
-    "ios": {
-      "supportsTablet": true
-    },
+    "ios": { "supportsTablet": true },
     "android": {
       "package": "com.katuz71.suenosaimvp",
       "adaptiveIcon": {
@@ -23,13 +21,9 @@
         "backgroundColor": "#ffffff"
       }
     },
-    "plugins": [
-      "expo-router"
-    ],
+    "plugins": ["expo-router"],
     "extra": {
-      "eas": {
-        "projectId": "cebb1e47-84d1-42e2-bac6-c3d10817432f"
-      }
+      "eas": { "projectId": "cebb1e47-84d1-42e2-bac6-c3d10817432f" }
     }
   }
 }
