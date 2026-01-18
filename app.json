@@ -5,13 +5,14 @@
     "version": "1.0.0",
     "android": {
       "package": "com.katuz71.suenosaimvp",
-      "versionCode": 9,
+      "versionCode": 10,
       "googleServicesFile": "./google-services.json"
     },
     "plugins": [
       "expo-router",
       "expo-font",
       "@react-native-firebase/app",
+      "react-native-purchases",
       [
         "react-native-google-mobile-ads",
         {
@@ -19,6 +20,12 @@
           "iosAppId": "ca-app-pub-8147866560220122~6913262165"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cebb1e47-84d1-42e2-bac6-c3d10817432f"
+      }
+    }
   }
 }
