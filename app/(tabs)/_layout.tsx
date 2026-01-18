@@ -1,46 +1,60 @@
 import { Tabs } from 'expo-router';
+import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function TabsLayout() {
+export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#0F172A',
-          borderTopColor: '#1E293B',
-          borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
-        tabBarActiveTintColor: '#A855F7',
-        tabBarInactiveTintColor: '#64748B',
+        // Цвета обновлены под "Золотую/Магическую" тему
+        tabBarActiveTintColor: '#FFD700', // Золотой активный
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)', // Полупрозрачный белый
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
+          marginTop: 4,
+          marginBottom: Platform.OS === 'android' ? 8 : 0,
+        },
+        tabBarStyle: {
+          backgroundColor: '#0f0c29', // Глубокий темно-синий (как на фонах экранов)
+          borderTopColor: 'rgba(255, 215, 0, 0.1)', // Тонкая золотая линия сверху
+          height: 70 + insets.bottom, // Чуть компактнее
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+          paddingTop: 10,
+          elevation: 0, // Убираем тень на Android для чистого вида
         },
       }}
     >
       <Tabs.Screen
         name="suenos"
         options={{
-          title: 'Сны',
-          tabBarIcon: ({ color, size }) => <Ionicons name="moon" size={size} color={color} />,
+          title: 'Sueños', // Перевод
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "moon" : "moon-outline"} size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="horoscopo"
+        name="horoscope"
         options={{
-          title: 'Гороскоп',
-          tabBarIcon: ({ color, size }) => <Ionicons name="star-outline" size={size} color={color} />,
+          title: 'Horóscopo', // Перевод
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "star" : "star-outline"} size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="oraculo"
+        name="oracle"
         options={{
-          title: 'Оракул',
-          tabBarIcon: ({ color, size }) => <Ionicons name="eye-outline" size={size} color={color} />,
+          title: 'Oráculo', // Перевод
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "sparkles" : "sparkles-outline"} size={24} color={color} />
+          ),
         }}
       />
     </Tabs>

@@ -1,470 +1,461 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   View, Text, StyleSheet, TextInput, TouchableOpacity, 
-  ScrollView, ActivityIndicator, Alert, Dimensions, Modal, RefreshControl, Animated, Share, Keyboard
+  ScrollView, ActivityIndicator, Alert, RefreshControl, Animated, Share, Keyboard, KeyboardAvoidingView, Platform 
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useMonetization } from '../../src/hooks/useMonetization';
-import { interpretDream } from '../../src/services/openai';
-import { useRouter } from 'expo-router';
+import { interpretDream } from '../../src/services/openai'; 
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MagicAlert from '../../src/components/MagicAlert';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 interface DreamEntry {
   id: string;
   dream_text: string;
   interpretation_text: string;
+  chat_history?: ChatMessage[]; 
   created_at: string;
 }
 
+type Message = {
+  id: string;
+  text: string;
+  sender: 'user' | 'luna';
+  isDream?: boolean; 
+};
+
+type ScreenMode = 'input' | 'chat';
+
 export default function SuenosScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { credits, isPremium, refreshStatus } = useMonetization();
+  const insets = useSafeAreaInsets();
+  const scrollViewRef = useRef<ScrollView>(null);
   
-  // Данные пользователя
-  const [userName, setUserName] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>('Viajero');
   const [userZodiac, setUserZodiac] = useState('');
 
-  // Состояния ввода
-  const [dreamText, setDreamText] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [mode, setMode] = useState<ScreenMode>('input');
+  const [currentDreamId, setCurrentDreamId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   
-  // Состояния истории
+  const [dreamText, setDreamText] = useState(''); 
+  const [chatInputText, setChatInputText] = useState(''); 
+  const [loading, setLoading] = useState(false);
+  
   const [dreamHistory, setDreamHistory] = useState<DreamEntry[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(false); 
   const [refreshing, setRefreshing] = useState(false);
 
-  // Состояния модального окна
-  const [selectedDream, setSelectedDream] = useState<DreamEntry | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [magicAlert, setMagicAlert] = useState({ visible: false, title: '', message: '', icon: '' });
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
-  const [showEnergyAlert, setShowEnergyAlert] = useState(false);
-  const [emptyInputAlert, setEmptyInputAlert] = useState(false);
+  const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
 
-  // АНИМАЦИЯ БЕЙДЖА ЭНЕРГИИ
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Отслеживаем изменения кредитов для анимации
   useEffect(() => {
-    // Запускаем анимацию при изменении credits
     Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 1.2,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
+      Animated.timing(scaleAnim, { toValue: 1.2, duration: 150, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
     ]).start();
   }, [credits]);
 
-  // --- 1. ЗАГРУЗКА ДАННЫХ ---
+  // Авто-скролл при появлении сообщений или клавиатуры
+  useEffect(() => {
+    if (mode === 'chat') {
+      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+    }
+    const kbdShow = Keyboard.addListener('keyboardDidShow', () => {
+      if (mode === 'chat') setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+    });
+    return () => kbdShow.remove();
+  }, [messages, mode, loading]);
+
+  useEffect(() => {
+    const loadLocalProfile = async () => {
+      const name = await AsyncStorage.getItem('user_name');
+      const sign = await AsyncStorage.getItem('user_zodiac');
+      if (name) setUserName(name);
+      if (sign) setUserZodiac(sign);
+
+      if (params.welcome === 'true') {
+        setMagicAlert({
+          visible: true,
+          title: "¡Regalo Estelar! ✨",
+          message: "Has recibido 3 energías para empezar.",
+          icon: "star"
+        });
+        router.setParams({ welcome: '' });
+      }
+    };
+    loadLocalProfile();
+  }, [params.welcome]);
+
   const loadData = useCallback(async (showLoading = false) => {
     try {
       if (showLoading) setLoadingHistory(true);
-      
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Получаем профиль (Имя и Знак)
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('display_name, zodiac_sign')
-        .eq('id', user.id)
-        .single();
+      if (!user) {
+        if (showLoading) setLoadingHistory(false);
+        return;
+      }
       
+      const { data: profile } = await supabase.from('profiles').select('display_name, zodiac_sign').eq('id', user.id).maybeSingle();
       if (profile) {
         setUserName(profile.display_name);
         setUserZodiac(profile.zodiac_sign || '');
+        await AsyncStorage.setItem('user_name', profile.display_name || '');
       }
 
-      // Получаем историю снов
-      const { data: history } = await supabase
+      const { data: history, error } = await supabase
         .from('interpretations')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(20);
         
-      setDreamHistory(history || []);
+      if (!error && history) setDreamHistory(history);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
-      setLoadingHistory(false);
+      if (showLoading) setLoadingHistory(false);
       setRefreshing(false);
     }
   }, []);
 
-  // Первичная загрузка
-  useEffect(() => {
-    loadData(true);
-  }, [loadData]);
-
-  // Обновление при фокусе
   useFocusEffect(
     useCallback(() => {
-      refreshStatus();
-      loadData(false);
-    }, [])
+      let isActive = true;
+      const loadAndRefresh = async () => {
+        if (!isActive) return;
+        const shouldShowSpinner = dreamHistory.length === 0;
+        await loadData(shouldShowSpinner);
+        if (!isActive) return;
+        refreshStatus();
+      };
+      loadAndRefresh();
+      return () => { isActive = false; };
+    }, [loadData]) 
   );
 
-  // Pull-to-refresh
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadData(false);
     refreshStatus();
   }, [loadData, refreshStatus]);
 
-  // --- 2. ТОЛКОВАНИЕ СНА ---
-  const handleInterpret = async () => {
+  const handleOpenDream = (dream: DreamEntry) => {
+    setCurrentDreamId(dream.id);
+    const restoredMessages: Message[] = [
+      { id: 'dream', text: dream.dream_text, sender: 'user', isDream: true },
+      { id: 'luna-1', text: dream.interpretation_text, sender: 'luna' }
+    ];
+    if (dream.chat_history && Array.isArray(dream.chat_history)) {
+      dream.chat_history.forEach((msg, index) => {
+        restoredMessages.push({
+          id: `hist-${index}`,
+          text: msg.content,
+          sender: msg.role === 'user' ? 'user' : 'luna'
+        });
+      });
+    }
+    setMessages(restoredMessages);
+    setMode('chat');
+  };
+
+  const handleSendDream = async () => {
     Keyboard.dismiss();
-    
     if (!dreamText.trim()) {
-      setEmptyInputAlert(true);
-      Keyboard.dismiss();
+      setMagicAlert({ visible: true, title: "Luna escucha", message: "Cuéntame tu sueño primero.", icon: "moon" });
       return;
     }
-
+    if (!isPremium && credits < 1) {
+      setMagicAlert({ visible: true, title: "Poca Energía", message: "¿Recargar en la tienda?", icon: "flash" });
+      return;
+    }
     setLoading(true);
-    setResult(null);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_premium, credits')
-        .eq('id', user.id)
-        .single();
-
-      if (!profile) return;
-
-      // Проверка баланса
-      if (!profile.is_premium && profile.credits < 1) {
-        setShowEnergyAlert(true);
-        return;
+      if (!isPremium) {
+        // Прямое списание для надежности
+        const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+        if (p) await supabase.from('profiles').update({ credits: p.credits - 1 }).eq('id', user.id);
+        refreshStatus(); 
       }
 
-      // ИИ запрос с защитой от null
-const response = await interpretDream(dreamText || '', { // <-- добавили || ''
-  name: userName || '',
-  zodiac: userZodiac || '' // здесь тоже лучше добавить на всякий случай
-});
+      const aiResponse = await interpretDream(dreamText, { name: userName, zodiac: userZodiac });
+      const initialChat: ChatMessage[] = []; 
+
+      const { data, error } = await supabase.from('interpretations').insert({
+          user_id: user.id,
+          dream_text: dreamText,
+          interpretation_text: aiResponse,
+          chat_history: initialChat,
+          created_at: new Date().toISOString()
+        }).select().single();
+
+      if (error) throw error;
+      if (data) setCurrentDreamId(data.id);
       
-      // Списание
-      if (!profile.is_premium) {
-        await supabase.rpc('consume_credit', { user_id: user.id });
-      }
+      const msgDream: Message = { id: 'dream', text: dreamText, sender: 'user', isDream: true };
+      const msgLuna: Message = { id: 'luna-1', text: aiResponse, sender: 'luna' };
       
-      // Сохранение
-      await supabase.from('interpretations').insert({
-        user_id: user.id,
-        dream_text: dreamText,
-        interpretation_text: response,
-        created_at: new Date().toISOString()
-      });
-      
-      await refreshStatus();
-      await loadData(false);
-      
-      setResult(response);
-      setDreamText('');
-      
+      setMessages([msgDream, msgLuna]);
+      setDreamText(''); 
+      setMode('chat');
+      loadData(false);
+
     } catch (e) {
       console.error(e);
-      Alert.alert("Ошибка", "Не удалось получить толкование.");
+      Alert.alert("Error", "La conexión falló.");
     } finally {
       setLoading(false);
     }
   };
 
-  // --- 3. РАБОТА С ДНЕВНИКОМ ---
-  const handleOpenDream = (dream: DreamEntry) => {
-    console.log("Opening dream:", dream.id); // Для отладки
-    setSelectedDream(dream);
-    setModalVisible(true);
+  const handleReply = async () => {
+    if (!chatInputText.trim()) return;
+    if (!isPremium && credits < 1) {
+      setMagicAlert({ visible: true, title: "Poca Energía", message: "¿Recargar?", icon: "flash" });
+      return;
+    }
+
+    const userMsgText = chatInputText;
+    setChatInputText(''); 
+    // Не скрываем клавиатуру полностью, чтобы было удобно писать дальше, 
+    // но если нужно - раскомментируй: Keyboard.dismiss();
+    setLoading(true);
+
+    try {
+      if (!isPremium) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+             const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+             if (p) await supabase.from('profiles').update({ credits: p.credits - 1 }).eq('id', user.id);
+        }
+        refreshStatus(); 
+      }
+
+      const newUserMsg: Message = { id: Date.now().toString(), text: userMsgText, sender: 'user' };
+      const newMessagesLocal = [...messages, newUserMsg];
+      setMessages(newMessagesLocal);
+
+      const contextString = messages.map(m => `${m.sender === 'user' ? 'USUARIO' : 'LUNA'}: ${m.text}`).join('\n');
+      const fullPrompt = `HISTORIAL:\n${contextString}\nNUEVO:\n${userMsgText}\nResponde como Luna en Español.`;
+
+      const aiReplyText = await interpretDream(fullPrompt, { name: userName, zodiac: userZodiac });
+      
+      const newLunaMsg: Message = { id: (Date.now() + 1).toString(), text: aiReplyText, sender: 'luna' };
+      const finalMessages = [...newMessagesLocal, newLunaMsg];
+      setMessages(finalMessages);
+
+      if (currentDreamId) {
+        const historyToSave = finalMessages.filter(m => m.id !== 'dream' && m.id !== 'luna-1').map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }));
+        await supabase.from('interpretations').update({ chat_history: historyToSave }).eq('id', currentDreamId);
+      }
+
+    } catch (e) {
+      Alert.alert("Error", "Magia interrumpida...");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteDream = (id: string) => {
+  const handleBackToInput = () => {
+    setMode('input');
+    setMessages([]);
+    setCurrentDreamId(null);
+    loadData(false); 
+  };
+
+  const handleConfirmDelete = (id: string) => {
+    setDreamToDelete(id);
     setDeleteAlertVisible(true);
   };
 
-  const performDelete = async (id: string) => {
+  const performDelete = async () => {
+    if (!dreamToDelete) return;
     try {
-      const { error } = await supabase.from('interpretations').delete().eq('id', id);
-      if (error) throw error;
-      
-      // Успешное удаление
-      setModalVisible(false);
-      setSelectedDream(null);
-      loadData(false); // Обновляем список
-    } catch (e) {
-      console.error(e);
-      Alert.alert("Ошибка", "Не удалось удалить запись. Проверьте интернет.");
-    }
+      await supabase.from('interpretations').delete().eq('id', dreamToDelete);
+      setDeleteAlertVisible(false);
+      setDreamToDelete(null);
+      loadData(false); 
+    } catch (e) { Alert.alert("Error", "Error al borrar."); }
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', { 
-      day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' 
-    });
-  };
-
-  // --- ПОДЕЛИТЬСЯ РЕЗУЛЬТАТОМ ---
-  const handleShare = async () => {
-    if (!result) return;
-    
-    try {
-      await Share.share({
-        message: `${result}\n\n✨ Расшифровано в Suenos AI - Мистический толкователь снов`,
-        url: 'https://suenos-ai.app'
-      });
-    } catch (error) {
-      console.log('Error sharing:', error);
-    }
+    return new Date(dateString).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
   };
 
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#1a1a2e']} style={StyleSheet.absoluteFill} />
       
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent} 
-        showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffd700" />}
-      >
-        {/* Хедер (ВЕРНУЛИ ИМЯ!) */}
-        <View style={styles.header}>
-          <View style={styles.headerTextContainer}>
-            {userName ? (
-              <>
-                <Text style={styles.greeting}>Здравствуй, {userName}!</Text>
-                <Text style={styles.zodiac}>{userZodiac || 'Сновидец'}</Text>
-              </>
-            ) : (
-              <View style={{ height: 50, justifyContent: 'center' }}>
-                <ActivityIndicator size="small" color="#FFD700" />
-              </View>
-            )}
+      {/* HEADER */}
+      <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
+        <View style={styles.headerTextContainer}>
+          {mode === 'chat' ? (
+            <TouchableOpacity onPress={handleBackToInput} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="chevron-back" size={24} color="#FFD700" />
+              <Text style={styles.backText}>Volver</Text>
+            </TouchableOpacity>
+          ) : (
+             <Text style={styles.greeting}>¡Hola, {userName}!</Text>
+          )}
+        </View>
+        
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadge}>
+            <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
+            <Text style={styles.energyText}>{isPremium ? '∞' : credits}</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+
+      {/* INPUT MODE */}
+      {mode === 'input' && (
+        <ScrollView 
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]} 
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffd700" />}
+        >
+          <View style={styles.magicCard}>
+            <View style={styles.cardHeader}>
+              <Ionicons name="moon-outline" size={20} color="#ffd700" />
+              <Text style={styles.cardTitle}>NUEVA VISIÓN</Text>
+            </View>
+            <TextInput
+              style={styles.dreamInput}
+              placeholder="¿Qué soñaste hoy? Cuéntamelo..."
+              placeholderTextColor="rgba(255,255,255,0.4)"
+              multiline
+              value={dreamText}
+              onChangeText={setDreamText}
+            />
+            <TouchableOpacity 
+              style={[styles.mainButton, loading && { opacity: 0.7 }]} 
+              onPress={handleSendDream}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient colors={['#8E2DE2', '#4A00E0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.buttonGradient}>
+                {loading ? <ActivityIndicator color="#fff" /> : (
+                  <>
+                    <Ionicons name="sparkles" size={20} color="#fff" style={{ marginRight: 10 }} />
+                    <Text style={styles.buttonText}>{isPremium ? 'INTERPRETAR' : 'INTERPRETAR (-1 ✨)'}</Text>
+                  </>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ height: 20 }} />
+          
+          <View style={styles.diaryHeader}>
+            <Ionicons name="book-outline" size={20} color="#ffd700" />
+            <Text style={styles.diaryTitle}>DIARIO DE SUEÑOS</Text>
+            <View style={styles.diaryCount}><Text style={styles.diaryCountText}>{dreamHistory.length}</Text></View>
           </View>
           
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadge}>
-              <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
-              <Text style={styles.energyText}>{isPremium ? '∞' : credits}</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
+          {loadingHistory ? (
+            <ActivityIndicator size="small" color="#ffd700" style={{ marginTop: 20 }} />
+          ) : dreamHistory.length > 0 ? (
+            <View style={styles.diaryList}>
+              {dreamHistory.map((item) => (
+                <View key={item.id} style={styles.dreamItemContainer}>
+                  <TouchableOpacity style={styles.dreamItem} activeOpacity={0.6} onPress={() => handleOpenDream(item)}>
+                    <View style={styles.dreamItemHeader}>
+                      <Text style={styles.dreamItemDate}>{formatDate(item.created_at)}</Text>
+                      <Ionicons name="chatbubble-ellipses-outline" size={14} color="#ffd700" />
+                    </View>
+                    <Text style={styles.dreamItemText} numberOfLines={2}>{item.dream_text}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.dreamDeleteBtn} onPress={() => handleConfirmDelete(item.id)}>
+                    <Ionicons name="trash-outline" size={18} color="#FF4444" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.diaryEmpty}><Text style={styles.diaryEmptyText}>Tu diario está vacío</Text></View>
+          )}
+        </ScrollView>
+      )}
 
-        {/* Форма ввода */}
-        <View style={styles.magicCard}>
-          <View style={styles.cardHeader}>
-            <Ionicons name="moon-outline" size={20} color="#ffd700" />
-            <Text style={styles.cardTitle}>НОВОЕ ВИДЕНИЕ</Text>
-          </View>
-          <TextInput
-            style={styles.dreamInput}
-            placeholder="Что тебе приснилось сегодня?"
-            placeholderTextColor="rgba(255,255,255,0.4)"
-            multiline
-            value={dreamText}
-            onChangeText={setDreamText}
-          />
-          <TouchableOpacity 
-            style={[styles.mainButton, loading && { opacity: 0.7 }]} 
-            onPress={handleInterpret}
-            disabled={loading}
-            activeOpacity={0.8}
+      {/* CHAT MODE - ИСПРАВЛЕНА КЛАВИАТУРА */}
+      {mode === 'chat' && (
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }} 
+          // Для Android часто лучше работает 'height' или 'padding' с отступом
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          // Отступ сверху (чтобы хедер не перекрывал)
+          keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 90}
+        >
+          <ScrollView 
+            ref={scrollViewRef} 
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20, flexGrow: 1 }}
           >
-            <LinearGradient 
-              colors={['#8E2DE2', '#4A00E0']} 
-              start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} 
-              style={styles.buttonGradient}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <>
-                  <Ionicons name="sparkles" size={20} color="#fff" style={{ marginRight: 10 }} />
-                  <Text style={styles.buttonText}>
-                    {isPremium ? 'ПОЛУЧИТЬ ОТКРОВЕНИЕ' : 'РАСШИФРОВАТЬ (-1 ✨)'}
-                  </Text>
-                </>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-
-        {/* Результат */}
-        {result && (
-          <View style={styles.revelationCard}>
-            <View style={styles.revelationHeader}>
-              <Ionicons name="moon" size={24} color="#ffd700" />
-              <Text style={styles.revelationTitle}>ОТКРОВЕНИЕ</Text>
-              <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
-                <Ionicons name="share-social-outline" size={24} color="#FFD700" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.divider} />
-            <Text style={styles.revelationText}>{result}</Text>
-          </View>
-        )}
-
-        <View style={{ height: 20 }} />
-        
-        {/* Заголовок Дневника */}
-        <View style={styles.diaryHeader}>
-          <Ionicons name="book-outline" size={20} color="#ffd700" />
-          <Text style={styles.diaryTitle}>ДНЕВНИК СНОВ</Text>
-          <View style={styles.diaryCount}>
-            <Text style={styles.diaryCountText}>{dreamHistory.length}</Text>
-          </View>
-        </View>
-        
-        {/* Список истории (КЛИКАБЕЛЬНЫЙ) */}
-        {loadingHistory ? (
-          <ActivityIndicator size="small" color="#ffd700" style={{ marginTop: 20 }} />
-        ) : dreamHistory.length > 0 ? (
-          <View style={styles.diaryList}>
-            {(() => {
-              let lastMonth = '';
-              return dreamHistory.map((item) => {
-                const date = new Date(item.created_at);
-                const month = date.toLocaleString('ru-RU', { month: 'long', year: 'numeric' }).toUpperCase();
-                const showHeader = month !== lastMonth;
-                lastMonth = month;
-                
-                return (
-                  <React.Fragment key={item.id}>
-                    {showHeader && <Text style={styles.monthHeader}>{month}</Text>}
-                    <TouchableOpacity 
-                      style={styles.dreamItem} 
-                      activeOpacity={0.6}
-                      onPress={() => handleOpenDream(item)} 
-                    >
-                      <View style={styles.dreamItemHeader}>
-                        <Text style={styles.dreamItemDate}>{formatDate(item.created_at)}</Text>
-                        <Ionicons name="chevron-forward" size={14} color="rgba(255,255,255,0.4)" />
-                      </View>
-                      <Text style={styles.dreamItemText} numberOfLines={2}>
-                        {item.dream_text}
-                      </Text>
+            {messages.map((msg, index) => {
+              const isUser = msg.sender === 'user';
+              return (
+                <View key={index} style={[styles.bubble, isUser ? styles.userBubble : styles.lunaBubble, msg.isDream && styles.dreamBubble]}>
+                  {!isUser && <Text style={styles.senderName}>Luna 🌙</Text>}
+                  <Text style={[styles.msgText, isUser ? styles.userText : styles.lunaText]}>{msg.text}</Text>
+                  {!isUser && !msg.isDream && (
+                    <TouchableOpacity onPress={() => Share.share({ message: msg.text + "\n\n✨ Sueños AI" })} style={{ alignSelf: 'flex-end', marginTop: 5 }}>
+                      <Ionicons name="share-social-outline" size={16} color="rgba(255,255,255,0.5)" />
                     </TouchableOpacity>
-                  </React.Fragment>
-                );
-              });
-            })()}
-          </View>
-        ) : (
-          <View style={styles.diaryEmpty}>
-            <Text style={styles.diaryEmptyText}>История пуста</Text>
-          </View>
-        )}
-      </ScrollView>
+                  )}
+                </View>
+              );
+            })}
+            {loading && <View style={styles.loadingBubble}><ActivityIndicator color="#FFD700" size="small" /><Text style={styles.loadingText}>Los astros susurran...</Text></View>}
+          </ScrollView>
 
-      {/* --- МОДАЛЬНОЕ ОКНО (FIXED LAYOUT) --- */}
-      <Modal
-// ...
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            
-            {/* 1. ШАПКА: Дата и Крестик */}
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalDate}>
-                {selectedDream ? formatDate(selectedDream.created_at) : 'Загрузка...'}
-              </Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)} hitSlop={{top: 15, bottom: 15, left: 15, right: 15}}>
-                <Ionicons name="close-circle" size={30} color="rgba(255,255,255,0.6)" />
-              </TouchableOpacity>
-            </View>
-
-            {/* 2. КОНТЕНТ (ScrollView с flex: 1) */}
-            <ScrollView 
-              style={{ flex: 1, width: '100%' }} 
-              contentContainerStyle={{ paddingBottom: 20 }}
-              showsVerticalScrollIndicator={true}
-            >
-              {/* Секция: ТВОЙ СОН */}
-              <Text style={styles.modalSectionTitle}>ТВОЙ СОН</Text>
-              <View style={styles.modalDreamBox}>
-                <Text style={styles.modalDreamText}>
-                  {selectedDream?.dream_text ? selectedDream.dream_text : "Текст сна отсутствует в записи."}
-                </Text>
-              </View>
-              {/* Секция: ТОЛКОВАНИЕ */}
-              <Text style={styles.modalSectionTitle}>ТОЛКОВАНИЕ</Text>
-              <View style={styles.modalInterpretationBox}>
-                <Text style={styles.modalInterpretationText}>
-                  {selectedDream?.interpretation_text ? selectedDream.interpretation_text : "Толкование не найдено."}
-                </Text>
-              </View>
-            </ScrollView>
-
-            {/* 3. ФУТЕР: Кнопка удаления */}
-            <TouchableOpacity 
-              style={styles.deleteButton}
-              onPress={() => selectedDream && handleDeleteDream(selectedDream.id)}
-            >
-              <Ionicons name="trash-outline" size={20} color="#FF4444" style={{ marginRight: 8 }} />
-              <Text style={styles.deleteButtonText}>Удалить запись</Text>
+          {/* Панель ввода */}
+          <View style={[styles.chatInputBar, { paddingBottom: Platform.OS === 'ios' ? insets.bottom : 10 }]}>
+            <TextInput 
+              style={styles.chatInput} 
+              placeholder="Pregúntale a Luna..." 
+              placeholderTextColor="#888" 
+              value={chatInputText} 
+              onChangeText={setChatInputText} 
+            />
+            <TouchableOpacity style={[styles.chatSendBtn, (!chatInputText.trim() || loading) && { opacity: 0.5 }]} onPress={handleReply} disabled={!chatInputText.trim() || loading}>
+              <Ionicons name="arrow-up" size={20} color="#000" />
+              {!isPremium && <Text style={styles.costText}>-1</Text>}
             </TouchableOpacity>
-
           </View>
-        </View>
-      </Modal>
+        </KeyboardAvoidingView>
+      )}
       
-      {/* MagicAlert для удаления */}
+      {/* АЛЕРТЫ */}
+      <MagicAlert visible={deleteAlertVisible} title="¿Borrar sueño?" message="No se puede deshacer." icon="trash-bin" onConfirm={performDelete} onCancel={() => setDeleteAlertVisible(false)} confirmText="Borrar" />
       <MagicAlert 
-        visible={deleteAlertVisible}
-        title="Удалить запись?"
-        message="Это действие нельзя отменить."
-        icon="trash-bin"
+        visible={magicAlert.visible} 
+        title={magicAlert.title} 
+        message={magicAlert.message} 
+        icon={magicAlert.icon as any} 
+        confirmText={magicAlert.title === "Poca Energía" ? "Ir a Tienda" : "Aceptar"}
         onConfirm={() => {
-          if (selectedDream) {
-            performDelete(selectedDream.id);
-            setDeleteAlertVisible(false);
-          }
+           if (magicAlert.title === "Poca Energía") router.push('/energy');
+           setMagicAlert({ ...magicAlert, visible: false });
         }}
-        onCancel={() => setDeleteAlertVisible(false)}
-        confirmText="Удалить"
-        cancelText="Оставить"
-      />
-      
-      {/* MagicAlert для энергии */}
-      <MagicAlert 
-        visible={showEnergyAlert}
-        title="Мало энергии"
-        message="Для магии нужна энергия. Пополнить запасы?"
-        icon="flash"
-        confirmText="В магазин"
-        cancelText="Позже"
-        onConfirm={() => {
-          setShowEnergyAlert(false);
-          router.push('/energy');
-        }}
-        onCancel={() => setShowEnergyAlert(false)}
-      />
-      
-      {/* MagicAlert для пустого ввода */}
-      <MagicAlert 
-        visible={emptyInputAlert}
-        title="Луна молчит"
-        message="Опиши свое видение, чтобы звезды могли ответить."
-        icon="moon"
-        confirmText="Хорошо"
-        onConfirm={() => setEmptyInputAlert(false)}
+        onCancel={() => setMagicAlert({ ...magicAlert, visible: false })}
       />
     </View>
   );
@@ -472,119 +463,45 @@ const response = await interpretDream(dreamText || '', { // <-- добавили
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 40 },
-  
-  // Хедер
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, minHeight: 50 },
   headerTextContainer: { flex: 1 },
-  greeting: { fontSize: 28, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
-  zodiac: { fontSize: 18, color: '#ffd700', marginTop: 4, fontWeight: '500', opacity: 0.9 },
-  energyBadge: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)',
-    marginTop: -20
-  },
+  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5 },
+  energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
   energyText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
-
-  // Карточки
-  magicCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 24, padding: 20, marginBottom: 20,
-    borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
+  magicCard: { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
   cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10 },
-  dreamInput: { 
-    color: '#fff', fontSize: 16, minHeight: 100, textAlignVertical: 'top', marginBottom: 20,
-    backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 12,
-  },
+  dreamInput: { color: '#fff', fontSize: 16, minHeight: 100, textAlignVertical: 'top', marginBottom: 20, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 12 },
   mainButton: { borderRadius: 30, overflow: 'hidden' },
   buttonGradient: { flexDirection: 'row', height: 56, alignItems: 'center', justifyContent: 'center' },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-
-  // Результат
-  revelationCard: {
-    backgroundColor: 'rgba(255, 215, 0, 0.05)', borderRadius: 24, padding: 20, marginBottom: 20,
-    borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)',
-  },
-  revelationHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  revelationTitle: { fontSize: 18, fontWeight: '700', color: '#ffd700', marginLeft: 10, flex: 1 },
-  shareButton: { 
-    padding: 8, 
-    borderRadius: 20, 
-    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-    borderWidth: 1, 
-    borderColor: 'rgba(255, 215, 0, 0.2)' 
-  },
-  divider: { height: 1, backgroundColor: 'rgba(255, 215, 0, 0.2)', marginVertical: 10 },
-  revelationText: { fontSize: 15, lineHeight: 24, color: '#fff', fontStyle: 'italic' },
-
-  // Дневник
   diaryHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
   diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1 },
   diaryCount: { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
   diaryCountText: { color: '#ffd700', fontSize: 14, fontWeight: '600' },
   diaryList: { paddingBottom: 20 },
-  dreamItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: 16, padding: 16, marginBottom: 10,
-    borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.05)',
-  },
+  dreamItemContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  dreamItem: { flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.05)' },
+  dreamDeleteBtn: { padding: 10, marginLeft: 5, justifyContent: 'center', alignItems: 'center' },
   dreamItemHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   dreamItemDate: { fontSize: 12, color: '#ffd700', fontWeight: '500' },
   dreamItemText: { fontSize: 14, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 20 },
   diaryEmpty: { alignItems: 'center', padding: 20 },
   diaryEmptyText: { color: 'rgba(255,255,255,0.3)' },
-  
-  // Заголовки месяцев в дневнике
-  monthHeader: {
-    color: '#ffd700',
-    fontSize: 14,
-    fontWeight: 'bold',
-    letterSpacing: 1.5,
-    marginTop: 20,
-    marginBottom: 10,
-    paddingLeft: 10,
-    opacity: 0.8
-  },
-
-  // МОДАЛКА
-  modalOverlay: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', padding: 20
-  },
-  modalContent: {
-    backgroundColor: '#151520', 
-    borderRadius: 24, 
-    height: '80%', // Фиксированная высота, чтобы ScrollView имел место
-    width: '100%',
-    borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.15)', padding: 20,
-    display: 'flex', flexDirection: 'column'
-  },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
-  modalDate: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  modalSectionTitle: { fontSize: 12, color: '#ffd700', fontWeight: '700', letterSpacing: 1, marginBottom: 8, marginTop: 10 },
-  
-  // Явные стили для блоков текста
-  modalDreamBox: { 
-    backgroundColor: 'rgba(255,255,255,0.08)', 
-    borderRadius: 12, 
-    padding: 15, 
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    minHeight: 50
-  },
-  modalDreamText: { fontSize: 16, color: '#ffffff', lineHeight: 24 },
-  
-  modalInterpretationBox: {
-    marginTop: 5,
-    padding: 5
-  },
-  modalInterpretationText: { fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 24, fontStyle: 'italic' },
-  
-  deleteButton: { 
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
-    marginTop: 10, paddingVertical: 15, 
-    borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)' 
-  },
-  deleteButtonText: { color: '#FF4444', fontSize: 16, fontWeight: '600' }
+  bubble: { padding: 16, borderRadius: 16, marginBottom: 16, maxWidth: '85%' },
+  userBubble: { backgroundColor: '#4A00E0', alignSelf: 'flex-end', borderBottomRightRadius: 4 },
+  lunaBubble: { backgroundColor: 'rgba(255,255,255,0.08)', alignSelf: 'flex-start', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  dreamBubble: { backgroundColor: 'rgba(255, 215, 0, 0.1)', borderColor: '#ffd700', borderWidth: 1, width: '100%', maxWidth: '100%' },
+  senderName: { color: '#FFD700', fontSize: 12, marginBottom: 4, fontWeight: 'bold' },
+  msgText: { fontSize: 16, lineHeight: 24 },
+  userText: { color: '#FFF' },
+  lunaText: { color: 'rgba(255,255,255,0.9)' },
+  loadingBubble: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, alignSelf: 'flex-start' },
+  loadingText: { color: '#888', fontSize: 12, fontStyle: 'italic' },
+  chatInputBar: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 15, backgroundColor: '#1a1a2e', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)' },
+  chatInput: { flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 20, paddingHorizontal: 15, paddingVertical: 10, color: '#fff', maxHeight: 100 },
+  chatSendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFD700', justifyContent: 'center', alignItems: 'center' },
+  costText: { fontSize: 10, color: '#000', fontWeight: 'bold', marginTop: -2 },
 });

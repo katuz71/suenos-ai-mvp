@@ -1,79 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { Slot, useRouter, useSegments, useRootNavigationState } from 'expo-router';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '../src/services/supabase';
-import { useDailyBonus } from '../src/hooks/useDailyBonus';
+import { Stack } from 'expo-router';
+import { AuthProvider } from '../src/providers/AuthProvider';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Удерживаем Splash Screen, пока не загрузим всё
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-  
-  const segments = useSegments();
-  const router = useRouter();
-  const navigationState = useRootNavigationState();
-  
-  // Ежедневный бонус - срабатывает глобально при старте приложения
-  useDailyBonus();
+  const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setIsAuthChecked(true);
-    }).catch((err) => {
-      console.error("Auth Error:", err);
-      setIsAuthChecked(true);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    // Wait for navigation and auth check
-    if (!isAuthChecked || !navigationState) return;
-
-    const currentSegment = segments[0];
-    const inTabs = currentSegment === '(tabs)';
-    const inRoot = !currentSegment;
-    const isPaywall = currentSegment === 'paywall';
-    const isEnergy = currentSegment === 'energy';
-
-    if (session) {
-      // Allow access to paywall and energy screens
-      if (isPaywall || isEnergy) {
-        return; // Don't redirect, allow access
-      }
-      
-      // If user is logged in and not in tabs, redirect to suenos
-      if (!inTabs) {
-        router.replace('/(tabs)/suenos');
-      }
-    } else {
-      // If user is not logged in and not at root, allow onboarding
-      if (!inRoot) {
-        router.replace('/');
+    async function prepare() {
+      try {
+        // Принудительно загружаем шрифты иконок
+        await Font.loadAsync(Ionicons.font);
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppReady(true);
+        await SplashScreen.hideAsync();
       }
     }
-  }, [session, isAuthChecked, segments, navigationState]);
+    prepare();
+  }, []);
 
-  // Show loading spinner while checking auth
-  if (!isAuthChecked || !navigationState) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F172A' }}>
-        <ActivityIndicator size="large" color="#A855F7" />
-      </View>
-    );
-  }
+  if (!appReady) return null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
-      <Slot />
-    </View>
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="energy" />
+        <Stack.Screen name="paywall" />
+      </Stack>
+    </AuthProvider>
   );
 }

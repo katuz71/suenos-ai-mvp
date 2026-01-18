@@ -29,7 +29,7 @@ export function useRewardedAd() {
         .from('profiles')
         .select('credits')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
       const newCredits = (profile?.credits || 0) + 1;
 

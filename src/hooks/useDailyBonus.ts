@@ -1,9 +1,13 @@
 import { useEffect } from 'react';
-import { Alert } from 'react-native';
 import { supabase } from '../services/supabase';
 import { useMonetization } from './useMonetization';
 
-export function useDailyBonus() {
+interface UseDailyBonusProps {
+  onBonusGranted?: () => void;
+  onError?: (error: string) => void;
+}
+
+export function useDailyBonus({ onBonusGranted, onError }: UseDailyBonusProps = {}) {
   const { refreshStatus } = useMonetization();
 
   useEffect(() => {
@@ -25,7 +29,7 @@ export function useDailyBonus() {
         .from('profiles')
         .select('credits, last_daily_bonus')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profileError) {
         console.error('Error fetching profile for daily bonus:', profileError);
@@ -60,19 +64,15 @@ export function useDailyBonus() {
 
       if (updateError) {
         console.error('Error updating daily bonus:', updateError);
-        Alert.alert('Ошибка', 'Не удалось начислить ежедневный бонус');
+        onError?.('Не удалось начислить ежедневный бонус');
         return;
       }
 
       // Обновляем статус монетизации
       await refreshStatus();
 
-      // Показываем уведомление
-      Alert.alert(
-        'Ежедневный бонус! ✨',
-        'Вы получили +1 энергию за возвращение',
-        [{ text: 'Отлично!', style: 'default' }]
-      );
+      // Вызываем callback для показа уведомления
+      onBonusGranted?.();
 
       console.log('Daily bonus granted successfully');
 

@@ -38,12 +38,13 @@ export const MysticButton: React.FC<MysticButtonProps> = ({
         styles.button,
         variant === 'filled' ? styles.filled : styles.outlined,
         isDisabled && styles.disabled,
+        loading && styles.loading,
         style,
       ]}
-      activeOpacity={0.8}
+      activeOpacity={loading ? 0.7 : 0.8}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'filled' ? Colors.background.primary : Colors.accent.gold} />
+        <ActivityIndicator color="#FFFFFF" size="small" />
       ) : (
         <Text
           style={[
@@ -79,6 +80,9 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  loading: {
+    opacity: 0.7,
   },
   text: {
     fontSize: 18,

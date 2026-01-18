@@ -28,7 +28,7 @@ export const useMonetization = () => {
         .from('profiles')
         .select('is_premium, credits') // <-- Твои поля
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (data) {
         setIsPremium(data.is_premium);
@@ -75,7 +75,7 @@ export const useMonetization = () => {
 
     // В идеале использовать RPC, но пока сделаем прямой update
     // Сначала получаем актуальное число, чтобы не ошибиться
-    const { data } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+    const { data } = await supabase.from('profiles').select('credits').eq('id', user.id).maybeSingle();
     const currentCredits = data?.credits || 0;
 
     const { error } = await supabase
@@ -180,7 +180,7 @@ export const useMonetization = () => {
         .from('profiles')
         .select('credits, last_energy_gift')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile) return false;
 
@@ -222,7 +222,7 @@ export const useMonetization = () => {
         .from('profiles')
         .select('credits, is_premium')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (data) {
         setCredits(data.credits || 0);
