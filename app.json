@@ -3,43 +3,15 @@
     "name": "suenos-ai-mvp",
     "slug": "suenos-ai-mvp",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
-    "scheme": "suenosai",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#120d26"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "package": "com.katuz71.suenosaimvp",
       "versionCode": 9,
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+      "googleServicesFile": "./google-services.json"
     },
     "plugins": [
       "expo-router",
       "expo-font",
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "minify": false,
-            "shrinkResources": false,
-            "enableProguardInReleaseBuilds": false
-          }
-        }
-      ],
+      "@react-native-firebase/app",
       [
         "react-native-google-mobile-ads",
         {
@@ -47,11 +19,6 @@
           "iosAppId": "ca-app-pub-8147866560220122~6913262165"
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "cebb1e47-84d1-42e2-bac6-c3d10817432f"
-      }
-    }
+    ]
   }
 }
