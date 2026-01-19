@@ -5,34 +5,27 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Purchases from 'react-native-purchases';
 import { useMonetization } from '../src/hooks/useMonetization';
-import { supabase } from '../src/services/supabase';
 import WatchAdButton from '../src/components/WatchAdButton';
 import MagicAlert from '../src/components/MagicAlert';
+import firebaseAnalytics from '@react-native-firebase/analytics';
 
-const REVENUECAT_API_KEY = "goog_aaxbLkokrPUPPmBBcNzInhlJHFY";
 const PRIVACY_POLICY_URL = 'https://docs.google.com/document/d/1I-yKqNSVKNgyb7m4wtqVBtA-9MNHwOxax7NMOoKVX84';
 const TERMS_URL = 'https://docs.google.com/document/d/1OJo14MGTZXWDDucssR7kNZ74UKDI2AxO1zS8pu2YWU4';
 
+// Цены в EUR для аналитики (0.99, 3.99, 9.99)
+const PRICE_MAP: Record<string, { value: number, amount: number }> = {
+  'energy_10_v2': { value: 0.99, amount: 10 },
+  'energy_50_v2': { value: 3.99, amount: 50 },
+  'energy_150_v2': { value: 9.99, amount: 150 },
+};
+
 export default function EnergyScreen() {
   const router = useRouter();
-  const { credits, refreshStatus } = useMonetization();
+  const { credits, refreshStatus, buyPremium } = useMonetization();
   
   const [magicAlertVisible, setMagicAlertVisible] = useState(false);
   const [alertConfig, setAlertConfig] = useState({ title: '', message: '', icon: '' });
   const [isPurchasing, setIsPurchasing] = useState(false);
-
-  // Инициализация RevenueCat
-  useEffect(() => {
-    const init = async () => {
-      try {
-        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
-        console.log("✅ RevenueCat Configured");
-      } catch (e) {
-        console.error("RevenueCat Init Error:", e);
-      }
-    };
-    init();
-  }, []);
 
   const openLink = async (url: string) => {
     try {
@@ -55,57 +48,39 @@ export default function EnergyScreen() {
     }
   };
 
-  const handlePurchase = async (type: 'starter' | 'dreamer' | 'magician') => {
+  const handlePurchase = async (packageId: 'energy_10_v2' | 'energy_50_v2' | 'energy_150_v2') => {
     if (isPurchasing) return;
     setIsPurchasing(true);
 
     try {
-      console.log(`🔥🔥🔥 НАЧИНАЕМ ПОКУПКУ: ${type}`);
+      console.log(`🚀 НАЧИНАЕМ ПОКУПКУ: ${packageId}`);
       
-      const offerings = await Purchases.getOfferings();
-      if (!offerings.current) throw new Error("No hay ofertas.");
+      await firebaseAnalytics().logEvent('energy_purchase_attempt', {
+        item_id: packageId,
+        energy_amount: PRICE_MAP[packageId].amount
+      });
 
-      // --- ВАЖНОЕ ИСПРАВЛЕНИЕ НИЖЕ ---
-      // Используем pack_10 вместо energy_10_pack, чтобы сбить ошибку "subs"
-      const packageId = type === 'starter' ? 'pack_10' : 
-                        type === 'dreamer' ? 'pack_50' : 
-                        'pack_150';
+      const success = await buyPremium(packageId);
 
-      console.log(`📦 ИЩЕМ ПАКЕТ С ID: ${packageId}`);
+      if (success) {
+        await firebaseAnalytics().logEvent('energy_purchase_success', {
+          item_id: packageId,
+          value: PRICE_MAP[packageId].value,
+          currency: 'EUR',
+          energy_amount: PRICE_MAP[packageId].amount
+        });
 
-      const packageToBuy = offerings.current.availablePackages.find(p => p.identifier === packageId);
-
-      if (packageToBuy) {
-        console.log("✅ Пакет найден, вызываем Google Play...");
-        const { customerInfo } = await Purchases.purchasePackage(packageToBuy);
-
-        if (typeof customerInfo.entitlements.active['energy_access'] !== "undefined") {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            let addAmount = type === 'starter' ? 10 : type === 'dreamer' ? 50 : 150;
-            const newCredits = (credits || 0) + addAmount;
-
-            await supabase.from('profiles').update({ credits: newCredits }).eq('id', user.id);
-            await refreshStatus();
-
-            setAlertConfig({ 
-              title: "¡Éxito!", 
-              message: `Has recibido ${addAmount} energías.`, 
-              icon: "checkmark-circle" 
-            });
-            setMagicAlertVisible(true);
-          }
-        }
-      } else {
-         console.error(`❌ ОШИБКА: Пакет ${packageId} не найден в текущем Offering RevenueCat!`);
-         throw new Error(`Пакет ${packageId} не найден`);
+        console.log(`📈 Аналитика: Событие покупки ${packageId} отправлено (EUR)`);
+        
+        setAlertConfig({ 
+          title: "¡Éxito!", 
+          message: `Has recibido ${PRICE_MAP[packageId].amount} energías.`, 
+          icon: "checkmark-circle" 
+        });
+        setMagicAlertVisible(true);
       }
     } catch (e: any) {
       console.error("❌ ОШИБКА ПОКУПКИ:", e);
-      if (!e.userCancelled) {
-        setAlertConfig({ title: "Error", message: e.message, icon: "alert-circle" });
-        setMagicAlertVisible(true);
-      }
     } finally {
       setIsPurchasing(false);
     }
@@ -141,8 +116,7 @@ export default function EnergyScreen() {
         <View style={styles.paidSection}>
           <Text style={styles.sectionTitle}>Recargar Energía</Text>
           
-          {/* ПАКЕТ 10 ЭНЕРГИЙ */}
-          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('starter')} disabled={isPurchasing}>
+          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('energy_10_v2')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']} style={styles.cardGradient}>
               <View style={styles.cardContent}>
                 <View style={styles.cardLeft}>
@@ -152,13 +126,12 @@ export default function EnergyScreen() {
                     <Text style={styles.purchaseAmount}>10 Energías</Text>
                   </View>
                 </View>
-                <View style={styles.priceContainer}><Text style={styles.purchasePrice}>€0.99</Text></View>
+                <View style={styles.priceContainer}><Text style={styles.purchasePrice}>0.99 €</Text></View>
               </View>
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* ПАКЕТ 50 ЭНЕРГИЙ */}
-          <TouchableOpacity style={[styles.purchaseCard, styles.popularCard]} onPress={() => handlePurchase('dreamer')} disabled={isPurchasing}>
+          <TouchableOpacity style={[styles.purchaseCard, styles.popularCard]} onPress={() => handlePurchase('energy_50_v2')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(255, 215, 0, 0.15)', 'rgba(255, 215, 0, 0.05)']} style={styles.cardGradient}>
               <View style={styles.popularBadge}><Text style={styles.popularBadgeText}>Popular</Text></View>
               <View style={styles.cardContent}>
@@ -170,15 +143,14 @@ export default function EnergyScreen() {
                   </View>
                 </View>
                 <View style={styles.priceContainer}>
-                  <Text style={styles.oldPrice}>€4.99</Text>
-                  <Text style={styles.purchasePrice}>€3.99</Text>
+                  <Text style={styles.oldPrice}>4.99 €</Text>
+                  <Text style={styles.purchasePrice}>3.99 €</Text>
                 </View>
               </View>
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* ПАКЕТ 150 ЭНЕРГИЙ */}
-          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('magician')} disabled={isPurchasing}>
+          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('energy_150_v2')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(147, 51, 234, 0.2)', 'rgba(147, 51, 234, 0.1)']} style={styles.cardGradient}>
               <View style={styles.cardContent}>
                 <View style={styles.cardLeft}>
@@ -188,18 +160,24 @@ export default function EnergyScreen() {
                     <Text style={styles.purchaseAmount}>150 Energías</Text>
                   </View>
                 </View>
-                <View style={styles.priceContainer}><Text style={styles.purchasePrice}>€9.99</Text></View>
+                <View style={styles.priceContainer}><Text style={styles.purchasePrice}>9.99 €</Text></View>
               </View>
             </LinearGradient>
           </TouchableOpacity>
         </View>
 
         <View style={styles.legalFooter}>
-          <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}><Text style={styles.restoreBtnText}>Restaurar Compras</Text></TouchableOpacity>
+          <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}>
+            <Text style={styles.restoreBtnText}>Restaurar Compras</Text>
+          </TouchableOpacity>
           <View style={styles.linksRow}>
-            <TouchableOpacity onPress={() => openLink(TERMS_URL)}><Text style={styles.linkText}>Términos de Uso</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => openLink(TERMS_URL)}>
+              <Text style={styles.linkText}>Términos de Uso</Text>
+            </TouchableOpacity>
             <Text style={styles.linkDivider}>|</Text>
-            <TouchableOpacity onPress={() => openLink(PRIVACY_POLICY_URL)}><Text style={styles.linkText}>Privacidad</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => openLink(PRIVACY_POLICY_URL)}>
+              <Text style={styles.linkText}>Privacidad</Text>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={{height: 40}} />

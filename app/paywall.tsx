@@ -4,21 +4,49 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useMonetization } from '../src/hooks/useMonetization';
+// Исправленный импорт аналитики для устранения WARN
+import firebaseAnalytics from '@react-native-firebase/analytics';
+
+const ENERGY_PACKS = [
+  { id: 'energy_10_v2', amount: 10, price: '199 ₽', numericPrice: 199, icon: 'flash-outline' },
+  { id: 'energy_50_v2', amount: 50, price: '799 ₽', numericPrice: 799, icon: 'flash', popular: true },
+  { id: 'energy_150_v2', amount: 150, price: '1 990 ₽', numericPrice: 1990, icon: 'thunderstorm' },
+];
 
 export default function PaywallScreen() {
   const router = useRouter();
-  const { buyPremium, loading, refreshStatus } = useMonetization();
-  const [selectedPlan, setSelectedPlan] = useState<'weekly' | 'lifetime'>('weekly');
+  const { buyPremium, loading, refreshStatus } = useMonetization(); 
+  const [selectedPack, setSelectedPack] = useState(ENERGY_PACKS[1].id);
 
   const handlePurchase = async () => {
-    const success = await buyPremium();
-    if (success) {
-      await refreshStatus();
+    const pack = ENERGY_PACKS.find(p => p.id === selectedPack);
+    if (!pack) return;
+
+    try {
+      // 1. Логируем попытку покупки (современный синтаксис)
+      await firebaseAnalytics().logEvent('energy_purchase_attempt', {
+        item_id: selectedPack,
+        energy_amount: pack.amount
+      });
+
+      const success = await buyPremium(selectedPack);
       
-      // Небольшая задержка для обновления UI
-      setTimeout(() => {
+      if (success) {
+        // 2. Логируем успех с передачей ценности (Revenue)
+        await firebaseAnalytics().logEvent('energy_purchase_success', {
+          item_id: selectedPack,
+          value: pack.numericPrice,
+          currency: 'RUB', // Важно для отчетов о доходах
+          energy_amount: pack.amount
+        });
+        
+        console.log(`📈 Аналитика: Событие покупки ${selectedPack} на сумму ${pack.numericPrice} RUB отправлено`);
+        
+        await refreshStatus();
         router.replace('/(tabs)/suenos');
-      }, 500);
+      }
+    } catch (error) {
+      console.error('Ошибка покупки:', error);
     }
   };
 
@@ -33,37 +61,32 @@ export default function PaywallScreen() {
 
         <ScrollView contentContainerStyle={styles.scroll}>
           <View style={styles.header}>
-            <Ionicons name="moon" size={60} color="#ffd700" />
-            <Text style={styles.title}>Стань Мастером Снов</Text>
-            <Text style={styles.subtitle}>Получи неограниченный доступ к мудрости звезд и глубинам подсознания.</Text>
+            <Ionicons name="sparkles" size={60} color="#ffd700" />
+            <Text style={styles.title}>Заряди свою Луну</Text>
+            <Text style={styles.subtitle}>Энергия нужна для толкования снов и глубоких предсказаний.</Text>
           </View>
 
-          <View style={styles.features}>
-            <Text style={styles.feature}><Ionicons name="star" color="#ffd700" /> Безлимитные толкования</Text>
-            <Text style={styles.feature}><Ionicons name="star" color="#ffd700" /> Расширенный гороскоп</Text>
-            <Text style={styles.feature}><Ionicons name="star" color="#ffd700" /> Никакой рекламы</Text>
-          </View>
-
-          <TouchableOpacity 
-            style={[styles.planCard, selectedPlan === 'weekly' && styles.selectedPlan]}
-            onPress={() => setSelectedPlan('weekly')}
-          >
-            <Text style={styles.planTitle}>Неделя доступа</Text>
-            <Text style={styles.planPrice}>199 ₽</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.planCard, selectedPlan === 'lifetime' && styles.selectedPlan]}
-            onPress={() => setSelectedPlan('lifetime')}
-          >
-            <Text style={styles.planTitle}>Навсегда</Text>
-            <Text style={styles.planPrice}>3 990 ₽</Text>
-          </TouchableOpacity>
+          {ENERGY_PACKS.map((pack) => (
+            <TouchableOpacity 
+              key={pack.id}
+              style={[styles.planCard, selectedPack === pack.id && styles.selectedPlan]}
+              onPress={() => setSelectedPack(pack.id)}
+            >
+              <View style={styles.planInfo}>
+                <Ionicons name={pack.icon as any} size={24} color={selectedPack === pack.id ? "#ffd700" : "#fff"} />
+                <View style={{ marginLeft: 15 }}>
+                  <Text style={styles.planTitle}>{pack.amount} Энергии</Text>
+                  {pack.popular && <Text style={styles.popularTag}>ПОПУЛЯРНО</Text>}
+                </View>
+              </View>
+              <Text style={styles.planPrice}>{pack.price}</Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
 
         <View style={styles.footer}>
           <TouchableOpacity style={styles.cta} onPress={handlePurchase} disabled={loading}>
-            {loading ? <ActivityIndicator color="#0f0c29" /> : <Text style={styles.ctaText}>Активировать доступ</Text>}
+            {loading ? <ActivityIndicator color="#0f0c29" /> : <Text style={styles.ctaText}>Купить энергию</Text>}
           </TouchableOpacity>
         </View>
       </View>
@@ -79,12 +102,22 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center', marginBottom: 30 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginTop: 15 },
   subtitle: { fontSize: 16, color: '#ccc', textAlign: 'center', marginTop: 10 },
-  features: { marginBottom: 30 },
-  feature: { color: '#eee', fontSize: 17, marginBottom: 12 },
-  planCard: { padding: 20, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.05)', marginBottom: 15, borderWidth: 1, borderColor: 'transparent' },
+  planCard: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    padding: 20, 
+    borderRadius: 15, 
+    backgroundColor: 'rgba(255,255,255,0.05)', 
+    marginBottom: 15, 
+    borderWidth: 1, 
+    borderColor: 'transparent' 
+  },
   selectedPlan: { borderColor: '#ffd700', backgroundColor: 'rgba(255,215,0,0.1)' },
+  planInfo: { flexDirection: 'row', alignItems: 'center' },
   planTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  planPrice: { color: '#ffd700', fontSize: 20, fontWeight: 'bold', marginTop: 5 },
+  planPrice: { color: '#ffd700', fontSize: 18, fontWeight: 'bold' },
+  popularTag: { color: '#ffd700', fontSize: 10, fontWeight: 'bold', marginTop: 2 },
   footer: { padding: 25 },
   cta: { backgroundColor: '#ffd700', padding: 18, borderRadius: 30, alignItems: 'center' },
   ctaText: { color: '#0f0c29', fontSize: 18, fontWeight: 'bold' }

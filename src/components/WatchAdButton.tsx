@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-// 👇 ДОБАВИЛИ AdEventType в импорт
 import { RewardedAd, RewardedAdEventType, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+// 👇 ДОБАВИЛИ АНАЛИТИКУ
+import analytics from '@react-native-firebase/analytics'; 
 import { supabase } from '../services/supabase';
 import MagicAlert from './MagicAlert';
 
-// ВАШ РЕАЛЬНЫЙ ID РЕКЛАМНОГО БЛОКА
 const productionAdUnitId = 'ca-app-pub-8147866560220122/2478181377';
-
 const adUnitId = __DEV__ ? TestIds.REWARDED : productionAdUnitId;
 
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
@@ -76,9 +75,15 @@ export default function WatchAdButton({ onReward }: WatchAdButtonProps) {
     const unsubscribeEarned = rewarded.addAdEventListener(RewardedAdEventType.EARNED_REWARD, reward => {
       console.log('🎁 AdMob: Награда получена!');
       setIsEarned(true);
+
+      // 👇 ОТПРАВЛЯЕМ СОБЫТИЕ В FIREBASE
+      analytics().logEvent('ad_reward_complete', {
+        reward_type: reward.type,
+        reward_amount: reward.amount,
+        ad_unit_id: adUnitId
+      }).then(() => console.log('📈 Аналитика: Событие просмотра рекламы отправлено'));
     });
 
-    // 👇 ИСПРАВЛЕНО: Используем AdEventType.CLOSED вместо RewardedAdEventType.CLOSED
     const unsubscribeClosed = rewarded.addAdEventListener(AdEventType.CLOSED, () => {
       console.log('❌ AdMob: Реклама закрыта');
       setLoaded(false);
