@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import Purchases from 'react-native-purchases';
 import { useMonetization } from '../src/hooks/useMonetization';
 import { supabase } from '../src/services/supabase';
 import WatchAdButton from '../src/components/WatchAdButton';
 import MagicAlert from '../src/components/MagicAlert';
 
+const REVENUECAT_API_KEY = "goog_aaxbLkokrPUPPmBBcNzInhlJHFY";
 const PRIVACY_POLICY_URL = 'https://docs.google.com/document/d/1I-yKqNSVKNgyb7m4wtqVBtA-9MNHwOxax7NMOoKVX84';
 const TERMS_URL = 'https://docs.google.com/document/d/1OJo14MGTZXWDDucssR7kNZ74UKDI2AxO1zS8pu2YWU4';
 
@@ -17,6 +19,20 @@ export default function EnergyScreen() {
   
   const [magicAlertVisible, setMagicAlertVisible] = useState(false);
   const [alertConfig, setAlertConfig] = useState({ title: '', message: '', icon: '' });
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  // Инициализация RevenueCat
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+        console.log("✅ RevenueCat Configured");
+      } catch (e) {
+        console.error("RevenueCat Init Error:", e);
+      }
+    };
+    init();
+  }, []);
 
   const openLink = async (url: string) => {
     try {
@@ -25,37 +41,74 @@ export default function EnergyScreen() {
     } catch (err) { console.error("Error opening link", err); }
   };
 
-  const handleRestore = () => {
-    setAlertConfig({ title: "Restaurado", message: "Tus compras han sido restauradas.", icon: "refresh" });
-    setMagicAlertVisible(true);
+  const handleRestore = async () => {
+    try {
+      await Purchases.restorePurchases();
+      setAlertConfig({ 
+        title: "Restaurado", 
+        message: "Tu historial de compras ha sido verificado.", 
+        icon: "refresh" 
+      });
+      setMagicAlertVisible(true);
+    } catch (e) {
+      Alert.alert("Error", "No se pudieron restaurar.");
+    }
   };
 
-  const handlePurchase = async (item: 'starter' | 'dreamer' | 'magician') => {
-    // В релизной сборке __DEV__ будет false, так что халявы не будет.
-    // Но для твоих тестов на эмуляторе покупки продолжат работать.
-    if (__DEV__) {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+  const handlePurchase = async (type: 'starter' | 'dreamer' | 'magician') => {
+    if (isPurchasing) return;
+    setIsPurchasing(true);
 
-        let newCredits = credits;
-        if (item === 'starter') newCredits += 10;
-        if (item === 'dreamer') newCredits += 50;
-        if (item === 'magician') newCredits += 150;
+    try {
+      console.log(`🔥🔥🔥 НАЧИНАЕМ ПОКУПКУ: ${type}`);
+      
+      const offerings = await Purchases.getOfferings();
+      if (!offerings.current) throw new Error("No hay ofertas.");
 
-        await supabase.from('profiles').update({ credits: newCredits }).eq('id', user.id);
-        
-        await refreshStatus();
-        
-        setAlertConfig({ title: "¡Éxito! (Test)", message: `Energía recibida. Nuevo balance: ${newCredits}`, icon: "checkmark-circle" });
+      // --- ВАЖНОЕ ИСПРАВЛЕНИЕ НИЖЕ ---
+      // Используем pack_10 вместо energy_10_pack, чтобы сбить ошибку "subs"
+      const packageId = type === 'starter' ? 'pack_10' : 
+                        type === 'dreamer' ? 'pack_50' : 
+                        'pack_150';
+
+      console.log(`📦 ИЩЕМ ПАКЕТ С ID: ${packageId}`);
+
+      const packageToBuy = offerings.current.availablePackages.find(p => p.identifier === packageId);
+
+      if (packageToBuy) {
+        console.log("✅ Пакет найден, вызываем Google Play...");
+        const { customerInfo } = await Purchases.purchasePackage(packageToBuy);
+
+        if (typeof customerInfo.entitlements.active['energy_access'] !== "undefined") {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            let addAmount = type === 'starter' ? 10 : type === 'dreamer' ? 50 : 150;
+            const newCredits = (credits || 0) + addAmount;
+
+            await supabase.from('profiles').update({ credits: newCredits }).eq('id', user.id);
+            await refreshStatus();
+
+            setAlertConfig({ 
+              title: "¡Éxito!", 
+              message: `Has recibido ${addAmount} energías.`, 
+              icon: "checkmark-circle" 
+            });
+            setMagicAlertVisible(true);
+          }
+        }
+      } else {
+         console.error(`❌ ОШИБКА: Пакет ${packageId} не найден в текущем Offering RevenueCat!`);
+         throw new Error(`Пакет ${packageId} не найден`);
+      }
+    } catch (e: any) {
+      console.error("❌ ОШИБКА ПОКУПКИ:", e);
+      if (!e.userCancelled) {
+        setAlertConfig({ title: "Error", message: e.message, icon: "alert-circle" });
         setMagicAlertVisible(true);
-      } catch (e) { console.error(e); }
-      return;
+      }
+    } finally {
+      setIsPurchasing(false);
     }
-    
-    // Заглушка для реального продакшена (пока не подключен RevenueCat/IAP)
-    setAlertConfig({ title: "Tienda Cerrada", message: "Las estrellas se están alineando. Inténtalo más tarde.", icon: "construct" });
-    setMagicAlertVisible(true);
   };
 
   return (
@@ -74,25 +127,22 @@ export default function EnergyScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
-        {/* REWARDED AD SECTION */}
         <View style={styles.freeSection}>
           <View style={styles.glassCard}>
             <View style={styles.cardHeader}>
               <Ionicons name="gift-outline" size={32} color="#ffd700" />
               <Text style={styles.cardTitle}>Regalo Astral</Text>
             </View>
-            <Text style={styles.cardDescription}>Mira una visión corta y recibe +1 energía del universo.</Text>
-            
+            <Text style={styles.cardDescription}>Mira una visión corta и recibe +1 energía.</Text>
             <WatchAdButton onReward={refreshStatus} />
-            
           </View>
         </View>
 
         <View style={styles.paidSection}>
           <Text style={styles.sectionTitle}>Recargar Energía</Text>
           
-          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('starter')}>
+          {/* ПАКЕТ 10 ЭНЕРГИЙ */}
+          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('starter')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']} style={styles.cardGradient}>
               <View style={styles.cardContent}>
                 <View style={styles.cardLeft}>
@@ -107,7 +157,8 @@ export default function EnergyScreen() {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.purchaseCard, styles.popularCard]} onPress={() => handlePurchase('dreamer')}>
+          {/* ПАКЕТ 50 ЭНЕРГИЙ */}
+          <TouchableOpacity style={[styles.purchaseCard, styles.popularCard]} onPress={() => handlePurchase('dreamer')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(255, 215, 0, 0.15)', 'rgba(255, 215, 0, 0.05)']} style={styles.cardGradient}>
               <View style={styles.popularBadge}><Text style={styles.popularBadgeText}>Popular</Text></View>
               <View style={styles.cardContent}>
@@ -126,7 +177,8 @@ export default function EnergyScreen() {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('magician')}>
+          {/* ПАКЕТ 150 ЭНЕРГИЙ */}
+          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('magician')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(147, 51, 234, 0.2)', 'rgba(147, 51, 234, 0.1)']} style={styles.cardGradient}>
               <View style={styles.cardContent}>
                 <View style={styles.cardLeft}>
@@ -150,10 +202,14 @@ export default function EnergyScreen() {
             <TouchableOpacity onPress={() => openLink(PRIVACY_POLICY_URL)}><Text style={styles.linkText}>Privacidad</Text></TouchableOpacity>
           </View>
         </View>
-
-        <Text style={styles.restoreText}>La energía no caduca. Recibes +1 energía diaria gratis al entrar.</Text>
         <View style={{height: 40}} />
       </ScrollView>
+
+      {isPurchasing && (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' }]}>
+          <ActivityIndicator size="large" color="#ffd700" />
+        </View>
+      )}
 
       <MagicAlert 
         visible={magicAlertVisible}
@@ -195,7 +251,6 @@ const styles = StyleSheet.create({
   priceContainer: { alignItems: 'flex-end' },
   purchasePrice: { fontSize: 18, fontWeight: '700', color: '#fff' },
   oldPrice: { fontSize: 12, color: 'rgba(255, 255, 255, 0.4)', textDecorationLine: 'line-through' },
-  restoreText: { color: 'rgba(255, 255, 255, 0.3)', fontSize: 12, textAlign: 'center', fontStyle: 'italic', marginTop: 10 },
   legalFooter: { marginTop: 20, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20 },
   restoreBtn: { marginBottom: 15 },
   restoreBtnText: { color: '#ffd700', fontSize: 14, fontWeight: '500' },

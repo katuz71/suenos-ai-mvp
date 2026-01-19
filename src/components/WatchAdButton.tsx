@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+// 👇 ДОБАВИЛИ AdEventType в импорт
+import { RewardedAd, RewardedAdEventType, AdEventType, TestIds } from 'react-native-google-mobile-ads';
 import { supabase } from '../services/supabase';
 import MagicAlert from './MagicAlert';
 
-// Добавляем интерфейс для props
+// ВАШ РЕАЛЬНЫЙ ID РЕКЛАМНОГО БЛОКА
+const productionAdUnitId = 'ca-app-pub-8147866560220122/2478181377';
+
+const adUnitId = __DEV__ ? TestIds.REWARDED : productionAdUnitId;
+
+const rewarded = RewardedAd.createForAdRequest(adUnitId, {
+  keywords: ['fashion', 'clothing', 'finance'],
+});
+
 interface WatchAdButtonProps {
-  onReward?: () => void; // Функция, которую вызовем после успеха
+  onReward?: () => void;
 }
 
 export default function WatchAdButton({ onReward }: WatchAdButtonProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [isEarned, setIsEarned] = useState(false);
+  
   const [alertConfig, setAlertConfig] = useState({ 
     visible: false, 
     title: '', 
@@ -19,14 +31,11 @@ export default function WatchAdButton({ onReward }: WatchAdButtonProps) {
     icon: 'sparkles' 
   });
 
-  const handleEarnReward = async () => {
+  const handleSaveReward = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      setAlertConfig(prev => ({ ...prev, visible: false }));
-
-      // 1. Читаем баланс
       const { data: profile } = await supabase
         .from('profiles')
         .select('credits')
@@ -36,7 +45,6 @@ export default function WatchAdButton({ onReward }: WatchAdButtonProps) {
       const currentCredits = profile?.credits || 0;
       const newCredits = currentCredits + 1;
 
-      // 2. Обновляем базу
       const { error } = await supabase
         .from('profiles')
         .update({ credits: newCredits })
@@ -44,64 +52,84 @@ export default function WatchAdButton({ onReward }: WatchAdButtonProps) {
 
       if (error) throw error;
 
-      // 3. ВАЖНО: Сообщаем родителю (Магазину), что пора обновиться
-      if (onReward) {
-        onReward(); 
-      }
-      
-      // 4. Показываем успех
+      if (onReward) onReward();
+
       setAlertConfig({
         visible: true,
         title: "¡Energía Recibida!",
-        message: "+1 Energía del universo.",
+        message: "+1 Energía gracias a los astros.",
         icon: "star"
       });
 
     } catch (e) {
-      console.error(e);
-      setAlertConfig({
-        visible: true,
-        title: "Error",
-        message: "No se pudo conectar.",
-        icon: "alert-circle"
-      });
-    } finally {
-      setIsLoading(false);
+      console.error("Error saving reward:", e);
+      Alert.alert("Error", "No se pudo guardar la energía.");
     }
   };
 
-  const showAd = () => {
-    if (isLoading) return;
-    setIsLoading(true);
-    
-    setAlertConfig({
-      visible: true,
-      title: "Viendo Visión...",
-      message: "Conectando con el cosmos... (3s)",
-      icon: "eye"
+  useEffect(() => {
+    const unsubscribeLoaded = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
+      setLoaded(true);
+      console.log('✅ AdMob: Реклама загружена');
     });
 
-    setTimeout(() => {
-      handleEarnReward();
-    }, 3000); 
+    const unsubscribeEarned = rewarded.addAdEventListener(RewardedAdEventType.EARNED_REWARD, reward => {
+      console.log('🎁 AdMob: Награда получена!');
+      setIsEarned(true);
+    });
+
+    // 👇 ИСПРАВЛЕНО: Используем AdEventType.CLOSED вместо RewardedAdEventType.CLOSED
+    const unsubscribeClosed = rewarded.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('❌ AdMob: Реклама закрыта');
+      setLoaded(false);
+      
+      if (isEarned) {
+        handleSaveReward();
+        setIsEarned(false);
+      }
+
+      rewarded.load();
+    });
+
+    rewarded.load();
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeEarned();
+      unsubscribeClosed();
+    };
+  }, [isEarned]);
+
+  const showAd = () => {
+    if (loaded) {
+      rewarded.show();
+    } else {
+      Alert.alert("Cargando...", "Conectando con el cosmos... espera un momento.");
+    }
   };
 
   return (
     <>
-      <TouchableOpacity onPress={showAd} activeOpacity={0.8} style={styles.container}>
+      <TouchableOpacity 
+        onPress={showAd} 
+        activeOpacity={0.8} 
+        style={[styles.container, !loaded && { opacity: 0.6 }]}
+        disabled={!loaded}
+      >
         <LinearGradient
           colors={['#8E2DE2', '#4A00E0']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.buttonGradient}
         >
-          {isLoading ? (
-             <ActivityIndicator color="#FFF" size="small" />
+          {!loaded ? (
+             <ActivityIndicator color="#FFF" size="small" style={{ marginRight: 8 }} />
           ) : (
              <Ionicons name="play-circle" size={24} color="#FFF" style={{ marginRight: 8 }} />
           )}
+          
           <Text style={styles.buttonText}>
-            {isLoading ? " Cargando..." : "Ver Video (+1 ✨)"}
+            {loaded ? "Ver Video (+1 ✨)" : "Cargando..."}
           </Text>
         </LinearGradient>
       </TouchableOpacity>
