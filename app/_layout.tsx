@@ -4,13 +4,11 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-// Добавляем импорт RevenueCat
 import Purchases from 'react-native-purchases';
+import mobileAds from 'react-native-google-mobile-ads'; // Импорт AdMob
 
-// Удерживаем Splash Screen, пока не загрузим всё
 SplashScreen.preventAutoHideAsync();
 
-// Константа ключа (вынесли для удобства)
 const REVENUECAT_API_KEY = "goog_aaxbLkokrPUPPmBBcNzInhlJHFY";
 
 export default function RootLayout() {
@@ -19,15 +17,16 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        // 1. Принудительно загружаем шрифты иконок
         await Font.loadAsync(Ionicons.font);
 
-        // 2. Инициализируем RevenueCat ПРИ СТАРТЕ
-        // Устанавливаем уровень логов DEBUG, чтобы избежать ошибки customLogHandler
+        // 1. Инициализируем AdMob
+        await mobileAds().initialize();
+        console.log("✅ AdMob: Инициализирован");
+
+        // 2. Инициализируем RevenueCat
         await Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG); 
         await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
-        
-        console.log("✅ RevenueCat глобально инициализирован");
+        console.log("✅ RevenueCat: Инициализирован");
 
       } catch (e) {
         console.warn("Ошибка при подготовке приложения:", e);
@@ -47,7 +46,6 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="energy" />
-        <Stack.Screen name="paywall" />
       </Stack>
     </AuthProvider>
   );

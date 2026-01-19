@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Alert, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Purchases from 'react-native-purchases';
+// Импорты для баннера
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { useMonetization } from '../src/hooks/useMonetization';
 import WatchAdButton from '../src/components/WatchAdButton';
 import MagicAlert from '../src/components/MagicAlert';
@@ -12,7 +14,10 @@ import firebaseAnalytics from '@react-native-firebase/analytics';
 const PRIVACY_POLICY_URL = 'https://docs.google.com/document/d/1I-yKqNSVKNgyb7m4wtqVBtA-9MNHwOxax7NMOoKVX84';
 const TERMS_URL = 'https://docs.google.com/document/d/1OJo14MGTZXWDDucssR7kNZ74UKDI2AxO1zS8pu2YWU4';
 
-// Цены в EUR для аналитики (0.99, 3.99, 9.99)
+// ID баннера
+const productionBannerId = 'ca-app-pub-8147866560220122/6890947761';
+const bannerUnitId = __DEV__ ? TestIds.BANNER : productionBannerId;
+
 const PRICE_MAP: Record<string, { value: number, amount: number }> = {
   'energy_10_v2': { value: 0.99, amount: 10 },
   'energy_50_v2': { value: 3.99, amount: 50 },
@@ -21,7 +26,8 @@ const PRICE_MAP: Record<string, { value: number, amount: number }> = {
 
 export default function EnergyScreen() {
   const router = useRouter();
-  const { credits, refreshStatus, buyPremium } = useMonetization();
+  // Используем addFreeEnergy из хука
+  const { credits, buyPremium, addFreeEnergy } = useMonetization();
   
   const [magicAlertVisible, setMagicAlertVisible] = useState(false);
   const [alertConfig, setAlertConfig] = useState({ title: '', message: '', icon: '' });
@@ -35,26 +41,24 @@ export default function EnergyScreen() {
   };
 
   const handleRestore = async () => {
-    try {
-      await Purchases.restorePurchases();
-      setAlertConfig({ 
-        title: "Restaurado", 
-        message: "Tu historial de compras ha sido verificado.", 
-        icon: "refresh" 
-      });
-      setMagicAlertVisible(true);
-    } catch (e) {
-      Alert.alert("Error", "No se pudieron restaurar.");
-    }
-  };
+      try {
+        await Purchases.restorePurchases();
+        setAlertConfig({ 
+          title: "Restaurado", 
+          message: "Tu historial de compras ha sido verificado.", 
+          icon: "refresh" 
+        });
+        setMagicAlertVisible(true);
+      } catch (e) {
+        Alert.alert("Error", "No se pudieron restaurar.");
+      }
+    };
 
   const handlePurchase = async (packageId: 'energy_10_v2' | 'energy_50_v2' | 'energy_150_v2') => {
     if (isPurchasing) return;
     setIsPurchasing(true);
 
     try {
-      console.log(`🚀 НАЧИНАЕМ ПОКУПКУ: ${packageId}`);
-      
       await firebaseAnalytics().logEvent('energy_purchase_attempt', {
         item_id: packageId,
         energy_amount: PRICE_MAP[packageId].amount
@@ -69,8 +73,6 @@ export default function EnergyScreen() {
           currency: 'EUR',
           energy_amount: PRICE_MAP[packageId].amount
         });
-
-        console.log(`📈 Аналитика: Событие покупки ${packageId} отправлено (EUR)`);
         
         setAlertConfig({ 
           title: "¡Éxito!", 
@@ -90,6 +92,7 @@ export default function EnergyScreen() {
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={StyleSheet.absoluteFill} />
       
+      {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
           <Ionicons name="close-outline" size={28} color="rgba(255,255,255,0.7)" />
@@ -102,6 +105,8 @@ export default function EnergyScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* FREE SECTION */}
         <View style={styles.freeSection}>
           <View style={styles.glassCard}>
             <View style={styles.cardHeader}>
@@ -109,13 +114,16 @@ export default function EnergyScreen() {
               <Text style={styles.cardTitle}>Regalo Astral</Text>
             </View>
             <Text style={styles.cardDescription}>Mira una visión corta и recibe +1 energía.</Text>
-            <WatchAdButton onReward={refreshStatus} />
+            {/* Передаем правильную функцию начисления */}
+            <WatchAdButton onReward={addFreeEnergy} />
           </View>
         </View>
 
+        {/* PAID SECTION */}
         <View style={styles.paidSection}>
           <Text style={styles.sectionTitle}>Recargar Energía</Text>
           
+          {/* PACK 10 */}
           <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('energy_10_v2')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']} style={styles.cardGradient}>
               <View style={styles.cardContent}>
@@ -131,6 +139,7 @@ export default function EnergyScreen() {
             </LinearGradient>
           </TouchableOpacity>
 
+          {/* PACK 50 - POPULAR */}
           <TouchableOpacity style={[styles.purchaseCard, styles.popularCard]} onPress={() => handlePurchase('energy_50_v2')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(255, 215, 0, 0.15)', 'rgba(255, 215, 0, 0.05)']} style={styles.cardGradient}>
               <View style={styles.popularBadge}><Text style={styles.popularBadgeText}>Popular</Text></View>
@@ -150,11 +159,12 @@ export default function EnergyScreen() {
             </LinearGradient>
           </TouchableOpacity>
 
+          {/* PACK 150 */}
           <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('energy_150_v2')} disabled={isPurchasing}>
             <LinearGradient colors={['rgba(147, 51, 234, 0.2)', 'rgba(147, 51, 234, 0.1)']} style={styles.cardGradient}>
               <View style={styles.cardContent}>
                 <View style={styles.cardLeft}>
-                  <View style={[styles.iconCircle, { backgroundColor: 'rgba(147, 51, 234, 0.3)' }]}><Ionicons name="infinite" size={20} color="#d8b4fe" /></View>
+                  <View style={[styles.iconCircle, { backgroundColor: 'rgba(147, 51, 234, 0.3)' }]}><Ionicons name="thunderstorm" size={20} color="#d8b4fe" /></View>
                   <View style={{ marginLeft: 12 }}>
                     <Text style={styles.purchaseTitle}>Fuente Eterna</Text>
                     <Text style={styles.purchaseAmount}>150 Energías</Text>
@@ -166,13 +176,14 @@ export default function EnergyScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* LEGAL FOOTER (Вернули на место) */}
         <View style={styles.legalFooter}>
           <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}>
             <Text style={styles.restoreBtnText}>Restaurar Compras</Text>
           </TouchableOpacity>
           <View style={styles.linksRow}>
             <TouchableOpacity onPress={() => openLink(TERMS_URL)}>
-              <Text style={styles.linkText}>Términos de Uso</Text>
+              <Text style={styles.linkText}>Términos</Text>
             </TouchableOpacity>
             <Text style={styles.linkDivider}>|</Text>
             <TouchableOpacity onPress={() => openLink(PRIVACY_POLICY_URL)}>
@@ -180,13 +191,22 @@ export default function EnergyScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* БАННЕР В САМОМ НИЗУ */}
+        <View style={styles.bannerContainer}>
+          <BannerAd
+            unitId={bannerUnitId}
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+            onAdFailedToLoad={(error) => console.log('Banner error:', error)}
+          />
+        </View>
+        
         <View style={{height: 40}} />
       </ScrollView>
 
       {isPurchasing && (
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' }]}>
-          <ActivityIndicator size="large" color="#ffd700" />
-        </View>
+        <View style={styles.loaderOverlay}><ActivityIndicator size="large" color="#ffd700" /></View>
       )}
 
       <MagicAlert 
@@ -205,34 +225,39 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f0c29' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 60, paddingBottom: 20 },
   closeButton: { padding: 8 },
-  headerTitle: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+  headerTitle: { fontSize: 24, fontWeight: '700', color: '#fff' },
   balanceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 215, 0, 0.1)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)' },
   balanceText: { color: '#ffd700', fontSize: 14, fontWeight: '600', marginLeft: 6 },
-  scrollContent: { paddingHorizontal: 20, paddingBottom: 60 },
-  freeSection: { marginBottom: 32 },
-  glassCard: { backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.15)', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8 },
+  scrollContent: { paddingHorizontal: 20 },
+  freeSection: { marginBottom: 30 },
+  glassCard: { backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.15)' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   cardTitle: { fontSize: 18, fontWeight: '600', color: '#ffd700', marginLeft: 12 },
   cardDescription: { fontSize: 14, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 16 },
   paidSection: { marginBottom: 20 },
   sectionTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginBottom: 16, opacity: 0.8 },
-  purchaseCard: { borderRadius: 16, marginBottom: 12, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
-  popularCard: { borderWidth: 1, borderColor: '#ffd700', transform: [{ scale: 1.02 }] },
+  purchaseCard: { borderRadius: 16, marginBottom: 12, overflow: 'hidden' },
+  popularCard: { borderWidth: 1.5, borderColor: '#ffd700', transform: [{ scale: 1.02 }] },
   cardGradient: { padding: 16 },
-  popularBadge: { position: 'absolute', top: 0, right: 0, backgroundColor: '#ffd700', paddingHorizontal: 8, paddingVertical: 2, borderBottomLeftRadius: 8 },
-  popularBadgeText: { color: '#000', fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' },
+  popularBadge: { position: 'absolute', top: 0, right: 0, backgroundColor: '#ffd700', paddingHorizontal: 10, paddingVertical: 2, borderBottomLeftRadius: 10 },
+  popularBadgeText: { color: '#000', fontSize: 10, fontWeight: 'bold' },
   cardContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cardLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255, 255, 255, 0.1)', alignItems: 'center', justifyContent: 'center' },
   purchaseTitle: { fontSize: 16, fontWeight: '600', color: '#fff' },
-  purchaseAmount: { fontSize: 13, color: 'rgba(255, 255, 255, 0.6)', marginTop: 2 },
+  purchaseAmount: { fontSize: 13, color: 'rgba(255, 255, 255, 0.5)', marginTop: 2 },
   priceContainer: { alignItems: 'flex-end' },
   purchasePrice: { fontSize: 18, fontWeight: '700', color: '#fff' },
   oldPrice: { fontSize: 12, color: 'rgba(255, 255, 255, 0.4)', textDecorationLine: 'line-through' },
-  legalFooter: { marginTop: 20, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20 },
-  restoreBtn: { marginBottom: 15 },
-  restoreBtnText: { color: '#ffd700', fontSize: 14, fontWeight: '500' },
+  
+  // Стили для подвала и баннера
+  legalFooter: { marginTop: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20, paddingBottom: 10 },
+  restoreBtn: { marginBottom: 10 },
+  restoreBtnText: { color: '#ffd700', fontSize: 14 },
   linksRow: { flexDirection: 'row', alignItems: 'center' },
   linkText: { color: 'rgba(255,255,255,0.5)', fontSize: 12 },
   linkDivider: { color: 'rgba(255,255,255,0.3)', marginHorizontal: 10 },
+  bannerContainer: { alignItems: 'center', marginTop: 10, minHeight: 60, paddingBottom: 20 },
+  
+  loaderOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }
 });
