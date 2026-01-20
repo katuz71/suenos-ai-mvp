@@ -37,6 +37,7 @@ type Message = {
 
 type ScreenMode = 'input' | 'chat';
 
+// Ключ для хранения даты (должен совпадать с тем, что в хуке)
 const BONUS_DATE_KEY = 'daily_bonus_date_v1';
 
 export default function SuenosScreen() {
@@ -46,6 +47,7 @@ export default function SuenosScreen() {
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   
+  // Блокировщик (на всякий случай оставим)
   const bonusCheckLock = useRef(false);
 
   const [userName, setUserName] = useState<string>('Viajero');
@@ -64,6 +66,7 @@ export default function SuenosScreen() {
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Анимация энергии
   useEffect(() => {
     Animated.sequence([
       Animated.timing(scaleAnim, { toValue: 1.2, duration: 150, useNativeDriver: true }),
@@ -71,6 +74,7 @@ export default function SuenosScreen() {
     ]).start();
   }, [credits]);
 
+  // Автоскролл чата
   useEffect(() => {
     if (mode === 'chat') {
       setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
@@ -81,24 +85,29 @@ export default function SuenosScreen() {
     return () => kbdShow.remove();
   }, [messages, mode, loading]);
 
-  // --- ГЛАВНАЯ ЛОГИКА БОНУСОВ ---
+  // --- ЕДИНАЯ ЛОГИКА БОНУСОВ ---
   useEffect(() => {
-    const handleWelcomeAndBonus = async () => {
+    const handleBonuses = async () => {
+      // 1. Загрузка данных профиля
       const name = await AsyncStorage.getItem('user_name');
       const sign = await AsyncStorage.getItem('user_zodiac');
       if (name) setUserName(name);
       if (sign) setUserZodiac(sign);
 
-      // СЦЕНАРИЙ 1: НОВИЧОК (Только что зарегистрировался)
-      if (params.welcome === 'true') {
-        if (bonusCheckLock.current) return;
-        bonusCheckLock.current = true;
+      // Защита от повторного запуска в одной сессии
+      if (bonusCheckLock.current) return;
+      bonusCheckLock.current = true;
 
-        // Ставим "галочку" на сегодня, чтобы не дать ежедневный бонус сверху
+      // 2. РАЗВИЛКА: ИЛИ Новичок, ИЛИ Старичок
+      if (params.welcome === 'true') {
+        // === ВЕТКА НОВИЧКА ===
+        console.log("Processing Welcome Bonus");
+        
+        // Сразу "гасим" ежедневный бонус на сегодня
         const today = new Date().toISOString().split('T')[0];
         await AsyncStorage.setItem(BONUS_DATE_KEY, today);
 
-        // Показываем красивый алерт (визуализация 3 энергий от базы)
+        // Показываем приветствие
         setMagicAlert({
           visible: true,
           title: "¡Regalo Estelar! ✨",
@@ -106,17 +115,16 @@ export default function SuenosScreen() {
           icon: "star"
         });
         
+        // Чистим параметр
         router.setParams({ welcome: '' });
-        return; 
-      }
 
-      // СЦЕНАРИЙ 2: СТАРЫЙ ЮЗЕР (Ежедневный бонус)
-      if (!bonusCheckLock.current) {
-        bonusCheckLock.current = true;
+      } else {
+        // === ВЕТКА ОБЫЧНОГО ВХОДА ===
+        console.log("Processing Daily Check");
+        
+        // Небольшая задержка для плавности
         setTimeout(async () => {
           if (checkDailyBonus) {
-            // Эта функция проверит галочку. Если мы сегодня уже были "новичком", 
-            // она вернет false. Если зашли завтра - вернет true и даст +1.
             const bonusGiven = await checkDailyBonus();
             if (bonusGiven) {
               setMagicAlert({
@@ -131,7 +139,8 @@ export default function SuenosScreen() {
       }
     };
 
-    handleWelcomeAndBonus();
+    handleBonuses();
+    // Добавляем params.welcome в зависимости, чтобы сработало при навигации
   }, [params.welcome]);
 
 

@@ -91,7 +91,8 @@ export default function OnboardingScreen() {
         // Передаем также определенный знак зодиака
         router.replace({ 
           pathname: '/(tabs)/suenos', 
-          params: { name, date: birthDate, zodiac: detectedZodiac } 
+          // 👇 Добавили welcome: 'true'
+          params: { name, date: birthDate, zodiac: detectedZodiac, welcome: 'true' } 
         });
       }, 5000); // Чуть дольше (5с), чтобы успеть прочитать тексты
       
