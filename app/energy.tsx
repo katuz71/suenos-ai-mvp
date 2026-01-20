@@ -20,7 +20,6 @@ const PRICE_MAP: Record<string, { value: number, amount: number }> = {
 
 export default function EnergyScreen() {
   const router = useRouter();
-  // Используем addFreeEnergy из хука
   const { credits, buyPremium, addFreeEnergy } = useMonetization();
   
   const [magicAlertVisible, setMagicAlertVisible] = useState(false);
@@ -39,12 +38,12 @@ export default function EnergyScreen() {
         await Purchases.restorePurchases();
         setAlertConfig({ 
           title: "Restaurado", 
-          message: "Tu historial de compras ha sido verificado.", 
+          message: "Tu historial de compras ha sido verificado con éxito.", 
           icon: "refresh" 
         });
         setMagicAlertVisible(true);
       } catch (e) {
-        Alert.alert("Error", "No se pudieron restaurar.");
+        Alert.alert("Error", "No se pudieron restaurar las compras.");
       }
     };
 
@@ -70,13 +69,13 @@ export default function EnergyScreen() {
         
         setAlertConfig({ 
           title: "¡Éxito!", 
-          message: `Has recibido ${PRICE_MAP[packageId].amount} energías.`, 
+          message: `Has recibido ${PRICE_MAP[packageId].amount} energías estelares.`, 
           icon: "checkmark-circle" 
         });
         setMagicAlertVisible(true);
       }
     } catch (e: any) {
-      console.error("❌ ОШИБКА ПОКУПКИ:", e);
+      console.error("Purchase error:", e);
     } finally {
       setIsPurchasing(false);
     }
@@ -107,8 +106,7 @@ export default function EnergyScreen() {
               <Ionicons name="gift-outline" size={32} color="#ffd700" />
               <Text style={styles.cardTitle}>Regalo Astral</Text>
             </View>
-            <Text style={styles.cardDescription}>Mira una visión corta y recibe +1 energía.</Text>
-            {/* Кнопка просмотра видео за награду */}
+            <Text style={styles.cardDescription}>Mira una visión corta y recibe +1 de energía gratuita.</Text>
             <WatchAdButton onReward={addFreeEnergy} />
           </View>
         </View>
@@ -198,7 +196,7 @@ export default function EnergyScreen() {
         title={alertConfig.title}
         message={alertConfig.message}
         icon={alertConfig.icon as any}
-        confirmText="Entendido"
+        confirmText="Aceptar"
         onConfirm={() => setMagicAlertVisible(false)}
       />
     </View>
@@ -233,13 +231,11 @@ const styles = StyleSheet.create({
   priceContainer: { alignItems: 'flex-end' },
   purchasePrice: { fontSize: 18, fontWeight: '700', color: '#fff' },
   oldPrice: { fontSize: 12, color: 'rgba(255, 255, 255, 0.4)', textDecorationLine: 'line-through' },
-  
   legalFooter: { marginTop: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20, paddingBottom: 10 },
   restoreBtn: { marginBottom: 10 },
   restoreBtnText: { color: '#ffd700', fontSize: 14 },
   linksRow: { flexDirection: 'row', alignItems: 'center' },
   linkText: { color: 'rgba(255,255,255,0.5)', fontSize: 12 },
   linkDivider: { color: 'rgba(255,255,255,0.3)', marginHorizontal: 10 },
-  
   loaderOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }
 });

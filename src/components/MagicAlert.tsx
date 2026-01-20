@@ -30,8 +30,8 @@ export default function MagicAlert({
   message,
   onConfirm,
   onCancel,
-  confirmText = "Ок",
-  cancelText = "Отмена",
+  confirmText = "Aceptar", // Changed from "Ок"
+  cancelText = "Cancelar", // Changed from "Отмена"
   icon = "sparkles"
 }: MagicAlertProps) {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
@@ -39,7 +39,7 @@ export default function MagicAlert({
 
   React.useEffect(() => {
     if (visible) {
-      // Анимация появления
+      // Appear animation
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -53,7 +53,7 @@ export default function MagicAlert({
         }),
       ]).start();
     } else {
-      // Анимация исчезновения
+      // Disappear animation
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
@@ -88,18 +88,18 @@ export default function MagicAlert({
             }
           ]}
         >
-          {/* Иконка */}
+          {/* Icon */}
           <View style={styles.iconContainer}>
             <Ionicons name={icon as any} size={48} color="#FFD700" />
           </View>
 
-          {/* Заголовок */}
+          {/* Title */}
           <Text style={styles.title}>{title}</Text>
 
-          {/* Сообщение */}
+          {/* Message */}
           <Text style={styles.message}>{message}</Text>
 
-          {/* Кнопки */}
+          {/* Buttons */}
           <View style={styles.buttonRow}>
             {onCancel && (
               <TouchableOpacity 
@@ -138,7 +138,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
   },
-  
   alertBox: {
     backgroundColor: '#1a1a2e',
     borderRadius: 24,
@@ -154,11 +153,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 10,
   },
-
-  iconContainer: {
-    marginBottom: 16,
-  },
-
+  iconContainer: { marginBottom: 16 },
   title: {
     fontSize: 22,
     fontWeight: '700',
@@ -169,7 +164,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
-
   message: {
     fontSize: 16,
     color: 'rgba(255, 255, 255, 0.9)',
@@ -178,13 +172,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     fontWeight: '400',
   },
-
-  buttonRow: {
-    flexDirection: 'row',
-    width: '100%',
-    gap: 12,
-  },
-
+  buttonRow: { flexDirection: 'row', width: '100%', gap: 12 },
   cancelButton: {
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -195,13 +183,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  cancelText: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-
+  cancelText: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 16, fontWeight: '600' },
   confirmButton: {
     flex: 1,
     borderRadius: 16,
@@ -212,16 +194,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-
-  gradientBtn: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  confirmBtnText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '700',
-  },
+  gradientBtn: { paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
+  confirmBtnText: { color: '#000', fontSize: 16, fontWeight: '700' },
 });

@@ -41,7 +41,6 @@ export default function Index() {
   const [detectedZodiac, setDetectedZodiac] = useState('');
   const [errors, setErrors] = useState({ name: '', birthDate: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -56,12 +55,6 @@ export default function Index() {
   }, [step]);
 
   useEffect(() => {
-    const show = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardVisible(true));
-    const hide = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardVisible(false));
-    return () => { show.remove(); hide.remove(); };
-  }, []);
-
-  useEffect(() => {
     if (step === 'animation') {
       Animated.loop(Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1.1, duration: 1000, useNativeDriver: true }),
@@ -70,7 +63,6 @@ export default function Index() {
       Animated.loop(Animated.timing(rotateAnim, { toValue: 1, duration: 3000, useNativeDriver: true })).start();
 
       const timer = setTimeout(() => {
-        // ИСПРАВЛЕНО: Переход на СНЫ (suenos) с параметром welcome
         router.replace({ pathname: '/(tabs)/suenos', params: { welcome: 'true' } });
       }, 4000);
 
@@ -96,12 +88,6 @@ export default function Index() {
   const handleContinue = async () => {
     if (step === 'intro') {
       setStep('input');
-      fadeAnim.setValue(0);
-      scaleAnim.setValue(0.8);
-      Animated.parallel([
-        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-        Animated.spring(scaleAnim, { toValue: 1, friction: 8, tension: 40, useNativeDriver: true }),
-      ]).start();
     } else if (step === 'input') {
       if (!name.trim()) { setErrors({...errors, name: 'Requerido'}); return; }
       if (!birthDate.trim()) { setErrors({...errors, birthDate: 'Requerido'}); return; }
@@ -112,26 +98,26 @@ export default function Index() {
         if (authError) throw authError;
 
         const zodiacSign = detectedZodiac || 'Desconocido';
+        const today = new Date().toISOString().split('T')[0];
 
-        // 1. Запись в БД
+        // Create Profile with 3 credits and mark today as claimed
         await supabase.from('profiles').upsert({
           id: authData.session?.user.id,
           display_name: name,
           birth_date: birthDate,
           zodiac_sign: zodiacSign,
           credits: 3, 
+          last_daily_bonus: today, // Mark as claimed during registration
           updated_at: new Date().toISOString(),
         });
 
-        // 2. ВАЖНО: Запись в память (Мгновенный доступ)
+        // Local storage sync
         await AsyncStorage.setItem('user_name', name);
         await AsyncStorage.setItem('user_zodiac', zodiacSign);
-        await AsyncStorage.setItem('user_credits', '3');
+        await AsyncStorage.setItem('daily_bonus_date_v1', today);
         await AsyncStorage.setItem('has_launched_app', 'true');
 
         setStep('animation');
-        fadeAnim.setValue(0);
-        Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
       } catch (error) {
         Alert.alert('Error', 'Error de conexión');
         setIsLoading(false);
@@ -151,25 +137,21 @@ export default function Index() {
           <View style={styles.introContainer}>
             <Text style={styles.lunaIcon}>🌙</Text>
             <Text style={styles.title}>Bienvenido a Luna</Text>
-            <Text style={styles.lunaName}>Luna</Text>
             <Text style={styles.subtitle}>Soy la energía que interpreta las señales del universo.</Text>
           </View>
-          <MysticButton title="Comenzar" onPress={handleContinue} style={styles.button} />
+          <MysticButton title="Comenzar" onPress={handleContinue} />
         </Animated.View>
       )}
 
       {step === 'input' && (
-        <KeyboardAvoidingView behavior={Platform.OS === 'android' ? 'height' : 'padding'} style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                <View style={{flex: 1, paddingHorizontal: 24, justifyContent: 'center'}}>
-                  <View style={styles.inputsContainer}>
-                      <Text style={styles.inputTitle}>Cuéntame sobre ti</Text>
-                      <MysticInput label="Nombre" placeholder="Tu nombre" value={name} onChangeText={setName} error={errors.name} />
-                      <View style={{height: 20}}/>
-                      <MysticInput label="Fecha de nacimiento" placeholder="DD/MM/AAAA" value={birthDate} onChangeText={handleDateChange} error={errors.birthDate} keyboardType="numeric" maxLength={10} />
-                      {detectedZodiac ? <Text style={styles.zodiacText}>Tu signo: <Text style={{color:'#FFD700', fontWeight:'bold'}}>{detectedZodiac}</Text></Text> : null}
-                  </View>
+                  <Text style={styles.inputTitle}>Cuéntame sobre ti</Text>
+                  <MysticInput label="Nombre" placeholder="Tu nombre" value={name} onChangeText={setName} error={errors.name} />
+                  <MysticInput label="Fecha de nacimiento" placeholder="DD/MM/AAAA" value={birthDate} onChangeText={handleDateChange} error={errors.birthDate} keyboardType="numeric" maxLength={10} />
+                  {detectedZodiac ? <Text style={styles.zodiacText}>Tu signo: <Text style={{color:'#FFD700', fontWeight:'bold'}}>{detectedZodiac}</Text></Text> : null}
                   <MysticButton title="Continuar" onPress={handleContinue} loading={isLoading} style={{marginTop: 40}} />
                </View>
             </TouchableWithoutFeedback>
@@ -196,12 +178,9 @@ const styles = StyleSheet.create({
   introContainer: { alignItems: 'center', marginBottom: 60 },
   lunaIcon: { fontSize: 80, marginBottom: 20 },
   title: { fontSize: 32, fontWeight: '700', color: '#F8FAFC', textAlign: 'center' },
-  lunaName: { fontSize: 24, color: '#A855F7', marginBottom: 20 },
   subtitle: { fontSize: 18, color: '#E2E8F0', textAlign: 'center' },
-  inputsContainer: { width: '100%' },
   inputTitle: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 30, textAlign: 'center' },
   zodiacText: { color: '#E2E8F0', textAlign: 'center', marginTop: 15, fontSize: 18 },
-  button: { marginTop: 20 },
   animationContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   cosmicCircle: { width: 200, height: 200, borderRadius: 100, borderWidth: 3, borderColor: '#A855F7', justifyContent: 'center', alignItems: 'center', marginBottom: 40 },
   innerCircle: { width: 160, height: 160, borderRadius: 80, backgroundColor: 'rgba(139, 92, 246, 0.2)', justifyContent: 'center', alignItems: 'center' },

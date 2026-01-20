@@ -1,0 +1,4065 @@
+﻿--- SUENOS AI: PROJECT CONTEXT ---
+Generated on: 01/20/2026 23:02:26
+
+
+--- PROJECT STRUCTURE ---
+@{FullName=C:\Luna\.expo}
+@{FullName=C:\Luna\android}
+@{FullName=C:\Luna\app}
+@{FullName=C:\Luna\assets}
+@{FullName=C:\Luna\docs}
+@{FullName=C:\Luna\src}
+@{FullName=C:\Luna\supabase}
+@{FullName=C:\Luna\.env}
+@{FullName=C:\Luna\all_errors.txt}
+@{FullName=C:\Luna\app.json}
+@{FullName=C:\Luna\App.tsx}
+@{FullName=C:\Luna\collect_data.ps1}
+@{FullName=C:\Luna\eas.json}
+@{FullName=C:\Luna\google-services.json}
+@{FullName=C:\Luna\index.ts}
+@{FullName=C:\Luna\local.properties}
+@{FullName=C:\Luna\package-lock.json}
+@{FullName=C:\Luna\package.json}
+@{FullName=C:\Luna\PROJECT_SUMMARY.md}
+@{FullName=C:\Luna\QUICKSTART.md}
+@{FullName=C:\Luna\README.md}
+@{FullName=C:\Luna\suenos_ai_audit_context.txt}
+@{FullName=C:\Luna\tsconfig.json}
+@{FullName=C:\Luna\.expo\web}
+@{FullName=C:\Luna\.expo\devices.json}
+@{FullName=C:\Luna\.expo\README.md}
+@{FullName=C:\Luna\.expo\settings.json}
+@{FullName=C:\Luna\.expo\web\cache}
+@{FullName=C:\Luna\.expo\web\cache\production}
+@{FullName=C:\Luna\android\.gradle}
+@{FullName=C:\Luna\android\.kotlin}
+@{FullName=C:\Luna\android\app}
+@{FullName=C:\Luna\android\build}
+@{FullName=C:\Luna\android\gradle}
+@{FullName=C:\Luna\android\build.gradle}
+@{FullName=C:\Luna\android\gradle.properties}
+@{FullName=C:\Luna\android\gradlew}
+@{FullName=C:\Luna\android\gradlew.bat}
+@{FullName=C:\Luna\android\settings.gradle}
+@{FullName=C:\Luna\android\.gradle\8.14.3}
+@{FullName=C:\Luna\android\.gradle\buildOutputCleanup}
+@{FullName=C:\Luna\android\.gradle\noVersion}
+@{FullName=C:\Luna\android\.gradle\vcs-1}
+@{FullName=C:\Luna\android\.gradle\file-system.probe}
+@{FullName=C:\Luna\android\.gradle\8.14.3\checksums}
+@{FullName=C:\Luna\android\.gradle\8.14.3\executionHistory}
+@{FullName=C:\Luna\android\.gradle\8.14.3\expanded}
+@{FullName=C:\Luna\android\.gradle\8.14.3\fileChanges}
+@{FullName=C:\Luna\android\.gradle\8.14.3\fileHashes}
+@{FullName=C:\Luna\android\.gradle\8.14.3\vcsMetadata}
+@{FullName=C:\Luna\android\.gradle\8.14.3\gc.properties}
+@{FullName=C:\Luna\android\.gradle\buildOutputCleanup\buildOutputCleanup.lock}
+@{FullName=C:\Luna\android\.gradle\buildOutputCleanup\cache.properties}
+@{FullName=C:\Luna\android\.gradle\buildOutputCleanup\outputFiles.bin}
+@{FullName=C:\Luna\android\.gradle\noVersion\buildLogic.lock}
+@{FullName=C:\Luna\android\.gradle\vcs-1\gc.properties}
+@{FullName=C:\Luna\android\.kotlin\sessions}
+@{FullName=C:\Luna\android\app\.cxx}
+@{FullName=C:\Luna\android\app\build}
+@{FullName=C:\Luna\android\app\src}
+@{FullName=C:\Luna\android\app\build.gradle}
+@{FullName=C:\Luna\android\app\debug.keystore}
+@{FullName=C:\Luna\android\app\google-services.json}
+@{FullName=C:\Luna\android\app\proguard-rules.pro}
+@{FullName=C:\Luna\android\app\.cxx\Debug}
+@{FullName=C:\Luna\android\app\.cxx\tools}
+@{FullName=C:\Luna\android\app\build\generated}
+@{FullName=C:\Luna\android\app\build\intermediates}
+@{FullName=C:\Luna\android\app\build\kotlin}
+@{FullName=C:\Luna\android\app\build\outputs}
+@{FullName=C:\Luna\android\app\build\tmp}
+@{FullName=C:\Luna\android\app\build\gmpAppId.txt}
+@{FullName=C:\Luna\android\app\src\debug}
+@{FullName=C:\Luna\android\app\src\debugOptimized}
+@{FullName=C:\Luna\android\app\src\main}
+@{FullName=C:\Luna\android\build\generated}
+@{FullName=C:\Luna\android\build\reports}
+@{FullName=C:\Luna\android\build\generated\autolinking}
+@{FullName=C:\Luna\android\build\reports\problems}
+@{FullName=C:\Luna\android\gradle\wrapper}
+@{FullName=C:\Luna\android\gradle\wrapper\gradle-wrapper.jar}
+@{FullName=C:\Luna\android\gradle\wrapper\gradle-wrapper.properties}
+@{FullName=C:\Luna\app\(auth)}
+@{FullName=C:\Luna\app\(tabs)}
+@{FullName=C:\Luna\app\energy.tsx}
+@{FullName=C:\Luna\app\index.tsx}
+@{FullName=C:\Luna\app\paywall.tsx}
+@{FullName=C:\Luna\app\zodiac.tsx}
+@{FullName=C:\Luna\app\_layout.tsx}
+@{FullName=C:\Luna\app\(auth)\onboarding.tsx}
+@{FullName=C:\Luna\app\(tabs)\horoscope.tsx}
+@{FullName=C:\Luna\app\(tabs)\oracle.tsx}
+@{FullName=C:\Luna\app\(tabs)\suenos.tsx}
+@{FullName=C:\Luna\app\(tabs)\_layout.tsx}
+@{FullName=C:\Luna\assets\adaptive-icon.png}
+@{FullName=C:\Luna\assets\favicon.png}
+@{FullName=C:\Luna\assets\icon.png}
+@{FullName=C:\Luna\assets\splash-icon.png}
+@{FullName=C:\Luna\docs\LUNA_PERSONA.md}
+@{FullName=C:\Luna\docs\STRATEGY.md}
+@{FullName=C:\Luna\src\components}
+@{FullName=C:\Luna\src\constants}
+@{FullName=C:\Luna\src\hooks}
+@{FullName=C:\Luna\src\providers}
+@{FullName=C:\Luna\src\services}
+@{FullName=C:\Luna\src\components\ui}
+@{FullName=C:\Luna\src\components\AdBanner.tsx}
+@{FullName=C:\Luna\src\components\MagicAlert.tsx}
+@{FullName=C:\Luna\src\components\WatchAdButton.tsx}
+@{FullName=C:\Luna\src\components\ui\MysticButton.tsx}
+@{FullName=C:\Luna\src\components\ui\MysticInput.tsx}
+@{FullName=C:\Luna\src\constants\Colors.ts}
+@{FullName=C:\Luna\src\hooks\useDailyBonus.ts}
+@{FullName=C:\Luna\src\hooks\useMonetization.ts}
+@{FullName=C:\Luna\src\hooks\useRewardedAd.ts}
+@{FullName=C:\Luna\src\providers\AuthProvider.tsx}
+@{FullName=C:\Luna\src\services\adConfig.ts}
+@{FullName=C:\Luna\src\services\ai.ts}
+@{FullName=C:\Luna\src\services\NotificationService.ts}
+@{FullName=C:\Luna\src\services\openai.ts}
+@{FullName=C:\Luna\src\services\supabase.ts}
+@{FullName=C:\Luna\supabase\migrations}
+@{FullName=C:\Luna\supabase\README.md}
+@{FullName=C:\Luna\supabase\migrations\001_create_interpretations_table.sql}
+
+
+--- FILE: package.json ---
+{
+  "name": "suenos-ai-mvp",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-firebase/analytics": "^21.0.0",
+    "@react-native-firebase/app": "^21.0.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "expo": "~52.0.0",
+    "expo-build-properties": "~0.13.3",
+    "expo-constants": "~17.0.0",
+    "expo-dev-client": "~5.0.0",
+    "expo-device": "~7.0.0",
+    "expo-font": "~13.0.0",
+    "expo-haptics": "~14.0.0",
+    "expo-linear-gradient": "~14.0.0",
+    "expo-linking": "~7.0.0",
+    "expo-notifications": "~0.29.0",
+    "expo-router": "~4.0.0",
+    "expo-splash-screen": "~0.29.0",
+    "expo-status-bar": "~2.0.0",
+    "openai": "^4.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.6",
+    "react-native-fbsdk-next": "^13.0.0",
+    "react-native-google-mobile-ads": "^14.0.0",
+    "react-native-purchases": "^8.0.0",
+    "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.4.0",
+    "react-native-url-polyfill": "^2.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.3.12",
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}
+
+
+--- FILE: app.json ---
+{
+  "expo": {
+    "name": "suenos-ai-mvp",
+    "slug": "suenos-ai-mvp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "suenosai",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#120d26"
+    },
+    "android": {
+      "package": "com.katuz71.suenosaimvp",
+      "versionCode": 12,
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "com.android.vending.BILLING",
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "@react-native-firebase/app",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff"
+        }
+      ],
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "1145794384111849",
+          "clientToken": "ffb5c511af4ceef5cdd8a1ca7a3467a6",
+          "displayName": "Luna AI",
+          "advertiserIDCollectionEnabled": true,
+          "autoLogAppEventsEnabled": true
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-8147866560220122~6913262165",
+          "iosAppId": "ca-app-pub-8147866560220122~6913262165"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cebb1e47-84d1-42e2-bac6-c3d10817432f"
+      }
+    }
+  }
+}
+
+
+--- FILE: eas.json ---
+{
+  "cli": {
+    "version": ">= 16.28.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://avigxbfksezvnoietjop.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aWd4YmZrc2V6dm5vaWV0am9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMTg3NjUsImV4cCI6MjA4Mzc5NDc2NX0.X-YfDkVOYHIr4R7GKsNG-GmAtRJx_F-60Qerbs7JNLg",
+        "EXPO_PUBLIC_OPENAI_API_KEY": "$EXPO_PUBLIC_OPENAI_API_KEY"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://avigxbfksezvnoietjop.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aWd4YmZrc2V6dm5vaWV0am9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMTg3NjUsImV4cCI6MjA4Mzc5NDc2NX0.X-YfDkVOYHIr4R7GKsNG-GmAtRJx_F-60Qerbs7JNLg",
+        "EXPO_PUBLIC_OPENAI_API_KEY": "$EXPO_PUBLIC_OPENAI_API_KEY"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
+
+
+--- SOURCE CODE ---
+
+--- FILE: C:\Luna\app\(auth)\onboarding.tsx ---
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  ScrollView,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MysticButton } from '../../src/components/ui/MysticButton';
+import { MysticInput } from '../../src/components/ui/MysticInput';
+import { Colors } from '../../src/constants/Colors';
+
+type OnboardingStep = 'intro' | 'input' | 'animation';
+
+// РҐРµР»РїРµСЂ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ Р·РЅР°РєР° Р·РѕРґРёР°РєР°
+const getZodiacSign = (day: number, month: number): string => {
+  if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return "Acuario";
+  if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return "Piscis";
+  if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return "Aries";
+  if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return "Tauro";
+  if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return "GГ©minis";
+  if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return "CГЎncer";
+  if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return "Leo";
+  if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return "Virgo";
+  if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return "Libra";
+  if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) return "Escorpio";
+  if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) return "Sagitario";
+  if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) return "Capricornio";
+  return "";
+};
+
+export default function OnboardingScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  
+  const [step, setStep] = useState<OnboardingStep>('intro');
+  const [name, setName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [detectedZodiac, setDetectedZodiac] = useState(''); // РђРІС‚Рѕ-РѕРїСЂРµРґРµР»РµРЅРёРµ Р·РЅР°РєР°
+  const [errors, setErrors] = useState({ name: '', birthDate: '' });
+  const [loadingText, setLoadingText] = useState('Analizando tu carta astral...');
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 8, tension: 40, useNativeDriver: true }),
+    ]).start();
+  }, [step]);
+
+  // РђРЅРёРјР°С†РёСЏ Р·Р°РіСЂСѓР·РєРё СЃ РјРµРЅСЏСЋС‰РёРјСЃСЏ С‚РµРєСЃС‚РѕРј
+  useEffect(() => {
+    if (step === 'animation') {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.1, duration: 1000, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        ])
+      ).start();
+      Animated.loop(
+        Animated.timing(rotateAnim, { toValue: 1, duration: 3000, useNativeDriver: true })
+      ).start();
+
+      // РЎРјРµРЅР° С‚РµРєСЃС‚РѕРІ РґР»СЏ Р°С‚РјРѕСЃС„РµСЂС‹
+      const texts = [
+        'Conectando con las estrellas...',
+        'Calculando tu ascendente...',
+        'Interpretando tu energГ­a...',
+        'ВЎTodo listo!'
+      ];
+      let i = 0;
+      const interval = setInterval(() => {
+        i++;
+        if (i < texts.length) setLoadingText(texts[i]);
+      }, 1500);
+
+      const timer = setTimeout(() => {
+        clearInterval(interval);
+        // РџРµСЂРµРґР°РµРј С‚Р°РєР¶Рµ РѕРїСЂРµРґРµР»РµРЅРЅС‹Р№ Р·РЅР°Рє Р·РѕРґРёР°РєР°
+        router.replace({ 
+          pathname: '/(tabs)/suenos', 
+          // рџ‘‡ Р”РѕР±Р°РІРёР»Рё welcome: 'true'
+          params: { name, date: birthDate, zodiac: detectedZodiac, welcome: 'true' } 
+        });
+      }, 5000); // Р§СѓС‚СЊ РґРѕР»СЊС€Рµ (5СЃ), С‡С‚РѕР±С‹ СѓСЃРїРµС‚СЊ РїСЂРѕС‡РёС‚Р°С‚СЊ С‚РµРєСЃС‚С‹
+      
+      return () => { clearTimeout(timer); clearInterval(interval); };
+    }
+  }, [step]);
+
+  const handleDateChange = (text: string) => {
+    // РЈРґР°Р»СЏРµРј РІСЃРµ РЅРµС†РёС„СЂРѕРІС‹Рµ СЃРёРјРІРѕР»С‹
+    const cleaned = text.replace(/[^0-9]/g, '');
+    let formatted = cleaned;
+
+    // Р¤РѕСЂРјР°С‚РёСЂСѓРµРј DD/MM/YYYY
+    if (cleaned.length > 2) formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
+    if (cleaned.length > 4) formatted = formatted.slice(0, 5) + '/' + cleaned.slice(4, 8);
+    
+    // РћРіСЂР°РЅРёС‡РёРІР°РµРј РґР»РёРЅСѓ
+    if (formatted.length <= 10) {
+      setBirthDate(formatted);
+      setErrors({ ...errors, birthDate: '' });
+
+      // РџС‹С‚Р°РµРјСЃСЏ РѕРїСЂРµРґРµР»РёС‚СЊ Р·РЅР°Рє Р·РѕРґРёР°РєР° РЅР° Р»РµС‚Сѓ
+      if (cleaned.length >= 4) { // Р•СЃС‚СЊ С…РѕС‚СЏ Р±С‹ РґРµРЅСЊ Рё РјРµСЃСЏС†
+        const d = parseInt(cleaned.slice(0, 2));
+        const m = parseInt(cleaned.slice(2, 4));
+        if (d > 0 && d <= 31 && m > 0 && m <= 12) {
+          const sign = getZodiacSign(d, m);
+          setDetectedZodiac(sign);
+        } else {
+          setDetectedZodiac('');
+        }
+      } else {
+        setDetectedZodiac('');
+      }
+    }
+  };
+
+  const validateInputs = () => {
+    const newErrors = { name: '', birthDate: '' };
+    let isValid = true;
+    
+    if (!name.trim()) { newErrors.name = 'Por favor, ingresa tu nombre'; isValid = false; }
+    
+    if (!birthDate.trim()) { 
+      newErrors.birthDate = 'Por favor, ingresa tu fecha de nacimiento'; 
+      isValid = false; 
+    } else {
+      const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+      const match = birthDate.match(dateRegex);
+      
+      if (!match) { 
+        newErrors.birthDate = 'Formato: DD/MM/AAAA'; 
+        isValid = false; 
+      } else {
+        const d = parseInt(match[1]);
+        const m = parseInt(match[2]);
+        const y = parseInt(match[3]);
+        const currentYear = new Date().getFullYear();
+
+        if (d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > currentYear) {
+           newErrors.birthDate = 'Fecha invГЎlida';
+           isValid = false;
+        }
+      }
+    }
+    
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleContinue = () => {
+    if (step === 'intro') {
+      setStep('input');
+      fadeAnim.setValue(0);
+      scaleAnim.setValue(0.8);
+      Animated.parallel([
+        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.spring(scaleAnim, { toValue: 1, friction: 8, tension: 40, useNativeDriver: true }),
+      ]).start();
+    } else if (step === 'input') {
+      if (validateInputs()) {
+        Keyboard.dismiss(); // РЎРєСЂС‹РІР°РµРј РєР»Р°РІРёР°С‚СѓСЂСѓ РїРµСЂРµРґ Р°РЅРёРјР°С†РёРµР№
+        setStep('animation');
+        fadeAnim.setValue(0);
+        Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+      }
+    }
+  };
+
+  const spin = rotateAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+
+  return (
+    <View style={styles.container}>
+      <LinearGradient
+        colors={[Colors.background.primary, Colors.background.secondary, Colors.background.tertiary]}
+        style={styles.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
+      <StatusBar style="light" />
+
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          scrollEnabled={step === 'input'} // Р’РєР»СЋС‡Р°РµРј СЃРєСЂРѕР»Р» С‚РѕР»СЊРєРѕ РЅР° С€Р°РіРµ РІРІРѕРґР°
+          showsVerticalScrollIndicator={false}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={[
+              styles.content, 
+              { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20, justifyContent: 'center' }
+            ]}>
+
+              {step === 'intro' && (
+                <Animated.View style={{ alignItems: 'center', opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}>
+                  <Text style={styles.lunaIcon}>рџЊ™</Text>
+                  <Text style={styles.title}>Bienvenido a SueГ±os AI</Text>
+                  <Text style={styles.lunaName}>Luna</Text>
+                  <Text style={styles.subtitle}>Soy la energГ­a que interpreta las seГ±ales del universo para ti.</Text>
+                  <Text style={styles.description}>PermГ­teme guiarte a travГ©s del misterioso mundo de tus sueГ±os.</Text>
+                  <View style={{ marginTop: 40, width: '100%', paddingHorizontal: 40 }}>
+                    <MysticButton title="Comenzar" onPress={handleContinue} />
+                  </View>
+                </Animated.View>
+              )}
+
+              {step === 'input' && (
+                <Animated.View style={{ width: '100%', opacity: fadeAnim }}>
+                  <View style={{ marginBottom: 40 }}>
+                    <Text style={styles.inputTitle}>CuГ©ntame sobre ti</Text>
+                    <Text style={styles.inputSubtitle}>Para personalizar tu experiencia cГіsmica</Text>
+                  </View>
+
+                  <View>
+                    <MysticInput
+                      label="Nombre"
+                      placeholder="ВїCГіmo te llamas?"
+                      value={name}
+                      onChangeText={(text) => { setName(text); setErrors({ ...errors, name: '' }); }}
+                      error={errors.name}
+                      autoCapitalize="words"
+                      containerStyle={{ marginBottom: 24 }}
+                    />
+
+                    <MysticInput
+                      label="Fecha de nacimiento"
+                      placeholder="DD/MM/AAAA"
+                      value={birthDate}
+                      onChangeText={handleDateChange}
+                      error={errors.birthDate}
+                      keyboardType="numeric"
+                      maxLength={10}
+                      containerStyle={{ marginBottom: 12 }}
+                    />
+                    
+                    {/* РџРѕРєР°Р·С‹РІР°РµРј Р·РЅР°Рє Р·РѕРґРёР°РєР°, РµСЃР»Рё РѕРїСЂРµРґРµР»РёР»Рё */}
+                    {detectedZodiac ? (
+                      <Animated.View style={styles.zodiacBadge}>
+                        <Text style={styles.zodiacText}>Tu signo parece ser: <Text style={{fontWeight: 'bold', color: Colors.accent.gold}}>{detectedZodiac}</Text></Text>
+                      </Animated.View>
+                    ) : (
+                      <Text style={styles.zodiacNote}>вњЁ Tu fecha de nacimiento me ayudarГЎ a conectar con tu energГ­a astral</Text>
+                    )}
+                  </View>
+
+                  <View style={{ marginTop: 30 }}>
+                    <MysticButton title="Continuar" onPress={handleContinue} />
+                  </View>
+                </Animated.View>
+              )}
+
+              {step === 'animation' && (
+                <Animated.View style={styles.animationContainer}>
+                  <Animated.View style={[styles.cosmicCircle, { transform: [{ scale: pulseAnim }, { rotate: spin }] }]}>
+                    <View style={styles.innerCircle}>
+                      <Text style={styles.cosmicIcon}>вњЁ</Text>
+                    </View>
+                  </Animated.View>
+                  <Animated.View style={{ opacity: fadeAnim }}>
+                    <Text style={styles.animationText}>{loadingText}</Text>
+                    {detectedZodiac && <Text style={styles.animationSubtext}>Conectando con la energГ­a de {detectedZodiac}...</Text>}
+                  </Animated.View>
+                </Animated.View>
+              )}
+
+            </View>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: Colors.background.primary },
+  gradient: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
+  content: { flex: 1, paddingHorizontal: 24 },
+  
+  lunaIcon: { fontSize: 80, marginBottom: 20, textAlign: 'center' },
+  title: { fontSize: 32, fontWeight: '700', color: Colors.text.primary, textAlign: 'center', marginBottom: 12, letterSpacing: 0.5 },
+  lunaName: { fontSize: 24, fontWeight: '600', color: Colors.accent.gold, textAlign: 'center', marginBottom: 24, letterSpacing: 1 },
+  subtitle: { fontSize: 18, color: Colors.text.secondary, textAlign: 'center', marginBottom: 20, lineHeight: 26, paddingHorizontal: 10 },
+  description: { fontSize: 16, color: Colors.text.muted, textAlign: 'center', lineHeight: 24, paddingHorizontal: 10 },
+  
+  inputTitle: { fontSize: 28, fontWeight: '700', color: Colors.text.primary, marginBottom: 8, letterSpacing: 0.5 },
+  inputSubtitle: { fontSize: 16, color: Colors.text.muted },
+  
+  zodiacNote: { fontSize: 14, color: Colors.mystic.lavender, textAlign: 'center', marginTop: 8, lineHeight: 20 },
+  zodiacBadge: { backgroundColor: 'rgba(255, 215, 0, 0.1)', padding: 10, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', marginTop: 8 },
+  zodiacText: { color: Colors.text.primary, textAlign: 'center', fontSize: 16 },
+
+  animationContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  cosmicCircle: { width: 200, height: 200, borderRadius: 100, borderWidth: 3, borderColor: Colors.accent.gold, justifyContent: 'center', alignItems: 'center', marginBottom: 60 },
+  innerCircle: { width: 160, height: 160, borderRadius: 80, borderWidth: 2, borderColor: Colors.mystic.violet, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(107, 70, 193, 0.2)' },
+  cosmicIcon: { fontSize: 60 },
+  animationText: { fontSize: 24, fontWeight: '600', color: Colors.accent.gold, textAlign: 'center', marginBottom: 10, letterSpacing: 0.5 },
+  animationSubtext: { fontSize: 16, color: Colors.text.secondary, textAlign: 'center', marginBottom: 12, opacity: 0.8 },
+});
+
+--- FILE: C:\Luna\app\(tabs)\horoscope.tsx ---
+import React, { useState, useCallback, useEffect } from 'react';
+import { 
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, 
+  ActivityIndicator, LayoutAnimation, Dimensions 
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import { supabase } from '../../src/services/supabase';
+import { useMonetization } from '../../src/hooks/useMonetization';
+import { generateDailyHoroscope } from '../../src/services/openai';
+import MagicAlert from '../../src/components/MagicAlert';
+// рџ‘‡ РЈР±РµРґРёС‚РµСЃСЊ, С‡С‚Рѕ СЌС‚РѕС‚ РїСѓС‚СЊ РїСЂР°РІРёР»СЊРЅС‹Р№
+import AdBanner from '../../src/components/AdBanner'; 
+
+const { width } = Dimensions.get('window');
+
+// --- 1. Р¤РЈРќРљР¦РРЇ РћР§РРЎРўРљР РўР•РљРЎРўРђ РћРў Р—Р’Р•Р—Р”РћР§Р•Рљ ---
+const cleanText = (text: string) => {
+  if (!text) return "";
+  // РЈРґР°Р»СЏРµРј ** (Р¶РёСЂРЅС‹Р№), * (РєСѓСЂСЃРёРІ), # (Р·Р°РіРѕР»РѕРІРєРё)
+  return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '').trim();
+};
+
+// --- 2. Р“Р•РќР•Р РђРўРћР  Р¦РР¤Р  (РћРґРёРЅ СЂР°Р· РІ РґРµРЅСЊ) ---
+const getDailyStats = (sign: string) => {
+  if (!sign) return { love: 0, health: 0, money: 0, luckyNumber: 0, color: '...' };
+
+  const todayStr = new Date().toISOString().split('T')[0]; // РџРѕР»СѓС‡Р°РµРј "2023-10-25"
+  const seedString = `${sign}-${todayStr}`; // РЈРЅРёРєР°Р»СЊРЅС‹Р№ РєР»СЋС‡: "Aries-2023-10-25"
+
+  // РџСЂРѕСЃС‚РѕР№ РіРµРЅРµСЂР°С‚РѕСЂ РїСЃРµРІРґРѕ-СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР» РЅР° РѕСЃРЅРѕРІРµ СЃС‚СЂРѕРєРё
+  const pseudoRandom = (seed: string) => {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      const char = seed.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    const result = Math.abs(hash) / 2147483647; // 0...1
+    return result;
+  };
+
+  return {
+    love: Math.floor(pseudoRandom(seedString + 'love') * 40) + 60,     // 60-100%
+    health: Math.floor(pseudoRandom(seedString + 'health') * 40) + 60, // 60-100%
+    money: Math.floor(pseudoRandom(seedString + 'money') * 40) + 60,   // 60-100%
+    luckyNumber: Math.floor(pseudoRandom(seedString + 'num') * 99) + 1,
+    color: ['Dorado', 'PГєrpura', 'Azul Real', 'Esmeralda', 'RubГ­', 'Plata', 'Blanco', 'ГЌndigo'][Math.floor(pseudoRandom(seedString + 'col') * 8)]
+  };
+};
+
+export default function HoroscopeScreen() {
+  const router = useRouter();
+  const { isPremium, credits, refreshStatus } = useMonetization();
+  
+  const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  const [name, setName] = useState('Viajero');
+  const [zodiacSign, setZodiacSign] = useState('');
+  const [prediction, setPrediction] = useState('');
+  
+  const [stats, setStats] = useState({ love: 0, health: 0, money: 0, luckyNumber: 0, color: '...' });
+
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({ visible: false, title: '', message: '', icon: '' });
+
+  // Р—РђР“Р РЈР—РљРђ Р”РђРќРќР«РҐ
+  const loadData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name, zodiac_sign')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        setName(profile.display_name || 'Viajero');
+        const sign = profile.zodiac_sign || '';
+        setZodiacSign(sign);
+        
+        if (sign) {
+          // Р“РµРЅРµСЂРёСЂСѓРµРј СЃС‚Р°Р±РёР»СЊРЅС‹Рµ С†РёС„СЂС‹ РЅР° СЃРµРіРѕРґРЅСЏ
+          setStats(getDailyStats(sign));
+          // Р“СЂСѓР·РёРј С‚РµРєСЃС‚
+          await fetchDailyHoroscope(sign, profile.display_name);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDailyHoroscope = async (sign: string, userName: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    try {
+      const { data: existing } = await supabase
+        .from('daily_horoscopes')
+        .select('prediction_text')
+        .eq('zodiac_sign', sign)
+        .eq('date', today)
+        .maybeSingle();
+
+      if (existing) {
+        setPrediction(existing.prediction_text);
+      } else {
+        setIsGenerating(true);
+        const text = await generateDailyHoroscope(sign, userName);
+        await supabase.from('daily_horoscopes').insert({ zodiac_sign: sign, date: today, prediction_text: text });
+        setPrediction(text);
+        setIsGenerating(false);
+      }
+    } catch (e) {
+      setPrediction("Las estrellas estГЎn nubladas hoy.");
+      setIsGenerating(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+      refreshStatus();
+      if (isPremium) setIsUnlocked(true);
+    }, [isPremium])
+  );
+
+  const handleUnlock = async () => {
+    if (credits < 1) {
+      setAlertConfig({
+        visible: true,
+        title: "Poca EnergГ­a",
+        message: "Necesitas energГ­a para revelar el destino.",
+        icon: "flash"
+      });
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+        if (p) await supabase.from('profiles').update({ credits: p.credits - 1 }).eq('id', user.id);
+        
+        await refreshStatus();
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setIsUnlocked(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const StatBar = ({ label, value, color, icon }: any) => (
+    <View style={styles.statRow}>
+      <View style={styles.statLabelContainer}>
+        <Ionicons name={icon} size={18} color={color} />
+        <Text style={styles.statLabel}>{label}</Text>
+      </View>
+      <View style={styles.progressBarBg}>
+        <LinearGradient
+          colors={[color, '#fff']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.progressBarFill, { width: `${value}%` }]}
+        />
+      </View>
+      <Text style={styles.statValue}>{value}%</Text>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <LinearGradient colors={['#0f0c29', '#24243e']} style={StyleSheet.absoluteFill} />
+      
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Hola, {name}</Text>
+            <Text style={styles.zodiacText}>{zodiacSign || '...'}</Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadgeBtn}>
+            <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
+            <Text style={styles.energyBadgeText}>{isPremium ? 'в€ћ' : credits}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.attributesContainer}>
+           <View style={styles.attributeBox}>
+              <Text style={styles.attrLabel}>NГљMERO</Text>
+              <Text style={styles.attrValue}>{stats.luckyNumber || '-'}</Text>
+           </View>
+           <View style={[styles.attributeBox, { borderLeftWidth: 1, borderLeftColor: 'rgba(255,255,255,0.1)' }]}>
+              <Text style={styles.attrLabel}>COLOR</Text>
+              <Text style={styles.attrValue} numberOfLines={1}>{stats.color || '-'}</Text>
+           </View>
+        </View>
+
+        <View style={styles.statsCard}>
+           <Text style={styles.statsTitle}>Tu EnergГ­a Hoy</Text>
+           <StatBar label="Amor" value={stats.love} color="#FF6B6B" icon="heart" />
+           <StatBar label="Salud" value={stats.health} color="#4ECDC4" icon="fitness" />
+           <StatBar label="Dinero" value={stats.money} color="#FFD93D" icon="cash" />
+        </View>
+
+        <View style={styles.predictionCard}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="moon" size={20} color="#ffd700" />
+            <Text style={styles.cardTitle}>Mensaje de los Astros</Text>
+          </View>
+          
+          <View style={[styles.textContainer, (!isUnlocked && !isPremium) && styles.textLocked]}>
+             {isGenerating ? (
+               <ActivityIndicator color="#FFD700" style={{ margin: 20 }} />
+             ) : (
+               <Text style={styles.predictionText}>
+                 {/* РћР§РРЎРўРљРђ РўР•РљРЎРўРђ */}
+                 {(!isUnlocked && !isPremium && prediction) 
+                   ? cleanText(prediction).substring(0, 70) + '...' 
+                   : cleanText(prediction) || "Conectando..."}
+               </Text>
+             )}
+
+             {!isUnlocked && !isPremium && !isGenerating && prediction && (
+               <View style={styles.lockOverlay}>
+                 <LinearGradient colors={['transparent', '#0f0c29']} style={StyleSheet.absoluteFill} />
+                 <TouchableOpacity style={styles.unlockButton} onPress={handleUnlock}>
+                   <LinearGradient colors={['#FFB800', '#FF8C00']} style={styles.unlockGradient}>
+                     <Ionicons name="lock-closed" size={18} color="#fff" />
+                     <Text style={styles.unlockText}>Revelar (-1 вњЁ)</Text>
+                   </LinearGradient>
+                 </TouchableOpacity>
+               </View>
+             )}
+          </View>
+        </View>
+        
+        {/* рџ‘‡ Р‘РђРќРќР•Р  Р’РЎРўРђР’Р›Р•Рќ Р—Р”Р•РЎР¬ */}
+        <AdBanner />
+      </ScrollView>
+
+      <MagicAlert 
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        icon={alertConfig.icon as any}
+        confirmText={alertConfig.title === "Poca EnergГ­a" ? "Ir a Tienda" : "Aceptar"}
+        onConfirm={() => {
+           if (alertConfig.title === "Poca EnergГ­a") router.push('/energy');
+           setAlertConfig({ ...alertConfig, visible: false });
+        }}
+        onCancel={() => setAlertConfig({ ...alertConfig, visible: false })}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#0f0c29' },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 40 },
+  
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
+  greeting: { fontSize: 26, fontWeight: '700', color: '#fff' },
+  zodiacText: { fontSize: 18, color: '#A855F7', marginTop: 4, fontWeight: '600' },
+  energyBadgeBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
+  energyBadgeText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
+
+  attributesContainer: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  attributeBox: { flex: 1, alignItems: 'center', paddingVertical: 15 },
+  attrLabel: { color: '#94A3B8', fontSize: 12, letterSpacing: 1, marginBottom: 5 },
+  attrValue: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
+
+  statsCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  statsTitle: { color: '#fff', fontSize: 18, fontWeight: '600', marginBottom: 15 },
+  statRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  statLabelContainer: { flexDirection: 'row', alignItems: 'center', width: 85 },
+  statLabel: { color: '#E2E8F0', marginLeft: 8, fontSize: 14 },
+  progressBarBg: { flex: 1, height: 8, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 4, marginHorizontal: 10, overflow: 'hidden' },
+  progressBarFill: { height: '100%', borderRadius: 4 },
+  statValue: { color: '#fff', fontSize: 14, fontWeight: 'bold', width: 35, textAlign: 'right' },
+
+  predictionCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  cardTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10 },
+  textContainer: { position: 'relative', minHeight: 80 },
+  textLocked: { maxHeight: 100, overflow: 'hidden' },
+  predictionText: { fontSize: 16, lineHeight: 26, color: 'rgba(255,255,255,0.85)' },
+  
+  lockOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, justifyContent: 'flex-end', alignItems: 'center' },
+  unlockButton: { width: '100%', borderRadius: 20, shadowColor: '#FFB800', shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
+  unlockGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14, borderRadius: 20 },
+  unlockText: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
+});
+
+--- FILE: C:\Luna\app\(tabs)\oracle.tsx ---
+import React, { useState, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert, Share, Keyboard } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import { supabase } from '../../src/services/supabase';
+import { useMonetization } from '../../src/hooks/useMonetization';
+import { useFocusEffect } from '@react-navigation/native';
+import MagicAlert from '../../src/components/MagicAlert';
+
+const { width, height } = Dimensions.get('window');
+
+// --- Р›РћРљРђР›Р¬РќР«Р• РћРўР’Р•РўР« (ESPAГ‘OL) ---
+const MAGICAL_ANSWERS = [
+  "Las estrellas dicen: SГЌ.",
+  "El destino es incierto, pregunta mГЎs tarde.",
+  "La respuesta es un NO rotundo.",
+  "El universo te favorece.",
+  "Escucha a tu intuiciГіn, no miente.",
+  "Se acercan grandes cambios.",
+  "No es el momento adecuado.",
+  "La paciencia traerГЎ recompensas.",
+  "Presta atenciГіn a las seГ±ales.",
+  "Tu deseo se cumplirГЎ de forma inesperada.",
+  "Cuidado con las decisiones apresuradas.",
+  "La suerte estГЎ de tu lado."
+];
+
+// РљРѕРјРїРѕРЅРµРЅС‚ РјРµСЂС†Р°СЋС‰РµР№ Р·РІРµР·РґС‹
+const TwinklingStar = ({ index }: { index: number }) => {
+  const opacity = useRef(new Animated.Value(Math.random() * 0.8 + 0.1)).current;
+  
+  React.useEffect(() => {
+    const twinkle = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: Math.random() * 0.8 + 0.1,
+          duration: Math.random() * 2000 + 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: Math.random() * 0.3 + 0.05,
+          duration: Math.random() * 2000 + 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    twinkle.start();
+    return () => twinkle.stop();
+  }, []);
+  
+  return (
+    <Animated.View
+      style={[
+        styles.star,
+        {
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          opacity,
+          transform: [{ scale: Math.random() * 1.5 + 0.3 }],
+        }
+      ]}
+    />
+  );
+};
+
+export default function OracleScreen() {
+  const router = useRouter();
+  const { isPremium, credits, refreshStatus } = useMonetization();
+  
+  const [isPulsing, setIsPulsing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [oracleAnswer, setOracleAnswer] = useState<string>('');
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [showEnergyAlert, setShowEnergyAlert] = useState(false);
+  
+  // РђРЅРёРјР°С†РёРё
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const glowAnim = useRef(new Animated.Value(0.3)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const continuousPulse = useRef(new Animated.Value(1)).current;
+  const glowIntensity = useRef(new Animated.Value(0.4)).current;
+  const flashAnim = useRef(new Animated.Value(0)).current;
+  const hintTextOpacity = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(continuousPulse, { toValue: 1.08, duration: 2500, useNativeDriver: true }),
+        Animated.timing(continuousPulse, { toValue: 0.92, duration: 2500, useNativeDriver: true }),
+      ])
+    );
+    const glow = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowIntensity, { toValue: 0.9, duration: 2500, useNativeDriver: true }),
+        Animated.timing(glowIntensity, { toValue: 0.3, duration: 2500, useNativeDriver: true }),
+      ])
+    );
+    pulse.start();
+    glow.start();
+    
+    setTimeout(() => {
+      Animated.timing(hintTextOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
+    }, 500);
+    
+    return () => { pulse.stop(); glow.stop(); };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const refresh = async () => {
+        await refreshStatus();
+        await fetchProfile();
+      };
+      refresh();
+    }, [])
+  );
+
+  React.useEffect(() => { fetchProfile(); }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('display_name, zodiac_sign')
+          .eq('id', user.id)
+          .maybeSingle();
+        setUserProfile(data);
+      }
+    } catch (e) { console.log('Error loading profile:', e); }
+  };
+
+  const handleShare = async () => {
+    if (!oracleAnswer) return;
+    try {
+      await Share.share({
+        message: `рџ”® OrГЎculo dice:\n\n${oracleAnswer}\n\nвњЁ SueГ±os AI`,
+        url: 'https://suenos-ai.app'
+      });
+    } catch (error) { console.log('Error sharing:', error); }
+  };
+
+  const startOracle = async () => {
+    Keyboard.dismiss();
+    if (isLoading) return;
+
+    if (isPremium) {
+      await executeOracle();
+      return;
+    }
+
+    if (credits < 1) {
+      setShowEnergyAlert(true);
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const { error } = await supabase.rpc('consume_credit', { user_id: user.id });
+      if (error) throw error;
+
+      await refreshStatus();
+      await executeOracle();
+      
+    } catch (error) {
+      console.error('Error in startOracle:', error);
+      Alert.alert('Error', 'Algo saliГі mal');
+    }
+  };
+
+  const executeOracle = async () => {
+    setIsLoading(true);
+    setIsPulsing(true);
+    setShowAnswer(false);
+    setOracleAnswer('');
+
+    Animated.sequence([
+      Animated.timing(flashAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(flashAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+    ]).start();
+
+    const rapidPulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.15, duration: 400, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 0.9, duration: 400, useNativeDriver: true }),
+      ])
+    );
+    const glowPulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+        Animated.timing(glowAnim, { toValue: 0.2, duration: 300, useNativeDriver: true }),
+      ])
+    );
+    rapidPulse.start();
+    glowPulse.start();
+
+    setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * MAGICAL_ANSWERS.length);
+        const response = MAGICAL_ANSWERS[randomIndex];
+
+        rapidPulse.stop();
+        glowPulse.stop();
+        pulseAnim.setValue(1);
+        glowAnim.setValue(0.3);
+
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+        setOracleAnswer(response);
+        setShowAnswer(true);
+        setIsPulsing(false);
+        setIsLoading(false);
+        
+        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
+    }, 2000); 
+  };
+
+  const resetOracle = () => {
+    setShowAnswer(false);
+    setOracleAnswer('');
+  };
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <LinearGradient 
+        colors={['#2E004E', '#1A0029', '#000000']} 
+        style={StyleSheet.absoluteFill} 
+        start={{ x: 0.5, y: 0.3 }}
+        end={{ x: 0.5, y: 1 }}
+      />
+      
+      <View style={styles.stardustContainer}>
+        {[...Array(50)].map((_, i) => ( <TwinklingStar key={i} index={i} /> ))}
+      </View>
+      
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.headerTextContainer}>
+            {userProfile ? (
+              <>
+                <Text style={styles.greeting}>ВЎHola, {userProfile.display_name || 'Viajero'}!</Text>
+                <Text style={styles.zodiacText}>{userProfile.zodiac_sign || 'Misterioso'}</Text>
+              </>
+            ) : (
+              <ActivityIndicator size="small" color="#FFD700" />
+            )}
+          </View>
+          
+          <TouchableOpacity 
+            onPress={() => router.push('/energy')}
+            style={styles.energyBadge}
+          >
+            <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
+            <Text style={styles.energyText}>{isPremium ? 'в€ћ' : credits}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {!showAnswer && (
+          <Animated.View style={[styles.hintContainer, { opacity: hintTextOpacity }]}>
+            <Text style={styles.hintText}>ConcГ©ntrate en tu pregunta...</Text>
+          </Animated.View>
+        )}
+
+        <View style={styles.oracleContainer}>
+          {!showAnswer ? (
+            <TouchableOpacity 
+              style={styles.sphereContainer} 
+              onPress={startOracle}
+              disabled={isPulsing}
+              activeOpacity={0.8}
+            >
+              <Animated.View 
+                style={[
+                  styles.outerGlow,
+                  {
+                    opacity: isPulsing ? glowAnim : glowIntensity,
+                    transform: [{ scale: isPulsing ? pulseAnim : continuousPulse }],
+                  }
+                ]}
+              />
+              <Animated.View 
+                style={[
+                  styles.sphere,
+                  {
+                    transform: [
+                      { scale: isPulsing ? pulseAnim : continuousPulse },
+                      { scale: flashAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.2] })}
+                    ],
+                  }
+                ]}
+              >
+                <LinearGradient
+                  colors={['#9333EA', '#7C3AED', '#6D28D9', '#4C1D95']}
+                  start={{ x: 0.2, y: 0.2 }}
+                  end={{ x: 0.8, y: 0.8 }}
+                  style={styles.sphereGradient}
+                >
+                  {isPulsing ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                  ) : (
+                    <View style={styles.sphereContent}>
+                      <Ionicons name="planet-outline" size={50} color="rgba(255, 255, 255, 0.8)" />
+                      <Text style={styles.sphereText}>TOCA EL DESTINO</Text>
+                    </View>
+                  )}
+                </LinearGradient>
+              </Animated.View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.answerContainer}>
+              <View style={styles.answerSphere}>
+                <Ionicons name="sparkles" size={40} color="#ffd700" />
+              </View>
+              <Animated.View style={[styles.answerBox, { opacity: fadeAnim }]}>
+                <View style={styles.answerHeader}>
+                  <Text style={styles.answerTitle}>EL ORГЃCULO DICE</Text>
+                  {oracleAnswer && (
+                    <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+                      <Ionicons name="share-social-outline" size={24} color="#FFD700" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <Text style={styles.answerText}>{oracleAnswer}</Text>
+              </Animated.View>
+              <TouchableOpacity style={styles.resetButton} onPress={resetOracle}>
+                <Ionicons name="refresh-outline" size={20} color="#ffd700" />
+                <Text style={styles.resetText}>Nueva Pregunta</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </View>
+      
+      <MagicAlert 
+        visible={showEnergyAlert}
+        title="OrГЎculo Cansado"
+        message="Necesitas energГ­a para conectar. ВїRecargar?"
+        icon="flash"
+        confirmText="Ir a la Tienda"
+        cancelText="MГЎs tarde"
+        onConfirm={() => { setShowEnergyAlert(false); router.push('/energy'); }}
+        onCancel={() => setShowEnergyAlert(false)}
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#000000' },
+  stardustContainer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  star: { position: 'absolute', width: 2, height: 2, borderRadius: 1, backgroundColor: '#fff', shadowColor: '#fff', shadowOpacity: 0.8, shadowRadius: 2, elevation: 3 },
+  content: { flex: 1, paddingHorizontal: 24, paddingVertical: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 40, marginBottom: 60 },
+  headerTextContainer: { flex: 1 },
+  greeting: { fontSize: 28, fontWeight: '700', color: '#fff', letterSpacing: 0.5, textShadowColor: 'rgba(147, 51, 234, 0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 },
+  zodiacText: { fontSize: 18, color: '#ffd700', marginTop: 4, fontWeight: '500', opacity: 0.9 },
+  energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 215, 0, 0.1)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', marginTop: -20 },
+  energyText: { color: '#ffd700', fontWeight: 'bold', fontSize: 16, marginLeft: 6 },
+
+  hintContainer: { alignItems: 'center', marginBottom: 40 },
+  hintText: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 16, fontStyle: 'italic', textAlign: 'center', lineHeight: 24 },
+
+  oracleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  sphereContainer: { alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  outerGlow: { position: 'absolute', width: 240, height: 240, borderRadius: 120, backgroundColor: 'rgba(147, 51, 234, 0.3)', shadowColor: '#9333EA', shadowOpacity: 0.8, shadowRadius: 40, elevation: 30 },
+  sphere: { width: 200, height: 200, borderRadius: 100, shadowColor: '#9333EA', shadowOpacity: 0.6, shadowRadius: 30, elevation: 20 },
+  sphereGradient: { flex: 1, borderRadius: 100, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'rgba(147, 51, 234, 0.4)' },
+  sphereContent: { alignItems: 'center' },
+  sphereText: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 12, marginTop: 12, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 2, textAlign: 'center' },
+
+  answerContainer: { alignItems: 'center', width: '100%' },
+  answerSphere: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(255, 215, 0, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 20, borderWidth: 2, borderColor: 'rgba(255, 215, 0, 0.3)' },
+  answerBox: { backgroundColor: 'rgba(255, 215, 0, 0.05)', borderRadius: 20, padding: 20, marginTop: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)', minHeight: 100 },
+  answerHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, justifyContent: 'space-between' },
+  answerTitle: { fontSize: 18, fontWeight: '700', color: '#ffd700', textAlign: 'center', flex: 1 },
+  shareButton: { padding: 8, borderRadius: 20, backgroundColor: 'rgba(255, 215, 0, 0.1)', borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)' },
+  answerText: { color: '#ffd700', fontSize: 20, lineHeight: 28, textAlign: 'center', fontStyle: 'italic', fontWeight: '500', textShadowColor: 'rgba(255, 215, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
+  resetButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: 'rgba(255, 215, 0, 0.05)' },
+  resetText: { color: '#ffd700', fontSize: 14, fontWeight: '500', marginLeft: 8 },
+});
+
+--- FILE: C:\Luna\app\(tabs)\suenos.tsx ---
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { 
+  View, Text, StyleSheet, TextInput, TouchableOpacity, 
+  ScrollView, ActivityIndicator, Alert, RefreshControl, Animated, Share, Keyboard, KeyboardAvoidingView, Platform 
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { useMonetization } from '../../src/hooks/useMonetization';
+import { interpretDream } from '../../src/services/openai'; 
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { supabase } from '../../src/services/supabase';
+import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MagicAlert from '../../src/components/MagicAlert';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AdBanner from '../../src/components/AdBanner';
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface DreamEntry {
+  id: string;
+  dream_text: string;
+  interpretation_text: string;
+  chat_history?: ChatMessage[]; 
+  created_at: string;
+}
+
+type Message = {
+  id: string;
+  text: string;
+  sender: 'user' | 'luna';
+  isDream?: boolean; 
+};
+
+type ScreenMode = 'input' | 'chat';
+
+// РљР»СЋС‡ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РґР°С‚С‹ (РґРѕР»Р¶РµРЅ СЃРѕРІРїР°РґР°С‚СЊ СЃ С‚РµРј, С‡С‚Рѕ РІ С…СѓРєРµ)
+const BONUS_DATE_KEY = 'daily_bonus_date_v1';
+
+export default function SuenosScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const { credits, isPremium, refreshStatus, spendEnergy, checkDailyBonus } = useMonetization();
+  const insets = useSafeAreaInsets();
+  const scrollViewRef = useRef<ScrollView>(null);
+  
+  // Р‘Р»РѕРєРёСЂРѕРІС‰РёРє (РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РѕСЃС‚Р°РІРёРј)
+  const bonusCheckLock = useRef(false);
+
+  const [userName, setUserName] = useState<string>('Viajero');
+  const [userZodiac, setUserZodiac] = useState('');
+  const [mode, setMode] = useState<ScreenMode>('input');
+  const [currentDreamId, setCurrentDreamId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [dreamText, setDreamText] = useState(''); 
+  const [chatInputText, setChatInputText] = useState(''); 
+  const [loading, setLoading] = useState(false);
+  const [dreamHistory, setDreamHistory] = useState<DreamEntry[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false); 
+  const [refreshing, setRefreshing] = useState(false);
+  const [magicAlert, setMagicAlert] = useState({ visible: false, title: '', message: '', icon: '' });
+  const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
+  const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  // РђРЅРёРјР°С†РёСЏ СЌРЅРµСЂРіРёРё
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 1.2, duration: 150, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
+    ]).start();
+  }, [credits]);
+
+  // РђРІС‚РѕСЃРєСЂРѕР»Р» С‡Р°С‚Р°
+  useEffect(() => {
+    if (mode === 'chat') {
+      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+    }
+    const kbdShow = Keyboard.addListener('keyboardDidShow', () => {
+      if (mode === 'chat') setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+    });
+    return () => kbdShow.remove();
+  }, [messages, mode, loading]);
+
+  // --- Р•Р”РРќРђРЇ Р›РћР“РРљРђ Р‘РћРќРЈРЎРћР’ ---
+  useEffect(() => {
+    const handleBonuses = async () => {
+      // 1. Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РїСЂРѕС„РёР»СЏ
+      const name = await AsyncStorage.getItem('user_name');
+      const sign = await AsyncStorage.getItem('user_zodiac');
+      if (name) setUserName(name);
+      if (sign) setUserZodiac(sign);
+
+      // Р—Р°С‰РёС‚Р° РѕС‚ РїРѕРІС‚РѕСЂРЅРѕРіРѕ Р·Р°РїСѓСЃРєР° РІ РѕРґРЅРѕР№ СЃРµСЃСЃРёРё
+      if (bonusCheckLock.current) return;
+      bonusCheckLock.current = true;
+
+      // 2. Р РђР—Р’РР›РљРђ: РР›Р РќРѕРІРёС‡РѕРє, РР›Р РЎС‚Р°СЂРёС‡РѕРє
+      if (params.welcome === 'true') {
+        // === Р’Р•РўРљРђ РќРћР’РР§РљРђ ===
+        console.log("Processing Welcome Bonus");
+        
+        // РЎСЂР°Р·Сѓ "РіР°СЃРёРј" РµР¶РµРґРЅРµРІРЅС‹Р№ Р±РѕРЅСѓСЃ РЅР° СЃРµРіРѕРґРЅСЏ
+        const today = new Date().toISOString().split('T')[0];
+        await AsyncStorage.setItem(BONUS_DATE_KEY, today);
+
+        // РџРѕРєР°Р·С‹РІР°РµРј РїСЂРёРІРµС‚СЃС‚РІРёРµ
+        setMagicAlert({
+          visible: true,
+          title: "ВЎRegalo Estelar! вњЁ",
+          message: "Has recibido 3 energГ­as para empezar.",
+          icon: "star"
+        });
+        
+        // Р§РёСЃС‚РёРј РїР°СЂР°РјРµС‚СЂ
+        router.setParams({ welcome: '' });
+
+      } else {
+        // === Р’Р•РўРљРђ РћР‘Р«Р§РќРћР“Рћ Р’РҐРћР”Рђ ===
+        console.log("Processing Daily Check");
+        
+        // РќРµР±РѕР»СЊС€Р°СЏ Р·Р°РґРµСЂР¶РєР° РґР»СЏ РїР»Р°РІРЅРѕСЃС‚Рё
+        setTimeout(async () => {
+          if (checkDailyBonus) {
+            const bonusGiven = await checkDailyBonus();
+            if (bonusGiven) {
+              setMagicAlert({
+                visible: true,
+                title: "ВЎRegalo Diario! рџЋЃ",
+                message: "Has recibido +1 energГ­a por volver hoy.",
+                icon: "star"
+              });
+            }
+          }
+        }, 1500);
+      }
+    };
+
+    handleBonuses();
+    // Р”РѕР±Р°РІР»СЏРµРј params.welcome РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё, С‡С‚РѕР±С‹ СЃСЂР°Р±РѕС‚Р°Р»Рѕ РїСЂРё РЅР°РІРёРіР°С†РёРё
+  }, [params.welcome]);
+
+
+  const loadData = useCallback(async (showLoading = false) => {
+    try {
+      if (showLoading) setLoadingHistory(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        if (showLoading) setLoadingHistory(false);
+        return;
+      }
+      
+      const { data: profile } = await supabase.from('profiles').select('display_name, zodiac_sign').eq('id', user.id).maybeSingle();
+      if (profile) {
+        setUserName(profile.display_name);
+        setUserZodiac(profile.zodiac_sign || '');
+        await AsyncStorage.setItem('user_name', profile.display_name || '');
+      }
+
+      const { data: history, error } = await supabase
+        .from('interpretations')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+        
+      if (!error && history) setDreamHistory(history);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      if (showLoading) setLoadingHistory(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      const loadAndRefresh = async () => {
+        if (!isActive) return;
+        const shouldShowSpinner = dreamHistory.length === 0;
+        await loadData(shouldShowSpinner);
+        if (!isActive) return;
+        refreshStatus();
+      };
+      loadAndRefresh();
+      return () => { isActive = false; };
+    }, [loadData]) 
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadData(false);
+    refreshStatus();
+  }, [loadData, refreshStatus]);
+
+  const handleOpenDream = (dream: DreamEntry) => {
+    setCurrentDreamId(dream.id);
+    const restoredMessages: Message[] = [
+      { id: 'dream', text: dream.dream_text, sender: 'user', isDream: true },
+      { id: 'luna-1', text: dream.interpretation_text, sender: 'luna' }
+    ];
+    if (dream.chat_history && Array.isArray(dream.chat_history)) {
+      dream.chat_history.forEach((msg, index) => {
+        restoredMessages.push({
+          id: `hist-${index}`,
+          text: msg.content,
+          sender: msg.role === 'user' ? 'user' : 'luna'
+        });
+      });
+    }
+    setMessages(restoredMessages);
+    setMode('chat');
+  };
+
+  const handleSendDream = async () => {
+    Keyboard.dismiss();
+    if (!dreamText.trim()) {
+      setMagicAlert({ visible: true, title: "Luna escucha", message: "CuГ©ntame tu sueГ±o primero.", icon: "moon" });
+      return;
+    }
+    
+    if (!isPremium && credits < 1) {
+      setMagicAlert({ visible: true, title: "Poca EnergГ­a", message: "ВїRecargar en la tienda?", icon: "flash" });
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      if (!isPremium) {
+        const success = await spendEnergy(1);
+        if (!success) {
+           setLoading(false);
+           setMagicAlert({ visible: true, title: "Error", message: "Error de saldo. Intenta recargar.", icon: "flash" });
+           return;
+        }
+      }
+
+      const aiResponse = await interpretDream(dreamText, { name: userName, zodiac: userZodiac });
+      const initialChat: ChatMessage[] = []; 
+
+      const { data, error } = await supabase.from('interpretations').insert({
+          user_id: user.id,
+          dream_text: dreamText,
+          interpretation_text: aiResponse,
+          chat_history: initialChat,
+          created_at: new Date().toISOString()
+        }).select().single();
+
+      if (error) throw error;
+      if (data) setCurrentDreamId(data.id);
+      
+      const msgDream: Message = { id: 'dream', text: dreamText, sender: 'user', isDream: true };
+      const msgLuna: Message = { id: 'luna-1', text: aiResponse, sender: 'luna' };
+      
+      setMessages([msgDream, msgLuna]);
+      setDreamText(''); 
+      setMode('chat');
+      loadData(false);
+
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Error", "La conexiГіn fallГі.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReply = async () => {
+    if (!chatInputText.trim()) return;
+    if (!isPremium && credits < 1) {
+      setMagicAlert({ visible: true, title: "Poca EnergГ­a", message: "ВїRecargar?", icon: "flash" });
+      return;
+    }
+
+    const userMsgText = chatInputText;
+    setChatInputText(''); 
+    setLoading(true);
+
+    try {
+      if (!isPremium) {
+         const success = await spendEnergy(1);
+         if (!success) {
+            setLoading(false);
+            setMagicAlert({ visible: true, title: "Poca EnergГ­a", message: "ВїRecargar?", icon: "flash" });
+            return;
+         }
+      }
+
+      const newUserMsg: Message = { id: Date.now().toString(), text: userMsgText, sender: 'user' };
+      const newMessagesLocal = [...messages, newUserMsg];
+      setMessages(newMessagesLocal);
+
+      const contextString = messages.map(m => `${m.sender === 'user' ? 'USUARIO' : 'LUNA'}: ${m.text}`).join('\n');
+      const fullPrompt = `HISTORIAL:\n${contextString}\nNUEVO:\n${userMsgText}\nResponde como Luna en EspaГ±ol.`;
+
+      const aiReplyText = await interpretDream(fullPrompt, { name: userName, zodiac: userZodiac });
+      
+      const newLunaMsg: Message = { id: (Date.now() + 1).toString(), text: aiReplyText, sender: 'luna' };
+      const finalMessages = [...newMessagesLocal, newLunaMsg];
+      setMessages(finalMessages);
+
+      if (currentDreamId) {
+        const historyToSave = finalMessages.filter(m => m.id !== 'dream' && m.id !== 'luna-1').map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }));
+        await supabase.from('interpretations').update({ chat_history: historyToSave }).eq('id', currentDreamId);
+      }
+
+    } catch (e) {
+      Alert.alert("Error", "Magia interrumpida...");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackToInput = () => {
+    setMode('input');
+    setMessages([]);
+    setCurrentDreamId(null);
+    loadData(false); 
+  };
+
+  const handleConfirmDelete = (id: string) => {
+    setDreamToDelete(id);
+    setDeleteAlertVisible(true);
+  };
+
+  const performDelete = async () => {
+    if (!dreamToDelete) return;
+    try {
+      await supabase.from('interpretations').delete().eq('id', dreamToDelete);
+      setDeleteAlertVisible(false);
+      setDreamToDelete(null);
+      loadData(false); 
+    } catch (e) { Alert.alert("Error", "Error al borrar."); }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+  };
+
+  return (
+    <View style={styles.container}>
+      <LinearGradient colors={['#0f0c29', '#1a1a2e']} style={StyleSheet.absoluteFill} />
+      
+      {/* HEADER */}
+      <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
+        <View style={styles.headerTextContainer}>
+          {mode === 'chat' ? (
+            <TouchableOpacity onPress={handleBackToInput} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="chevron-back" size={24} color="#FFD700" />
+              <Text style={styles.backText}>Volver</Text>
+            </TouchableOpacity>
+          ) : (
+             <Text style={styles.greeting}>ВЎHola, {userName}!</Text>
+          )}
+        </View>
+        
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadge}>
+            <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
+            <Text style={styles.energyText}>{isPremium ? 'в€ћ' : credits}</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+
+      {/* INPUT MODE */}
+      {mode === 'input' && (
+        <ScrollView 
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]} 
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffd700" />}
+        >
+          <View style={styles.magicCard}>
+            <View style={styles.cardHeader}>
+              <Ionicons name="moon-outline" size={20} color="#ffd700" />
+              <Text style={styles.cardTitle}>NUEVA VISIГ“N</Text>
+            </View>
+            <TextInput
+              style={styles.dreamInput}
+              placeholder="ВїQuГ© soГ±aste hoy? CuГ©ntamelo..."
+              placeholderTextColor="rgba(255,255,255,0.4)"
+              multiline
+              value={dreamText}
+              onChangeText={setDreamText}
+            />
+            <TouchableOpacity 
+              style={[styles.mainButton, loading && { opacity: 0.7 }]} 
+              onPress={handleSendDream}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient colors={['#8E2DE2', '#4A00E0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.buttonGradient}>
+                {loading ? <ActivityIndicator color="#fff" /> : (
+                  <>
+                    <Ionicons name="sparkles" size={20} color="#fff" style={{ marginRight: 10 }} />
+                    <Text style={styles.buttonText}>{isPremium ? 'INTERPRETAR' : 'INTERPRETAR (-1 вњЁ)'}</Text>
+                  </>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ height: 20 }} />
+          
+          <View style={styles.diaryHeader}>
+            <Ionicons name="book-outline" size={20} color="#ffd700" />
+            <Text style={styles.diaryTitle}>DIARIO DE SUEГ‘OS</Text>
+            <View style={styles.diaryCount}><Text style={styles.diaryCountText}>{dreamHistory.length}</Text></View>
+          </View>
+          
+          {loadingHistory ? (
+            <ActivityIndicator size="small" color="#ffd700" style={{ marginTop: 20 }} />
+          ) : dreamHistory.length > 0 ? (
+            <View style={styles.diaryList}>
+              {dreamHistory.map((item) => (
+                <View key={item.id} style={styles.dreamItemContainer}>
+                  <TouchableOpacity style={styles.dreamItem} activeOpacity={0.6} onPress={() => handleOpenDream(item)}>
+                    <View style={styles.dreamItemHeader}>
+                      <Text style={styles.dreamItemDate}>{formatDate(item.created_at)}</Text>
+                      <Ionicons name="chatbubble-ellipses-outline" size={14} color="#ffd700" />
+                    </View>
+                    <Text style={styles.dreamItemText} numberOfLines={2}>{item.dream_text}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.dreamDeleteBtn} onPress={() => handleConfirmDelete(item.id)}>
+                    <Ionicons name="trash-outline" size={18} color="#FF4444" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.diaryEmpty}><Text style={styles.diaryEmptyText}>Tu diario estГЎ vacГ­o</Text></View>
+          )}
+
+          <AdBanner />
+        </ScrollView>
+      )}
+
+      {/* CHAT MODE */}
+      {mode === 'chat' && (
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }} 
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 90}
+        >
+          <ScrollView 
+            ref={scrollViewRef} 
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20, flexGrow: 1 }}
+          >
+            {messages.map((msg, index) => {
+              const isUser = msg.sender === 'user';
+              return (
+                <View key={index} style={[styles.bubble, isUser ? styles.userBubble : styles.lunaBubble, msg.isDream && styles.dreamBubble]}>
+                  {!isUser && <Text style={styles.senderName}>Luna рџЊ™</Text>}
+                  <Text style={[styles.msgText, isUser ? styles.userText : styles.lunaText]}>{msg.text}</Text>
+                  {!isUser && !msg.isDream && (
+                    <TouchableOpacity onPress={() => Share.share({ message: msg.text + "\n\nвњЁ SueГ±os AI" })} style={{ alignSelf: 'flex-end', marginTop: 5 }}>
+                      <Ionicons name="share-social-outline" size={16} color="rgba(255,255,255,0.5)" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              );
+            })}
+            {loading && <View style={styles.loadingBubble}><ActivityIndicator color="#FFD700" size="small" /><Text style={styles.loadingText}>Los astros susurran...</Text></View>}
+          </ScrollView>
+
+          {/* РџР°РЅРµР»СЊ РІРІРѕРґР° */}
+          <View style={[styles.chatInputBar, { paddingBottom: Platform.OS === 'ios' ? insets.bottom : 10 }]}>
+            <TextInput 
+              style={styles.chatInput} 
+              placeholder="PregГєntale a Luna..." 
+              placeholderTextColor="#888" 
+              value={chatInputText} 
+              onChangeText={setChatInputText} 
+            />
+            <TouchableOpacity style={[styles.chatSendBtn, (!chatInputText.trim() || loading) && { opacity: 0.5 }]} onPress={handleReply} disabled={!chatInputText.trim() || loading}>
+              <Ionicons name="arrow-up" size={20} color="#000" />
+              {!isPremium && <Text style={styles.costText}>-1</Text>}
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      )}
+      
+      {/* РђР›Р•Р РўР« */}
+      <MagicAlert visible={deleteAlertVisible} title="ВїBorrar sueГ±o?" message="No se puede deshacer." icon="trash-bin" onConfirm={performDelete} onCancel={() => setDeleteAlertVisible(false)} confirmText="Borrar" />
+      <MagicAlert 
+        visible={magicAlert.visible} 
+        title={magicAlert.title} 
+        message={magicAlert.message} 
+        icon={magicAlert.icon as any} 
+        confirmText={magicAlert.title === "Poca EnergГ­a" ? "Ir a Tienda" : "Aceptar"}
+        onConfirm={() => {
+           if (magicAlert.title === "Poca EnergГ­a") router.push('/energy');
+           setMagicAlert({ ...magicAlert, visible: false });
+        }}
+        onCancel={() => setMagicAlert({ ...magicAlert, visible: false })}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, minHeight: 50 },
+  headerTextContainer: { flex: 1 },
+  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5 },
+  energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
+  energyText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
+  magicCard: { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10 },
+  dreamInput: { color: '#fff', fontSize: 16, minHeight: 100, textAlignVertical: 'top', marginBottom: 20, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 12 },
+  mainButton: { borderRadius: 30, overflow: 'hidden' },
+  buttonGradient: { flexDirection: 'row', height: 56, alignItems: 'center', justifyContent: 'center' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  diaryHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
+  diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1 },
+  diaryCount: { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
+  diaryCountText: { color: '#ffd700', fontSize: 14, fontWeight: '600' },
+  diaryList: { paddingBottom: 20 },
+  dreamItemContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  dreamItem: { flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.05)' },
+  dreamDeleteBtn: { padding: 10, marginLeft: 5, justifyContent: 'center', alignItems: 'center' },
+  dreamItemHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+  dreamItemDate: { fontSize: 12, color: '#ffd700', fontWeight: '500' },
+  dreamItemText: { fontSize: 14, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 20 },
+  diaryEmpty: { alignItems: 'center', padding: 20 },
+  diaryEmptyText: { color: 'rgba(255,255,255,0.3)' },
+  bubble: { padding: 16, borderRadius: 16, marginBottom: 16, maxWidth: '85%' },
+  userBubble: { backgroundColor: '#4A00E0', alignSelf: 'flex-end', borderBottomRightRadius: 4 },
+  lunaBubble: { backgroundColor: 'rgba(255,255,255,0.08)', alignSelf: 'flex-start', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  dreamBubble: { backgroundColor: 'rgba(255, 215, 0, 0.1)', borderColor: '#ffd700', borderWidth: 1, width: '100%', maxWidth: '100%' },
+  senderName: { color: '#FFD700', fontSize: 12, marginBottom: 4, fontWeight: 'bold' },
+  msgText: { fontSize: 16, lineHeight: 24 },
+  userText: { color: '#FFF' },
+  lunaText: { color: 'rgba(255,255,255,0.9)' },
+  loadingBubble: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, alignSelf: 'flex-start' },
+  loadingText: { color: '#888', fontSize: 12, fontStyle: 'italic' },
+  chatInputBar: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 15, backgroundColor: '#1a1a2e', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)' },
+  chatInput: { flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 20, paddingHorizontal: 15, paddingVertical: 10, color: '#fff', maxHeight: 100 },
+  chatSendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFD700', justifyContent: 'center', alignItems: 'center' },
+  costText: { fontSize: 10, color: '#000', fontWeight: 'bold', marginTop: -2 },
+});
+
+--- FILE: C:\Luna\app\(tabs)\_layout.tsx ---
+import { Tabs } from 'expo-router';
+import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        // Р¦РІРµС‚Р° РѕР±РЅРѕРІР»РµРЅС‹ РїРѕРґ "Р—РѕР»РѕС‚СѓСЋ/РњР°РіРёС‡РµСЃРєСѓСЋ" С‚РµРјСѓ
+        tabBarActiveTintColor: '#FFD700', // Р—РѕР»РѕС‚РѕР№ Р°РєС‚РёРІРЅС‹Р№
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)', // РџРѕР»СѓРїСЂРѕР·СЂР°С‡РЅС‹Р№ Р±РµР»С‹Р№
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 4,
+          marginBottom: Platform.OS === 'android' ? 8 : 0,
+        },
+        tabBarStyle: {
+          backgroundColor: '#0f0c29', // Р“Р»СѓР±РѕРєРёР№ С‚РµРјРЅРѕ-СЃРёРЅРёР№ (РєР°Рє РЅР° С„РѕРЅР°С… СЌРєСЂР°РЅРѕРІ)
+          borderTopColor: 'rgba(255, 215, 0, 0.1)', // РўРѕРЅРєР°СЏ Р·РѕР»РѕС‚Р°СЏ Р»РёРЅРёСЏ СЃРІРµСЂС…Сѓ
+          height: 70 + insets.bottom, // Р§СѓС‚СЊ РєРѕРјРїР°РєС‚РЅРµРµ
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+          paddingTop: 10,
+          elevation: 0, // РЈР±РёСЂР°РµРј С‚РµРЅСЊ РЅР° Android РґР»СЏ С‡РёСЃС‚РѕРіРѕ РІРёРґР°
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="suenos"
+        options={{
+          title: 'SueГ±os', // РџРµСЂРµРІРѕРґ
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "moon" : "moon-outline"} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="horoscope"
+        options={{
+          title: 'HorГіscopo', // РџРµСЂРµРІРѕРґ
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "star" : "star-outline"} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="oracle"
+        options={{
+          title: 'OrГЎculo', // РџРµСЂРµРІРѕРґ
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "sparkles" : "sparkles-outline"} size={24} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}
+
+--- FILE: C:\Luna\app\energy.tsx ---
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, ActivityIndicator, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import Purchases from 'react-native-purchases';
+import { useMonetization } from '../src/hooks/useMonetization';
+import WatchAdButton from '../src/components/WatchAdButton';
+import MagicAlert from '../src/components/MagicAlert';
+import firebaseAnalytics from '@react-native-firebase/analytics';
+
+const PRIVACY_POLICY_URL = 'https://docs.google.com/document/d/1I-yKqNSVKNgyb7m4wtqVBtA-9MNHwOxax7NMOoKVX84';
+const TERMS_URL = 'https://docs.google.com/document/d/1OJo14MGTZXWDDucssR7kNZ74UKDI2AxO1zS8pu2YWU4';
+
+const PRICE_MAP: Record<string, { value: number, amount: number }> = {
+  'energy_10_v2': { value: 0.99, amount: 10 },
+  'energy_50_v2': { value: 3.99, amount: 50 },
+  'energy_150_v2': { value: 9.99, amount: 150 },
+};
+
+export default function EnergyScreen() {
+  const router = useRouter();
+  // РСЃРїРѕР»СЊР·СѓРµРј addFreeEnergy РёР· С…СѓРєР°
+  const { credits, buyPremium, addFreeEnergy } = useMonetization();
+  
+  const [magicAlertVisible, setMagicAlertVisible] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', icon: '' });
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  const openLink = async (url: string) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) await Linking.openURL(url);
+    } catch (err) { console.error("Error opening link", err); }
+  };
+
+  const handleRestore = async () => {
+      try {
+        await Purchases.restorePurchases();
+        setAlertConfig({ 
+          title: "Restaurado", 
+          message: "Tu historial de compras ha sido verificado.", 
+          icon: "refresh" 
+        });
+        setMagicAlertVisible(true);
+      } catch (e) {
+        Alert.alert("Error", "No se pudieron restaurar.");
+      }
+    };
+
+  const handlePurchase = async (packageId: 'energy_10_v2' | 'energy_50_v2' | 'energy_150_v2') => {
+    if (isPurchasing) return;
+    setIsPurchasing(true);
+
+    try {
+      await firebaseAnalytics().logEvent('energy_purchase_attempt', {
+        item_id: packageId,
+        energy_amount: PRICE_MAP[packageId].amount
+      });
+
+      const success = await buyPremium(packageId);
+
+      if (success) {
+        await firebaseAnalytics().logEvent('energy_purchase_success', {
+          item_id: packageId,
+          value: PRICE_MAP[packageId].value,
+          currency: 'EUR',
+          energy_amount: PRICE_MAP[packageId].amount
+        });
+        
+        setAlertConfig({ 
+          title: "ВЎГ‰xito!", 
+          message: `Has recibido ${PRICE_MAP[packageId].amount} energГ­as.`, 
+          icon: "checkmark-circle" 
+        });
+        setMagicAlertVisible(true);
+      }
+    } catch (e: any) {
+      console.error("вќЊ РћРЁРР‘РљРђ РџРћРљРЈРџРљР:", e);
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={StyleSheet.absoluteFill} />
+      
+      {/* HEADER */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
+          <Ionicons name="close-outline" size={28} color="rgba(255,255,255,0.7)" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Tienda MГ­stica</Text>
+        <View style={styles.balanceBadge}>
+          <Ionicons name="sparkles" size={16} color="#ffd700" />
+          <Text style={styles.balanceText}>{credits}</Text>
+        </View>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* FREE SECTION */}
+        <View style={styles.freeSection}>
+          <View style={styles.glassCard}>
+            <View style={styles.cardHeader}>
+              <Ionicons name="gift-outline" size={32} color="#ffd700" />
+              <Text style={styles.cardTitle}>Regalo Astral</Text>
+            </View>
+            <Text style={styles.cardDescription}>Mira una visiГіn corta y recibe +1 energГ­a.</Text>
+            {/* РљРЅРѕРїРєР° РїСЂРѕСЃРјРѕС‚СЂР° РІРёРґРµРѕ Р·Р° РЅР°РіСЂР°РґСѓ */}
+            <WatchAdButton onReward={addFreeEnergy} />
+          </View>
+        </View>
+
+        {/* PAID SECTION */}
+        <View style={styles.paidSection}>
+          <Text style={styles.sectionTitle}>Recargar EnergГ­a</Text>
+          
+          {/* PACK 10 */}
+          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('energy_10_v2')} disabled={isPurchasing}>
+            <LinearGradient colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']} style={styles.cardGradient}>
+              <View style={styles.cardContent}>
+                <View style={styles.cardLeft}>
+                  <View style={styles.iconCircle}><Ionicons name="star" size={20} color="#ffd700" /></View>
+                  <View style={{ marginLeft: 12 }}>
+                    <Text style={styles.purchaseTitle}>PuГ±ado de Estrellas</Text>
+                    <Text style={styles.purchaseAmount}>10 EnergГ­as</Text>
+                  </View>
+                </View>
+                <View style={styles.priceContainer}><Text style={styles.purchasePrice}>0.99 в‚¬</Text></View>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* PACK 50 - POPULAR */}
+          <TouchableOpacity style={[styles.purchaseCard, styles.popularCard]} onPress={() => handlePurchase('energy_50_v2')} disabled={isPurchasing}>
+            <LinearGradient colors={['rgba(255, 215, 0, 0.15)', 'rgba(255, 215, 0, 0.05)']} style={styles.cardGradient}>
+              <View style={styles.popularBadge}><Text style={styles.popularBadgeText}>Popular</Text></View>
+              <View style={styles.cardContent}>
+                <View style={styles.cardLeft}>
+                  <View style={[styles.iconCircle, { backgroundColor: 'rgba(255, 215, 0, 0.2)' }]}><Ionicons name="flash" size={20} color="#ffd700" /></View>
+                  <View style={{ marginLeft: 12 }}>
+                    <Text style={styles.purchaseTitle}>Resplandor MГ­stico</Text>
+                    <Text style={styles.purchaseAmount}>50 EnergГ­as</Text>
+                  </View>
+                </View>
+                <View style={styles.priceContainer}>
+                  <Text style={styles.oldPrice}>4.99 в‚¬</Text>
+                  <Text style={styles.purchasePrice}>3.99 в‚¬</Text>
+                </View>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* PACK 150 */}
+          <TouchableOpacity style={styles.purchaseCard} onPress={() => handlePurchase('energy_150_v2')} disabled={isPurchasing}>
+            <LinearGradient colors={['rgba(147, 51, 234, 0.2)', 'rgba(147, 51, 234, 0.1)']} style={styles.cardGradient}>
+              <View style={styles.cardContent}>
+                <View style={styles.cardLeft}>
+                  <View style={[styles.iconCircle, { backgroundColor: 'rgba(147, 51, 234, 0.3)' }]}><Ionicons name="thunderstorm" size={20} color="#d8b4fe" /></View>
+                  <View style={{ marginLeft: 12 }}>
+                    <Text style={styles.purchaseTitle}>Fuente Eterna</Text>
+                    <Text style={styles.purchaseAmount}>150 EnergГ­as</Text>
+                  </View>
+                </View>
+                <View style={styles.priceContainer}><Text style={styles.purchasePrice}>9.99 в‚¬</Text></View>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+        {/* LEGAL FOOTER */}
+        <View style={styles.legalFooter}>
+          <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}>
+            <Text style={styles.restoreBtnText}>Restaurar Compras</Text>
+          </TouchableOpacity>
+          <View style={styles.linksRow}>
+            <TouchableOpacity onPress={() => openLink(TERMS_URL)}>
+              <Text style={styles.linkText}>TГ©rminos</Text>
+            </TouchableOpacity>
+            <Text style={styles.linkDivider}>|</Text>
+            <TouchableOpacity onPress={() => openLink(PRIVACY_POLICY_URL)}>
+              <Text style={styles.linkText}>Privacidad</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <View style={{height: 40}} />
+      </ScrollView>
+
+      {isPurchasing && (
+        <View style={styles.loaderOverlay}><ActivityIndicator size="large" color="#ffd700" /></View>
+      )}
+
+      <MagicAlert 
+        visible={magicAlertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        icon={alertConfig.icon as any}
+        confirmText="Entendido"
+        onConfirm={() => setMagicAlertVisible(false)}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#0f0c29' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 60, paddingBottom: 20 },
+  closeButton: { padding: 8 },
+  headerTitle: { fontSize: 24, fontWeight: '700', color: '#fff' },
+  balanceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 215, 0, 0.1)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)' },
+  balanceText: { color: '#ffd700', fontSize: 14, fontWeight: '600', marginLeft: 6 },
+  scrollContent: { paddingHorizontal: 20 },
+  freeSection: { marginBottom: 30 },
+  glassCard: { backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.15)' },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  cardTitle: { fontSize: 18, fontWeight: '600', color: '#ffd700', marginLeft: 12 },
+  cardDescription: { fontSize: 14, color: 'rgba(255, 255, 255, 0.7)', marginBottom: 16 },
+  paidSection: { marginBottom: 20 },
+  sectionTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginBottom: 16, opacity: 0.8 },
+  purchaseCard: { borderRadius: 16, marginBottom: 12, overflow: 'hidden' },
+  popularCard: { borderWidth: 1.5, borderColor: '#ffd700', transform: [{ scale: 1.02 }] },
+  cardGradient: { padding: 16 },
+  popularBadge: { position: 'absolute', top: 0, right: 0, backgroundColor: '#ffd700', paddingHorizontal: 10, paddingVertical: 2, borderBottomLeftRadius: 10 },
+  popularBadgeText: { color: '#000', fontSize: 10, fontWeight: 'bold' },
+  cardContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  cardLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255, 255, 255, 0.1)', alignItems: 'center', justifyContent: 'center' },
+  purchaseTitle: { fontSize: 16, fontWeight: '600', color: '#fff' },
+  purchaseAmount: { fontSize: 13, color: 'rgba(255, 255, 255, 0.5)', marginTop: 2 },
+  priceContainer: { alignItems: 'flex-end' },
+  purchasePrice: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  oldPrice: { fontSize: 12, color: 'rgba(255, 255, 255, 0.4)', textDecorationLine: 'line-through' },
+  
+  legalFooter: { marginTop: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20, paddingBottom: 10 },
+  restoreBtn: { marginBottom: 10 },
+  restoreBtnText: { color: '#ffd700', fontSize: 14 },
+  linksRow: { flexDirection: 'row', alignItems: 'center' },
+  linkText: { color: 'rgba(255,255,255,0.5)', fontSize: 12 },
+  linkDivider: { color: 'rgba(255,255,255,0.3)', marginHorizontal: 10 },
+  
+  loaderOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }
+});
+
+--- FILE: C:\Luna\app\index.tsx ---
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  View, Text, StyleSheet, Animated, Dimensions, KeyboardAvoidingView, Platform, ScrollView, Alert, Keyboard, TouchableWithoutFeedback,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MysticButton } from '../src/components/ui/MysticButton';
+import { MysticInput } from '../src/components/ui/MysticInput';
+import { supabase } from '../src/services/supabase';
+
+const { width, height } = Dimensions.get('window');
+
+type OnboardingStep = 'intro' | 'input' | 'animation';
+
+const getZodiacSign = (day: number, month: number): string => {
+  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'Aries';
+  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'Tauro';
+  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'GГ©minis';
+  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'CГЎncer';
+  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'Leo';
+  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'Virgo';
+  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'Libra';
+  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'Escorpio';
+  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Sagitario';
+  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'Capricornio';
+  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Acuario';
+  if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return 'Piscis';
+  return '';
+};
+
+export default function Index() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const [step, setStep] = useState<OnboardingStep>('intro');
+  const [name, setName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [detectedZodiac, setDetectedZodiac] = useState('');
+  const [errors, setErrors] = useState({ name: '', birthDate: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 8, tension: 40, useNativeDriver: true }),
+    ]).start();
+  }, [step]);
+
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardVisible(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
+
+  useEffect(() => {
+    if (step === 'animation') {
+      Animated.loop(Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.1, duration: 1000, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+      ])).start();
+      Animated.loop(Animated.timing(rotateAnim, { toValue: 1, duration: 3000, useNativeDriver: true })).start();
+
+      const timer = setTimeout(() => {
+        // РРЎРџР РђР’Р›Р•РќРћ: РџРµСЂРµС…РѕРґ РЅР° РЎРќР« (suenos) СЃ РїР°СЂР°РјРµС‚СЂРѕРј welcome
+        router.replace({ pathname: '/(tabs)/suenos', params: { welcome: 'true' } });
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
+
+  const handleDateChange = (text: string) => {
+    if (text.length < birthDate.length) { setBirthDate(text); setDetectedZodiac(''); return; }
+    const cleaned = text.replace(/[^0-9]/g, '');
+    let formatted = cleaned;
+    if (cleaned.length > 2) formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
+    if (cleaned.length > 4) formatted = formatted.slice(0, 5) + '/' + cleaned.slice(4, 8);
+    if (formatted.length <= 10) { 
+      setBirthDate(formatted); setErrors({ ...errors, birthDate: '' }); 
+      if (cleaned.length >= 4) {
+        const sign = getZodiacSign(parseInt(cleaned.slice(0, 2)), parseInt(cleaned.slice(2, 4)));
+        if (sign) setDetectedZodiac(sign);
+      }
+    }
+  };
+
+  const handleContinue = async () => {
+    if (step === 'intro') {
+      setStep('input');
+      fadeAnim.setValue(0);
+      scaleAnim.setValue(0.8);
+      Animated.parallel([
+        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.spring(scaleAnim, { toValue: 1, friction: 8, tension: 40, useNativeDriver: true }),
+      ]).start();
+    } else if (step === 'input') {
+      if (!name.trim()) { setErrors({...errors, name: 'Requerido'}); return; }
+      if (!birthDate.trim()) { setErrors({...errors, birthDate: 'Requerido'}); return; }
+      
+      setIsLoading(true);
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
+        if (authError) throw authError;
+
+        const zodiacSign = detectedZodiac || 'Desconocido';
+
+        // 1. Р—Р°РїРёСЃСЊ РІ Р‘Р”
+        await supabase.from('profiles').upsert({
+          id: authData.session?.user.id,
+          display_name: name,
+          birth_date: birthDate,
+          zodiac_sign: zodiacSign,
+          credits: 3, 
+          updated_at: new Date().toISOString(),
+        });
+
+        // 2. Р’РђР–РќРћ: Р—Р°РїРёСЃСЊ РІ РїР°РјСЏС‚СЊ (РњРіРЅРѕРІРµРЅРЅС‹Р№ РґРѕСЃС‚СѓРї)
+        await AsyncStorage.setItem('user_name', name);
+        await AsyncStorage.setItem('user_zodiac', zodiacSign);
+        await AsyncStorage.setItem('user_credits', '3');
+        await AsyncStorage.setItem('has_launched_app', 'true');
+
+        setStep('animation');
+        fadeAnim.setValue(0);
+        Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+      } catch (error) {
+        Alert.alert('Error', 'Error de conexiГіn');
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const spin = rotateAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+
+  return (
+    <View style={[styles.container, { paddingBottom: insets.bottom + 20 }]}>
+      <LinearGradient colors={['#1a0b2e', '#120d26', '#0a0612']} style={styles.gradient} />
+      <StatusBar style="light" />
+
+      {step === 'intro' && (
+        <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
+          <View style={styles.introContainer}>
+            <Text style={styles.lunaIcon}>рџЊ™</Text>
+            <Text style={styles.title}>Bienvenido a Luna</Text>
+            <Text style={styles.lunaName}>Luna</Text>
+            <Text style={styles.subtitle}>Soy la energГ­a que interpreta las seГ±ales del universo.</Text>
+          </View>
+          <MysticButton title="Comenzar" onPress={handleContinue} style={styles.button} />
+        </Animated.View>
+      )}
+
+      {step === 'input' && (
+        <KeyboardAvoidingView behavior={Platform.OS === 'android' ? 'height' : 'padding'} style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+               <View style={{flex: 1, paddingHorizontal: 24, justifyContent: 'center'}}>
+                  <View style={styles.inputsContainer}>
+                      <Text style={styles.inputTitle}>CuГ©ntame sobre ti</Text>
+                      <MysticInput label="Nombre" placeholder="Tu nombre" value={name} onChangeText={setName} error={errors.name} />
+                      <View style={{height: 20}}/>
+                      <MysticInput label="Fecha de nacimiento" placeholder="DD/MM/AAAA" value={birthDate} onChangeText={handleDateChange} error={errors.birthDate} keyboardType="numeric" maxLength={10} />
+                      {detectedZodiac ? <Text style={styles.zodiacText}>Tu signo: <Text style={{color:'#FFD700', fontWeight:'bold'}}>{detectedZodiac}</Text></Text> : null}
+                  </View>
+                  <MysticButton title="Continuar" onPress={handleContinue} loading={isLoading} style={{marginTop: 40}} />
+               </View>
+            </TouchableWithoutFeedback>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      )}
+
+      {step === 'animation' && (
+        <Animated.View style={[styles.animationContainer, { opacity: fadeAnim }]}>
+          <Animated.View style={[styles.cosmicCircle, { transform: [{ scale: pulseAnim }, { rotate: spin }] }]}>
+            <View style={styles.innerCircle}><Text style={styles.cosmicIcon}>вњЁ</Text></View>
+          </Animated.View>
+          <Text style={styles.animationText}>Conectando con las estrellas...</Text>
+        </Animated.View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#0F172A' },
+  gradient: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
+  content: { flex: 1, justifyContent: 'center', paddingHorizontal: 24 },
+  introContainer: { alignItems: 'center', marginBottom: 60 },
+  lunaIcon: { fontSize: 80, marginBottom: 20 },
+  title: { fontSize: 32, fontWeight: '700', color: '#F8FAFC', textAlign: 'center' },
+  lunaName: { fontSize: 24, color: '#A855F7', marginBottom: 20 },
+  subtitle: { fontSize: 18, color: '#E2E8F0', textAlign: 'center' },
+  inputsContainer: { width: '100%' },
+  inputTitle: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 30, textAlign: 'center' },
+  zodiacText: { color: '#E2E8F0', textAlign: 'center', marginTop: 15, fontSize: 18 },
+  button: { marginTop: 20 },
+  animationContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  cosmicCircle: { width: 200, height: 200, borderRadius: 100, borderWidth: 3, borderColor: '#A855F7', justifyContent: 'center', alignItems: 'center', marginBottom: 40 },
+  innerCircle: { width: 160, height: 160, borderRadius: 80, backgroundColor: 'rgba(139, 92, 246, 0.2)', justifyContent: 'center', alignItems: 'center' },
+  cosmicIcon: { fontSize: 60 },
+  animationText: { fontSize: 24, color: '#A855F7' },
+});
+
+--- FILE: C:\Luna\app\paywall.tsx ---
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useMonetization } from '../src/hooks/useMonetization';
+// РСЃРїСЂР°РІР»РµРЅРЅС‹Р№ РёРјРїРѕСЂС‚ Р°РЅР°Р»РёС‚РёРєРё РґР»СЏ СѓСЃС‚СЂР°РЅРµРЅРёСЏ WARN
+import firebaseAnalytics from '@react-native-firebase/analytics';
+
+const ENERGY_PACKS = [
+  { id: 'energy_10_v2', amount: 10, price: '199 в‚Ѕ', numericPrice: 199, icon: 'flash-outline' },
+  { id: 'energy_50_v2', amount: 50, price: '799 в‚Ѕ', numericPrice: 799, icon: 'flash', popular: true },
+  { id: 'energy_150_v2', amount: 150, price: '1 990 в‚Ѕ', numericPrice: 1990, icon: 'thunderstorm' },
+];
+
+export default function PaywallScreen() {
+  const router = useRouter();
+  const { buyPremium, loading, refreshStatus } = useMonetization(); 
+  const [selectedPack, setSelectedPack] = useState(ENERGY_PACKS[1].id);
+
+  const handlePurchase = async () => {
+    const pack = ENERGY_PACKS.find(p => p.id === selectedPack);
+    if (!pack) return;
+
+    try {
+      // 1. Р›РѕРіРёСЂСѓРµРј РїРѕРїС‹С‚РєСѓ РїРѕРєСѓРїРєРё (СЃРѕРІСЂРµРјРµРЅРЅС‹Р№ СЃРёРЅС‚Р°РєСЃРёСЃ)
+      await firebaseAnalytics().logEvent('energy_purchase_attempt', {
+        item_id: selectedPack,
+        energy_amount: pack.amount
+      });
+
+      const success = await buyPremium(selectedPack);
+      
+      if (success) {
+        // 2. Р›РѕРіРёСЂСѓРµРј СѓСЃРїРµС… СЃ РїРµСЂРµРґР°С‡РµР№ С†РµРЅРЅРѕСЃС‚Рё (Revenue)
+        await firebaseAnalytics().logEvent('energy_purchase_success', {
+          item_id: selectedPack,
+          value: pack.numericPrice,
+          currency: 'RUB', // Р’Р°Р¶РЅРѕ РґР»СЏ РѕС‚С‡РµС‚РѕРІ Рѕ РґРѕС…РѕРґР°С…
+          energy_amount: pack.amount
+        });
+        
+        console.log(`рџ“€ РђРЅР°Р»РёС‚РёРєР°: РЎРѕР±С‹С‚РёРµ РїРѕРєСѓРїРєРё ${selectedPack} РЅР° СЃСѓРјРјСѓ ${pack.numericPrice} RUB РѕС‚РїСЂР°РІР»РµРЅРѕ`);
+        
+        await refreshStatus();
+        router.replace('/(tabs)/suenos');
+      }
+    } catch (error) {
+      console.error('РћС€РёР±РєР° РїРѕРєСѓРїРєРё:', error);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <LinearGradient colors={['#0f0c29', '#302b63', '#24243e']} style={StyleSheet.absoluteFill} />
+      
+      <View style={styles.safeArea}>
+        <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
+          <Ionicons name="close-circle" size={32} color="rgba(255,255,255,0.4)" />
+        </TouchableOpacity>
+
+        <ScrollView contentContainerStyle={styles.scroll}>
+          <View style={styles.header}>
+            <Ionicons name="sparkles" size={60} color="#ffd700" />
+            <Text style={styles.title}>Р—Р°СЂСЏРґРё СЃРІРѕСЋ Р›СѓРЅСѓ</Text>
+            <Text style={styles.subtitle}>Р­РЅРµСЂРіРёСЏ РЅСѓР¶РЅР° РґР»СЏ С‚РѕР»РєРѕРІР°РЅРёСЏ СЃРЅРѕРІ Рё РіР»СѓР±РѕРєРёС… РїСЂРµРґСЃРєР°Р·Р°РЅРёР№.</Text>
+          </View>
+
+          {ENERGY_PACKS.map((pack) => (
+            <TouchableOpacity 
+              key={pack.id}
+              style={[styles.planCard, selectedPack === pack.id && styles.selectedPlan]}
+              onPress={() => setSelectedPack(pack.id)}
+            >
+              <View style={styles.planInfo}>
+                <Ionicons name={pack.icon as any} size={24} color={selectedPack === pack.id ? "#ffd700" : "#fff"} />
+                <View style={{ marginLeft: 15 }}>
+                  <Text style={styles.planTitle}>{pack.amount} Р­РЅРµСЂРіРёРё</Text>
+                  {pack.popular && <Text style={styles.popularTag}>РџРћРџРЈР›РЇР РќРћ</Text>}
+                </View>
+              </View>
+              <Text style={styles.planPrice}>{pack.price}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.cta} onPress={handlePurchase} disabled={loading}>
+            {loading ? <ActivityIndicator color="#0f0c29" /> : <Text style={styles.ctaText}>РљСѓРїРёС‚СЊ СЌРЅРµСЂРіРёСЋ</Text>}
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  safeArea: { flex: 1, paddingTop: 50 },
+  closeButton: { alignSelf: 'flex-end', padding: 20 },
+  scroll: { paddingHorizontal: 25 },
+  header: { alignItems: 'center', marginBottom: 30 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginTop: 15 },
+  subtitle: { fontSize: 16, color: '#ccc', textAlign: 'center', marginTop: 10 },
+  planCard: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    padding: 20, 
+    borderRadius: 15, 
+    backgroundColor: 'rgba(255,255,255,0.05)', 
+    marginBottom: 15, 
+    borderWidth: 1, 
+    borderColor: 'transparent' 
+  },
+  selectedPlan: { borderColor: '#ffd700', backgroundColor: 'rgba(255,215,0,0.1)' },
+  planInfo: { flexDirection: 'row', alignItems: 'center' },
+  planTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  planPrice: { color: '#ffd700', fontSize: 18, fontWeight: 'bold' },
+  popularTag: { color: '#ffd700', fontSize: 10, fontWeight: 'bold', marginTop: 2 },
+  footer: { padding: 25 },
+  cta: { backgroundColor: '#ffd700', padding: 18, borderRadius: 30, alignItems: 'center' },
+  ctaText: { color: '#0f0c29', fontSize: 18, fontWeight: 'bold' }
+});
+
+--- FILE: C:\Luna\app\zodiac.tsx ---
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+
+export default function ZodiacScreen() {
+  const router = useRouter();
+  const { name, date } = useLocalSearchParams<{ name: string; date: string }>();
+
+  const calculateZodiac = (dateStr: string): string => {
+    if (!dateStr) return 'Desconocido';
+    
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return 'Desconocido';
+    
+    const day = parseInt(parts[0]);
+    const month = parseInt(parts[1]);
+    
+    if (isNaN(day) || isNaN(month)) return 'Desconocido';
+    
+    if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'Aries';
+    if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'Tauro';
+    if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'GГ©minis';
+    if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'CГЎncer';
+    if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'Leo';
+    if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'Virgo';
+    if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'Libra';
+    if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'Escorpio';
+    if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Sagitario';
+    if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'Capricornio';
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Acuario';
+    if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return 'Piscis';
+    
+    return 'Desconocido';
+  };
+
+  const zodiacSign = calculateZodiac(date || '');
+  const zodiacEmojis: { [key: string]: string } = {
+    'Aries': 'в™€',
+    'Tauro': 'в™‰',
+    'GГ©minis': 'в™Љ',
+    'CГЎncer': 'в™‹',
+    'Leo': 'в™Њ',
+    'Virgo': 'в™Ќ',
+    'Libra': 'в™Ћ',
+    'Escorpio': 'в™Џ',
+    'Sagitario': 'в™ђ',
+    'Capricornio': 'в™‘',
+    'Acuario': 'в™’',
+    'Piscis': 'в™“',
+    'Desconocido': 'вќ“'
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.emoji}>{zodiacEmojis[zodiacSign]}</Text>
+        <Text style={styles.welcome}>Bienvenido, {name || 'Viajero'}</Text>
+        <Text style={styles.sign}>Tu signo: {zodiacSign}</Text>
+        <Text style={styles.description}>
+          Las estrellas se han alineado para revelar tu destino. 
+          Tu energГ­a astral resuena con las fuerzas cГіsmicas del universo.
+        </Text>
+        <Text style={styles.mysticalText}>
+          вњЁ Luna estГЎ esperando para guiarte a travГ©s de los misterios de tus sueГ±os...
+        </Text>
+        
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => router.replace('/(tabs)/suenos')}
+        >
+          <Text style={styles.buttonText}>Consultar a Luna</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0F172A',
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+  },
+  emoji: {
+    fontSize: 80,
+    marginBottom: 20,
+  },
+  welcome: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#F8FAFC',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  sign: {
+    fontSize: 24,
+    color: '#A855F7',
+    textAlign: 'center',
+    marginBottom: 30,
+    fontWeight: '600',
+  },
+  description: {
+    fontSize: 16,
+    color: '#E2E8F0',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 20,
+  },
+  mysticalText: {
+    fontSize: 14,
+    color: '#94A3B8',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginBottom: 40,
+  },
+  button: {
+    backgroundColor: '#A855F7',
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#F8FAFC',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+--- FILE: C:\Luna\app\_layout.tsx ---
+import { Stack } from 'expo-router';
+import { AuthProvider } from '../src/providers/AuthProvider';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import Purchases from 'react-native-purchases';
+import mobileAds from 'react-native-google-mobile-ads';
+import { Settings } from 'react-native-fbsdk-next';
+// РРјРїРѕСЂС‚РёСЂСѓРµРј РЅР°С€ РЅРѕРІС‹Р№ СЃРµСЂРІРёСЃ
+import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../src/services/NotificationService';
+
+// РРіРЅРѕСЂРёСЂСѓРµРј РѕС€РёР±РєСѓ СЃРїР»СЌС€Р°
+SplashScreen.preventAutoHideAsync().catch((e) => {
+  console.warn("SplashScreen warning:", e);
+});
+
+const REVENUECAT_API_KEY = "goog_aaxbLkokrPUPPmBBcNzInhlJHFY";       
+
+export default function RootLayout() {
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await Font.loadAsync(Ionicons.font);
+
+        // --- 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ SDK ---
+        await mobileAds().initialize();
+        console.log("вњ… AdMob: РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅ");       
+
+        await Settings.initializeSDK();
+        await Settings.setAdvertiserTrackingEnabled(true);
+        console.log("вњ… Meta SDK: РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅ");    
+
+        await Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);        
+        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });    
+        console.log("вњ… RevenueCat: РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅ"); 
+
+        // --- 2. РќР°СЃС‚СЂРѕР№РєР° РЈРІРµРґРѕРјР»РµРЅРёР№ ---
+        // Р—Р°РїСЂР°С€РёРІР°РµРј РїСЂР°РІР° Рё СЃРѕС…СЂР°РЅСЏРµРј С‚РѕРєРµРЅ
+        await registerForPushNotificationsAsync();
+        // РЎС‚Р°РІРёРј Р±СѓРґРёР»СЊРЅРёРє РЅР° СѓС‚СЂРѕ
+        await scheduleDailyReminder();
+
+      } catch (e) {
+        console.warn("РћС€РёР±РєР° РїСЂРё РїРѕРґРіРѕС‚РѕРІРєРµ РїСЂРёР»РѕР¶РµРЅРёСЏ:", e);
+      } finally {
+        setAppReady(true);
+        await SplashScreen.hideAsync();
+      }
+    }
+    prepare();
+  }, []);
+
+  if (!appReady) return null;
+
+  return (
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="energy" />
+      </Stack>
+    </AuthProvider>
+  );
+}
+
+--- FILE: C:\Luna\src\components\ui\MysticButton.tsx ---
+import React from 'react';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import { Colors } from '../../constants/Colors';
+
+interface MysticButtonProps {
+  onPress: () => void;
+  title: string;
+  loading?: boolean;
+  disabled?: boolean;
+  variant?: 'filled' | 'outlined';
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+}
+
+export const MysticButton: React.FC<MysticButtonProps> = ({
+  onPress,
+  title,
+  loading = false,
+  disabled = false,
+  variant = 'filled',
+  style,
+  textStyle,
+}) => {
+  const isDisabled = disabled || loading;
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={isDisabled}
+      style={[
+        styles.button,
+        variant === 'filled' ? styles.filled : styles.outlined,
+        isDisabled && styles.disabled,
+        loading && styles.loading,
+        style,
+      ]}
+      activeOpacity={loading ? 0.7 : 0.8}
+    >
+      {loading ? (
+        <ActivityIndicator color="#FFFFFF" size="small" />
+      ) : (
+        <Text
+          style={[
+            styles.text,
+            variant === 'outlined' && styles.outlinedText,
+            textStyle,
+          ]}
+        >
+          {title}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  button: {
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 56,
+    borderWidth: 2,
+  },
+  filled: {
+    backgroundColor: Colors.accent.gold,
+    borderColor: Colors.accent.gold,
+  },
+  outlined: {
+    backgroundColor: 'transparent',
+    borderColor: Colors.accent.gold,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  loading: {
+    opacity: 0.7,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.background.primary,
+    letterSpacing: 0.5,
+  },
+  outlinedText: {
+    color: Colors.accent.gold,
+  },
+});
+
+--- FILE: C:\Luna\src\components\ui\MysticInput.tsx ---
+import React from 'react';
+import {
+  TextInput,
+  View,
+  Text,
+  StyleSheet,
+  TextInputProps,
+  ViewStyle,
+} from 'react-native';
+import { Colors } from '../../constants/Colors';
+
+interface MysticInputProps extends TextInputProps {
+  label?: string;
+  error?: string;
+  containerStyle?: ViewStyle;
+}
+
+export const MysticInput: React.FC<MysticInputProps> = ({
+  label,
+  error,
+  containerStyle,
+  style,
+  ...props
+}) => {
+  return (
+    <View style={[styles.container, containerStyle]}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <TextInput
+        style={[styles.input, error && styles.inputError, style]}
+        placeholderTextColor={Colors.text.muted}
+        {...props}
+      />
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.text.secondary,
+    marginBottom: 8,
+    letterSpacing: 0.3,
+  },
+  input: {
+    backgroundColor: Colors.ui.inputBg,
+    borderWidth: 1,
+    borderColor: Colors.ui.border,
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    fontSize: 16,
+    color: Colors.text.primary,
+    minHeight: 56,
+  },
+  inputError: {
+    borderColor: '#E74C3C',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#E74C3C',
+    marginTop: 6,
+    marginLeft: 4,
+  },
+});
+
+--- FILE: C:\Luna\src\components\AdBanner.tsx ---
+import React from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
+import { 
+  BannerAd, 
+  BannerAdSize, 
+  TestIds 
+} from 'react-native-google-mobile-ads';
+import { useMonetization } from '../hooks/useMonetization';
+
+// Р’Р°С€ СЂРµР°Р»СЊРЅС‹Р№ ID Р±Р°РЅРЅРµСЂР° (РІР·СЏС‚ РёР· energy.tsx)
+// Р•СЃР»Рё Р·Р°С…РѕС‚РёС‚Рµ СЃРѕР·РґР°С‚СЊ РѕС‚РґРµР»СЊРЅС‹Р№ Р±Р°РЅРЅРµСЂ РґР»СЏ РЎРЅРѕРІ/Р“РѕСЂРѕСЃРєРѕРїР° - РїРѕРјРµРЅСЏР№С‚Рµ СЌС‚РѕС‚ ID
+const productionAdUnitId = 'ca-app-pub-8147866560220122/6890947761';
+
+const adUnitId = __DEV__ ? TestIds.BANNER : productionAdUnitId;
+
+export default function AdBanner() {
+  const { isPremium } = useMonetization();
+
+  // Р•СЃР»Рё Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїСЂРµРјРёСѓРј, РЅРµ РїРѕРєР°Р·С‹РІР°РµРј СЂРµРєР»Р°РјСѓ
+  if (isPremium) {
+    return null;
+  }
+
+  return (
+    <View style={styles.container}>
+      <BannerAd
+        unitId={adUnitId}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+        }}
+        onAdFailedToLoad={(error) => {
+           console.log('AdBanner error:', error);
+           // Р—РґРµСЃСЊ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ Р±С‹ РІРµСЂРЅСѓС‚СЊ null, С‡С‚РѕР±С‹ СЃРєСЂС‹С‚СЊ РјРµСЃС‚Рѕ,
+           // РЅРѕ РїРѕРєР° РѕСЃС‚Р°РІРёРј РєР°Рє РµСЃС‚СЊ, С‡С‚РѕР±С‹ РІРёРґРµС‚СЊ РѕС€РёР±РєРё РІ Р»РѕРіР°С…
+        }}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 16,
+    // РЈР±СЂР°Р»Рё СЃС‚РёР»Рё "Р·Р°РіР»СѓС€РєРё" (СЂР°РјРєРё Рё С†РІРµС‚), С‡С‚РѕР±С‹ СЂРµРєР»Р°РјР° РІС‹РіР»СЏРґРµР»Р° С‡РёСЃС‚Рѕ
+  },
+});
+
+--- FILE: C:\Luna\src\components\MagicAlert.tsx ---
+import React from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Modal, 
+  TouchableOpacity, 
+  Animated, 
+  Dimensions
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
+
+interface MagicAlertProps {
+  visible: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  icon?: string;
+}
+
+export default function MagicAlert({
+  visible,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  confirmText = "РћРє",
+  cancelText = "РћС‚РјРµРЅР°",
+  icon = "sparkles"
+}: MagicAlertProps) {
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const scaleAnim = React.useRef(new Animated.Value(0.8)).current;
+
+  React.useEffect(() => {
+    if (visible) {
+      // РђРЅРёРјР°С†РёСЏ РїРѕСЏРІР»РµРЅРёСЏ
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      // РђРЅРёРјР°С†РёСЏ РёСЃС‡РµР·РЅРѕРІРµРЅРёСЏ
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 0.8,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [visible]);
+
+  if (!visible) return null;
+
+  return (
+    <Modal
+      transparent
+      visible={visible}
+      animationType="none"
+      onRequestClose={onCancel || onConfirm}
+    >
+      <View style={styles.overlay}>
+        <Animated.View 
+          style={[
+            styles.alertBox,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }]
+            }
+          ]}
+        >
+          {/* РРєРѕРЅРєР° */}
+          <View style={styles.iconContainer}>
+            <Ionicons name={icon as any} size={48} color="#FFD700" />
+          </View>
+
+          {/* Р—Р°РіРѕР»РѕРІРѕРє */}
+          <Text style={styles.title}>{title}</Text>
+
+          {/* РЎРѕРѕР±С‰РµРЅРёРµ */}
+          <Text style={styles.message}>{message}</Text>
+
+          {/* РљРЅРѕРїРєРё */}
+          <View style={styles.buttonRow}>
+            {onCancel && (
+              <TouchableOpacity 
+                onPress={onCancel} 
+                style={styles.cancelButton}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.cancelText}>{cancelText}</Text>
+              </TouchableOpacity>
+            )}
+            
+            <TouchableOpacity 
+              onPress={onConfirm} 
+              style={styles.confirmButton}
+              activeOpacity={0.8}
+            >
+              <LinearGradient 
+                colors={['#FFD700', '#FDB931']} 
+                style={styles.gradientBtn}
+              >
+                <Text style={styles.confirmBtnText}>{confirmText}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  
+  alertBox: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)',
+    padding: 32,
+    width: width - 40,
+    maxWidth: 400,
+    alignItems: 'center',
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+
+  iconContainer: {
+    marginBottom: 16,
+  },
+
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFD700',
+    textAlign: 'center',
+    marginBottom: 12,
+    textShadowColor: 'rgba(255, 215, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+
+  message: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.9)',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 24,
+    fontWeight: '400',
+  },
+
+  buttonRow: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 12,
+  },
+
+  cancelButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  cancelText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  confirmButton: {
+    flex: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+
+  gradientBtn: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  confirmBtnText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+});
+
+--- FILE: C:\Luna\src\components\WatchAdButton.tsx ---
+import React, { useEffect, useState } from 'react';
+import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, Alert, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { RewardedAd, RewardedAdEventType, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+// рџ‘‡ РђРЅР°Р»РёС‚РёРєР°
+import { AppEventsLogger } from 'react-native-fbsdk-next'; 
+import analytics from '@react-native-firebase/analytics'; // вњ… Р”РѕР±Р°РІРёР»Рё Google
+import MagicAlert from './MagicAlert';
+
+const productionAdUnitId = 'ca-app-pub-8147866560220122/2478181377';
+const adUnitId = __DEV__ ? TestIds.REWARDED : productionAdUnitId;
+
+// РЎРѕР·РґР°РµРј РёРЅСЃС‚Р°РЅСЃ СЂРµРєР»Р°РјС‹ РѕРґРёРЅ СЂР°Р·
+const rewarded = RewardedAd.createForAdRequest(adUnitId, {
+  keywords: ['fashion', 'fortune', 'mystic'],
+});
+
+export default function WatchAdButton({ onReward }: { onReward?: () => void }) {
+  const [loaded, setLoaded] = useState(false);
+  const [isEarned, setIsEarned] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  useEffect(() => {
+    // 1. Р—Р°РіСЂСѓР·РєР°
+    const unsubscribeLoaded = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
+      setLoaded(true);
+      console.log('вњ… [AD] Р РµРєР»Р°РјР° Р·Р°РіСЂСѓР¶РµРЅР°');
+    });
+
+    // 2. РќР°РіСЂР°РґР° (РЎР°РјРѕРµ РІР°Р¶РЅРѕРµ!)
+    const unsubscribeEarned = rewarded.addAdEventListener(RewardedAdEventType.EARNED_REWARD, async () => {
+      setIsEarned(true);
+      console.log('рџЋЃ [AD] РќР°РіСЂР°РґР° РїРѕР»СѓС‡РµРЅР°');
+      
+      // --- РћРўРџР РђР’РљРђ РђРќРђР›РРўРРљР ---
+      
+      // Facebook
+      AppEventsLogger.logEvent('ad_watched_rewarded');
+      
+      // Google Analytics (Firebase)
+      await analytics().logEvent('ad_watched_rewarded', {
+        type: 'video',
+        reward: 1
+      });
+
+      console.log('рџ“Ё [Analytics] РЎРѕР±С‹С‚РёСЏ РѕС‚РїСЂР°РІР»РµРЅС‹ РІ FB Рё Google');
+      // ---------------------------
+    });
+
+    // 3. Р—Р°РєСЂС‹С‚РёРµ
+    const unsubscribeClosed = rewarded.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('вќЊ [AD] Р РµРєР»Р°РјР° Р·Р°РєСЂС‹С‚Р°');
+      setLoaded(false);
+      
+      // Р•СЃР»Рё РЅР°РіСЂР°РґР° Р±С‹Р»Р° РїРѕР»СѓС‡РµРЅР°, РЅР°С‡РёСЃР»СЏРµРј СЌРЅРµСЂРіРёСЋ
+      if (isEarned) {
+        console.log('рџЋ¬ [AD] Р—Р°РїСѓСЃРє РЅР°С‡РёСЃР»РµРЅРёСЏ СЌРЅРµСЂРіРёРё...');
+        if (onReward) onReward();
+        setAlertVisible(true);
+        setIsEarned(false); 
+      }
+      
+      // Р“СЂСѓР·РёРј СЃР»РµРґСѓСЋС‰СѓСЋ
+      console.log('рџ”„ [AD] Р—Р°РіСЂСѓР¶Р°РµРј СЃР»РµРґСѓСЋС‰СѓСЋ...');
+      rewarded.load();
+    });
+
+    // 4. РћС€РёР±РєР°
+    const unsubscribeError = rewarded.addAdEventListener(AdEventType.ERROR, (err) => {
+      console.error('вќЊ [AD] РћС€РёР±РєР° СЂРµРєР»Р°РјС‹:', err.message);
+      setLoaded(false);
+    });
+
+    // Р—Р°РїСѓСЃРє РїРµСЂРІРѕР№ Р·Р°РіСЂСѓР·РєРё
+    rewarded.load();
+
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeEarned();
+      unsubscribeClosed();
+      unsubscribeError();
+    };
+  }, [onReward, isEarned]);
+
+  return (
+    <View>
+      <TouchableOpacity 
+        onPress={() => {
+            if (loaded) {
+                rewarded.show();
+            } else {
+                Alert.alert("Cargando", "El cosmos estГЎ preparando tu visiГіn...");
+            }
+        }} 
+        disabled={!loaded}
+        style={[styles.container, !loaded && { opacity: 0.6 }]}
+      >
+        <LinearGradient colors={['#8E2DE2', '#4A00E0']} style={styles.buttonGradient}>
+          {loaded ? <Ionicons name="play-circle" size={24} color="#FFF" style={{ marginRight: 8 }} /> 
+                  : <ActivityIndicator color="#FFF" style={{ marginRight: 8 }} />}
+          <Text style={styles.buttonText}>{loaded ? "Ver Video (+1 вњЁ)" : "Cargando..."}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      <MagicAlert 
+        visible={alertVisible}
+        title="ВЎEnergГ­a Recibida!"
+        message="Los astros te han otorgado +1 de energГ­a."
+        icon="star"
+        onConfirm={() => setAlertVisible(false)}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { marginTop: 12, borderRadius: 25 },
+  buttonGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 25 },
+  buttonText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 }
+});
+
+--- FILE: C:\Luna\src\constants\Colors.ts ---
+export const Colors = {
+  background: {
+    primary: '#120d26',
+    secondary: '#1a0b2e',
+    tertiary: '#2a1a4e',
+  },
+  accent: {
+    gold: '#D4AF37',
+    lightGold: '#F4D03F',
+    darkGold: '#B8941F',
+  },
+  text: {
+    primary: '#F5F5DC',
+    secondary: '#E8E8D0',
+    muted: '#A8A89C',
+  },
+  mystic: {
+    purple: '#6B46C1',
+    violet: '#8B5CF6',
+    lavender: '#C4B5FD',
+  },
+  ui: {
+    border: '#3a2a5e',
+    inputBg: 'rgba(42, 26, 78, 0.6)',
+    overlay: 'rgba(18, 13, 38, 0.9)',
+  },
+};
+
+--- FILE: C:\Luna\src\hooks\useDailyBonus.ts ---
+import { useEffect } from 'react';
+import { supabase } from '../services/supabase';
+import { useMonetization } from './useMonetization';
+
+interface UseDailyBonusProps {
+  onBonusGranted?: () => void;
+  onError?: (error: string) => void;
+}
+
+export function useDailyBonus({ onBonusGranted, onError }: UseDailyBonusProps = {}) {
+  const { refreshStatus } = useMonetization();
+
+  useEffect(() => {
+    checkAndGrantDailyBonus();
+  }, []);
+
+  const checkAndGrantDailyBonus = async () => {
+    try {
+      // РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log('No user found for daily bonus');
+        return;
+      }
+
+      // РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('credits, last_daily_bonus')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Error fetching profile for daily bonus:', profileError);
+        return;
+      }
+
+      if (!profile) {
+        console.log('Profile not found for daily bonus');
+        return;
+      }
+
+      // РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰СѓСЋ РґР°С‚Сѓ РІ С„РѕСЂРјР°С‚Рµ YYYY-MM-DD
+      const today = new Date().toISOString().split('T')[0];
+      const lastBonus = profile.last_daily_bonus;
+
+      // РџСЂРѕРІРµСЂСЏРµРј, РїРѕР»СѓС‡Р°Р» Р»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ Р±РѕРЅСѓСЃ СЃРµРіРѕРґРЅСЏ
+      if (lastBonus === today) {
+        console.log('Daily bonus already claimed today');
+        return;
+      }
+
+      // РќР°С‡РёСЃР»СЏРµРј Р±РѕРЅСѓСЃ
+      const newCredits = (profile.credits || 0) + 1;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          credits: newCredits,
+          last_daily_bonus: today
+        })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Error updating daily bonus:', updateError);
+        onError?.('РќРµ СѓРґР°Р»РѕСЃСЊ РЅР°С‡РёСЃР»РёС‚СЊ РµР¶РµРґРЅРµРІРЅС‹Р№ Р±РѕРЅСѓСЃ');
+        return;
+      }
+
+      // РћР±РЅРѕРІР»СЏРµРј СЃС‚Р°С‚СѓСЃ РјРѕРЅРµС‚РёР·Р°С†РёРё
+      await refreshStatus();
+
+      // Р’С‹Р·С‹РІР°РµРј callback РґР»СЏ РїРѕРєР°Р·Р° СѓРІРµРґРѕРјР»РµРЅРёСЏ
+      onBonusGranted?.();
+
+      console.log('Daily bonus granted successfully');
+
+    } catch (error) {
+      console.error('Error in daily bonus check:', error);
+    }
+  };
+
+  return { checkAndGrantDailyBonus };
+}
+
+--- FILE: C:\Luna\src\hooks\useMonetization.ts ---
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { supabase } from '../services/supabase';
+import Purchases from 'react-native-purchases';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const ENERGY_VALUES: Record<string, number> = {
+  'energy_10_v2': 10,
+  'energy_50_v2': 50,
+  'energy_150_v2': 150,
+};
+
+const BONUS_DATE_KEY = 'daily_bonus_date_v1';
+// рџ‘‡ РўРЈРў РЎРўРђР’РРњ 1 (Р­С‚Рѕ Р±РѕРЅСѓСЃ Р·Р° СѓРґРµСЂР¶Р°РЅРёРµ СЃРѕ РІС‚РѕСЂРѕРіРѕ РґРЅСЏ)
+const DAILY_BONUS_AMOUNT = 1; 
+
+export const useMonetization = () => {
+  const [credits, setCredits] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const isProcessing = useRef(false);
+
+  const fetchStatus = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const { data } = await supabase.from('profiles').select('credits').eq('id', user.id).maybeSingle();
+      if (data) setCredits(data.credits || 0);
+
+    } catch (e) { console.error('Error fetching status:', e); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { fetchStatus(); }, [fetchStatus]);
+
+  // --- Р•Р–Р•Р”РќР•Р’РќР«Р™ Р‘РћРќРЈРЎ ---
+  const checkDailyBonus = async (): Promise<boolean> => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const lastDate = await AsyncStorage.getItem(BONUS_DATE_KEY);
+
+      if (lastDate === today) return false;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      const { data: profile } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+      const currentCredits = profile?.credits || 0;
+      const newTotal = currentCredits + DAILY_BONUS_AMOUNT;
+
+      const { error } = await supabase.from('profiles').update({ credits: newTotal }).eq('id', user.id);
+
+      if (!error) {
+        await AsyncStorage.setItem(BONUS_DATE_KEY, today);
+        setCredits(newTotal);
+        return true;
+      }
+    } catch (e) {
+      console.error("Bonus error:", e);
+    }
+    return false;
+  };
+
+  const buyPremium = async (packageId: string) => {
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      const offerings = await Purchases.getOfferings();      
+      const packageToBuy = offerings.current?.availablePackages.find(p => p.product.identifier === packageId);
+      
+      if (!packageToBuy) return false;
+      
+      await Purchases.purchasePackage(packageToBuy);
+      
+      if (ENERGY_VALUES[packageId]) {
+         const { data: profile } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+         const newTotal = (profile?.credits || 0) + ENERGY_VALUES[packageId];
+         
+         await supabase.from('profiles').update({ credits: newTotal }).eq('id', user.id);
+         setCredits(newTotal);
+         return true;
+      }
+    } catch (e: any) { 
+      if (!e.userCancelled) console.error('Purchase error:', e); 
+    } finally { 
+      setLoading(false); 
+    }
+    return false;
+  };
+
+  const spendEnergy = async (amount: number): Promise<boolean> => {
+    try {
+      if (credits < amount) return false;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      const newTotal = credits - amount;
+      setCredits(newTotal);
+
+      const { error } = await supabase.from('profiles').update({ credits: newTotal }).eq('id', user.id);
+
+      if (error) {
+        setCredits(credits);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
+
+  const addFreeEnergy = useCallback(async () => {
+    if (isProcessing.current) return;
+    isProcessing.current = true;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+      const newTotal = (profile?.credits || 0) + 1;
+
+      const { error } = await supabase.from('profiles').update({ credits: newTotal }).eq('id', user.id);
+
+      if (!error) setCredits(newTotal);
+    } catch (e) {
+      console.error('Error adding free energy:', e);
+    } finally {
+      setTimeout(() => { isProcessing.current = false; }, 3000);
+    }
+  }, []);
+
+  return { 
+    credits, 
+    isPremium: false,
+    loading, 
+    buyPremium, 
+    addFreeEnergy, 
+    spendEnergy, 
+    checkDailyBonus,
+    refreshStatus: fetchStatus 
+  };
+};
+
+--- FILE: C:\Luna\src\hooks\useRewardedAd.ts ---
+import { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
+// import { 
+//   RewardedAd, 
+//   RewardedAdEventType, 
+//   TestIds 
+// } from 'react-native-google-mobile-ads';
+import { supabase } from '../services/supabase';
+import { useMonetization } from './useMonetization';
+
+export function useRewardedAd() {
+  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { refreshStatus } = useMonetization();
+
+  useEffect(() => {
+    // РЎРёРјСѓР»СЏС†РёСЏ Р·Р°РіСЂСѓР·РєРё
+    const timer = setTimeout(() => setLoaded(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const grantReward = async () => {
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('credits')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      const newCredits = (profile?.credits || 0) + 1;
+
+      await supabase
+        .from('profiles')
+        .update({ credits: newCredits })
+        .eq('id', user.id);
+
+      await refreshStatus();
+      Alert.alert('РЈСЃРїРµС…!', 'РўРµСЃС‚РѕРІР°СЏ РЅР°РіСЂР°РґР° РїРѕР»СѓС‡РµРЅР° (+1 вњЁ)');
+      
+      // РџРµСЂРµР·Р°РіСЂСѓР·РєР° "СЂРµРєР»Р°РјС‹"
+      setLoaded(false);
+      setTimeout(() => setLoaded(true), 2000);
+    } catch (e) {
+      console.error(e);
+      Alert.alert('РћС€РёР±РєР°', 'РЎР±РѕР№ РЅР°С‡РёСЃР»РµРЅРёСЏ');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showAd = () => {
+    Alert.alert(
+      "Р РµР¶РёРј СЂР°Р·СЂР°Р±РѕС‚РєРё",
+      "Р’РёРґРµРѕ РЅРµРґРѕСЃС‚СѓРїРЅРѕ РІ Expo Go. РќР°С‡РёСЃР»РёС‚СЊ РЅР°РіСЂР°РґСѓ СЃСЂР°Р·Сѓ?",
+      [
+        { text: "РћС‚РјРµРЅР°", style: "cancel" },
+        { text: "Р”Р°, РЅР°С‡РёСЃР»РёС‚СЊ", onPress: grantReward }
+      ]
+    );
+  };
+
+  return { loaded, loading, showAd };
+}
+
+--- FILE: C:\Luna\src\providers\AuthProvider.tsx ---
+import React, { useEffect, useState, ReactNode } from 'react';
+import { View, ActivityIndicator, Text } from 'react-native';
+import { useRouter, useSegments, useRootNavigationState } from 'expo-router';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '../services/supabase';
+import { useDailyBonus } from '../hooks/useDailyBonus';
+import MagicAlert from '../components/MagicAlert';
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [session, setSession] = useState<Session | null>(null);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [bonusAlertVisible, setBonusAlertVisible] = useState(false);
+  
+  const segments = useSegments();
+  const router = useRouter();
+  const navigationState = useRootNavigationState();
+  
+  useDailyBonus({
+    onBonusGranted: () => setBonusAlertVisible(true),
+    onError: (error) => console.error('Daily bonus error:', error)
+  });
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setIsAuthChecked(true);
+    }).catch((err) => {
+      console.error("Auth Error:", err);
+      setIsAuthChecked(true);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthChecked || !navigationState) return;
+
+    const currentSegment = segments[0];
+    const inTabs = currentSegment === '(tabs)';
+    const inRoot = !currentSegment;
+    const isPaywall = currentSegment === 'paywall';
+    const isEnergy = currentSegment === 'energy';
+
+    if (session) {
+      if (isPaywall || isEnergy) {
+        return;
+      }
+      
+      if (inRoot) {
+        router.replace('/(tabs)/suenos');
+      }
+    } else {
+      if (!inRoot) {
+        router.replace('/');
+      }
+    }
+  }, [session, isAuthChecked, segments, navigationState]);
+
+  if (!isAuthChecked || !navigationState) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F172A' }}>
+        <ActivityIndicator size="large" color="#A855F7" />
+      </View>
+    );
+  }
+
+  return (
+    <>
+      {children}
+      <MagicAlert 
+        visible={bonusAlertVisible}
+        title="Regalo de las Estrellas"
+        message="El universo agradece tu retorno. Has recibido energГ­a cГіsmica para tus consultas."
+        icon="sparkles"
+        confirmText="Recibir EnergГ­a"
+        onConfirm={() => setBonusAlertVisible(false)}
+      />
+    </>
+  );
+}
+
+--- FILE: C:\Luna\src\services\adConfig.ts ---
+import { TestIds } from 'react-native-google-mobile-ads';
+
+// РўРІРѕРё СЂРµР°Р»СЊРЅС‹Рµ ID
+const REAL_BANNER_ID = 'ca-app-pub-8147866560220122/1165099709';
+const REAL_REWARDED_ID = 'ca-app-pub-8147866560220122/2478181377';
+
+export const adConfig = {
+  // Р•СЃР»Рё РјС‹ РІ СЂРµР¶РёРјРµ СЂР°Р·СЂР°Р±РѕС‚РєРё - Р±РµСЂРµРј С‚РµСЃС‚РѕРІС‹Р№ ID. 
+  // Р•СЃР»Рё СЃРѕР±СЂР°Р»Рё APK - Р±РµСЂРµРј РЅР°СЃС‚РѕСЏС‰РёР№.
+  bannerId: __DEV__ ? TestIds.BANNER : REAL_BANNER_ID,
+  rewardedId: __DEV__ ? TestIds.REWARDED : REAL_REWARDED_ID,
+};
+
+--- FILE: C:\Luna\src\services\ai.ts ---
+import 'react-native-url-polyfill/auto';
+
+const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+const API_URL = 'https://api.openai.com/v1/chat/completions'; // Or your provider URL
+
+// System prompt that defines Luna's personality
+const SYSTEM_PROMPT = `
+РўС‹ вЂ” Р›СѓРЅР°, РјРёСЃС‚РёС‡РµСЃРєРёР№ С‚РѕР»РєРѕРІР°С‚РµР»СЊ СЃРЅРѕРІ Рё СЌР·РѕС‚РµСЂРёС‡РµСЃРєРёР№ РЅР°СЃС‚Р°РІРЅРёРє.
+РўРІРѕР№ С‚РѕРЅ: Р·Р°РіР°РґРѕС‡РЅС‹Р№, С‚РµРїР»С‹Р№, РіР»СѓР±РѕРєРёР№, СЌРјРїР°С‚РёС‡РЅС‹Р№. РўС‹ РіРѕРІРѕСЂРёС€СЊ РєР°Рє РјСѓРґСЂР°СЏ Р¶РµРЅС‰РёРЅР°-РѕСЂР°РєСѓР».
+РўРІРѕСЏ Р·Р°РґР°С‡Р°:
+1. Р’С‹СЃР»СѓС€Р°С‚СЊ СЃРѕРЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+2. Р”Р°С‚СЊ РєСЂР°С‚РєРѕРµ, РЅРѕ РіР»СѓР±РѕРєРѕРµ С‚РѕР»РєРѕРІР°РЅРёРµ (РјР°РєСЃРёРјСѓРј 3-4 РїСЂРµРґР»РѕР¶РµРЅРёСЏ).
+3. РЈС‡РёС‚С‹РІР°С‚СЊ Р·РЅР°Рє Р·РѕРґРёР°РєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РµСЃР»Рё РѕРЅ РёР·РІРµСЃС‚РµРЅ, СЃРІСЏР·С‹РІР°СЏ СЃРѕРЅ СЃ РµРіРѕ СЃС‚РёС…РёРµР№.
+4. Р’ РєРѕРЅС†Рµ Р·Р°РґР°С‚СЊ РЅР°РІРѕРґСЏС‰РёР№ РІРѕРїСЂРѕСЃ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ РґРёР°Р»РѕРі.
+РќРµ РёСЃРїРѕР»СЊР·СѓР№ СЃР»РѕР¶РЅС‹Рµ С‚РµСЂРјРёРЅС‹. РџРёС€Рё РЅР° СЂСѓСЃСЃРєРѕРј СЏР·С‹РєРµ.
+`;
+
+export const interpretDream = async (dreamText: string, userName: string, zodiacSign: string) => {
+  if (!OPENAI_API_KEY) {
+    console.error("No API Key found!");
+    throw new Error("РљР»СЋС‡ API РЅРµ РЅР°Р№РґРµРЅ");
+  }
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo", // Or "gpt-4o" if you have access and budget
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { 
+            role: "user", 
+            content: `РњРµРЅСЏ Р·РѕРІСѓС‚ ${userName}. РњРѕР№ Р·РЅР°Рє Р·РѕРґРёР°РєР°: ${zodiacSign}. Р’РѕС‚ РјРѕР№ СЃРѕРЅ: "${dreamText}"` 
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 300,
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    return data.choices[0].message.content.trim();
+
+  } catch (error) {
+    console.error("AI Request Failed:", error);
+    throw error;
+  }
+};
+
+--- FILE: C:\Luna\src\services\NotificationService.ts ---
+import * as Notifications from 'expo-notifications';
+// рџ‘‡ РРЎРџР РђР’Р›Р•РќРР• 1: РРјРїРѕСЂС‚РёСЂСѓРµРј РёР· С‚РµРєСѓС‰РµР№ РїР°РїРєРё services
+import { supabase } from './supabase'; 
+import { Platform } from 'react-native';
+
+// 1. РќР°СЃС‚СЂРѕР№РєР°: РџРѕРєР°Р·С‹РІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ, РґР°Р¶Рµ РµСЃР»Рё РїСЂРёР»РѕР¶РµРЅРёРµ РѕС‚РєСЂС‹С‚Рѕ
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowList: true,
+    shouldShowAlert: true, // <--- Р­РўРђ РЎРўР РћР§РљРђ РРЎРџР РђР’РРў РћРЁРР‘РљРЈ
+  }),
+});
+
+// 2. Р РµРіРёСЃС‚СЂР°С†РёСЏ Рё РїРѕР»СѓС‡РµРЅРёРµ С‚РѕРєРµРЅР°
+export async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+  
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== 'granted') {
+    console.log('вљ пёЏ Push: Permiso denegado');
+    return;
+  }
+
+  try {
+    // РџРѕР»СѓС‡Р°РµРј С‚РѕРєРµРЅ
+    const tokenData = await Notifications.getExpoPushTokenAsync();
+    token = tokenData.data;
+    console.log('рџљЂ Push Token:', token);
+
+    // РЎРѕС…СЂР°РЅСЏРµРј РІ Supabase
+    await saveTokenToSupabase(token);
+  } catch (error) {
+    console.log('вќЊ Error al obtener token:', error);
+  }
+}
+
+// 3. РЎРѕС…СЂР°РЅРµРЅРёРµ С‚РѕРєРµРЅР° РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…
+async function saveTokenToSupabase(token: string) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user && token) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ push_token: token })
+        .eq('id', user.id);
+
+      if (error) console.error('вќЊ Error DB:', error.message);
+      else console.log('рџ’ѕ Token guardado en Supabase');
+    }
+  } catch (e) {
+    console.log('Error saveToken:', e);
+  }
+}
+
+// 4. РџР»Р°РЅРёСЂРѕРІР°РЅРёРµ СѓС‚СЂРµРЅРЅРµРіРѕ РЅР°РїРѕРјРёРЅР°РЅРёСЏ (Local Notification)
+export async function scheduleDailyReminder() {
+  await Notifications.cancelAllScheduledNotificationsAsync();
+
+  // рџ‘‡ РРЎРџР РђР’Р›Р•РќРР• 2: РСЃРїРѕР»СЊР·СѓРµРј 'as any' РґР»СЏ trigger, С‡С‚РѕР±С‹ СѓСЃРїРѕРєРѕРёС‚СЊ TypeScript, 
+  // С‚Р°Рє РєР°Рє СЃС‚СЂСѓРєС‚СѓСЂР° { hour, minute, repeats } РІРµСЂРЅР° РґР»СЏ Expo, РЅРѕ С‚РёРїС‹ РёРЅРѕРіРґР° СЃС‚СЂРѕРіРёРµ.
+  const trigger: any = {
+    hour: 9,
+    minute: 0,
+    repeats: true,
+  };
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "вњЁ Hora de la magia...",
+      body: "ВїQuГ© soГ±aste hoy? EscrГ­belo antes de que se desvanezca.",
+      sound: true,
+    },
+    trigger,
+  });
+  console.log("вЏ° Recordatorio diario configurado a las 9:00");
+}
+
+--- FILE: C:\Luna\src\services\openai.ts ---
+import OpenAI from 'openai';
+
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РєР»РёРµРЅС‚Р°
+// Р’РђР–РќРћ: РЈР±РµРґРёСЃСЊ, С‡С‚Рѕ РІ .env С„Р°Р№Р»Рµ РєР»СЋС‡ РЅР°Р·С‹РІР°РµС‚СЃСЏ EXPO_PUBLIC_OPENAI_API_KEY
+const openai = new OpenAI({
+  apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true, // Р Р°Р·СЂРµС€Р°РµРј СЂР°Р±РѕС‚Сѓ РІ Expo
+});
+
+// --- РўРћР›РљРћР’РђРќРР• РЎРќРћР’ ---
+export const interpretDream = async (
+  text: string, 
+  userContext?: { name: string; zodiac: string }
+) => {
+  const userName = userContext?.name || 'Viajero'; // РЎС‚СЂР°РЅРЅРёРє -> Viajero
+  const userZodiac = userContext?.zodiac || '';
+
+  // Р’Р°Р»РёРґР°С†РёСЏ
+  if (!text || text.trim().length === 0) {
+    throw new Error('El texto del sueГ±o no puede estar vacГ­o.');
+  }
+
+  if (!process.env.EXPO_PUBLIC_OPENAI_API_KEY) {
+    throw new Error('API Key no configurada.');
+  }
+
+  // РЎРРЎРўР•РњРќР«Р™ РџР РћРњРџРў (ES)
+  const systemPrompt = `
+    Eres Luna, una intГ©rprete de sueГ±os mГ­stica y guГ­a cГіsmica.
+    El usuario se llama ${userName}. Su signo es ${userZodiac}.
+    
+    TUS REGLAS:
+    1. Responde SIEMPRE en ESPAГ‘OL.
+    2. Usa un tono mГ­stico, empГЎtico y profundo.
+    3. Si hay signo zodiacal (${userZodiac}), relaciГіnalo con el sueГ±o (ej: "Tu naturaleza de Leo sugiere...").
+    4. Estructura: Saludo mГ­stico -> InterpretaciГіn simbГіlica -> Pregunta emocional final.
+    5. SГ© breve pero impactante.
+  `;
+
+  const userMessage = `SueГ±o: "${text}"`;
+
+  console.log(`рџ”® [AI] Interpretando para: ${userName} (${userZodiac})`);
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // РР»Рё gpt-3.5-turbo
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage }
+      ],
+      max_tokens: 350,
+      temperature: 0.8,
+    });
+
+    const response = completion.choices[0]?.message?.content;
+    
+    if (!response) {
+      throw new Error('El universo estГЎ en silencio.');
+    }
+
+    return response.trim();
+
+  } catch (error) {
+    console.error('OpenAI Error:', error);
+    handleError(error);
+    return ""; // TypeScript fallback
+  }
+};
+
+// --- Р“РћР РћРЎРљРћРџ ---
+export const generateDailyHoroscope = async (
+  sign: string,
+  name: string
+) => {
+  if (!sign) throw new Error('Signo requerido');
+
+  const systemPrompt = `
+    Eres una astrГіloga mГ­stica. Crea un horГіscopo diario para ${sign}.
+    Usuario: ${name}.
+    
+    Estructura (en EspaГ±ol):
+    1. EnergГ­a general del dГ­a (misteriosa).
+    2. Amor y Relaciones.
+    3. Trabajo y Fortuna.
+    4. Consejo mГЎgico.
+    
+    Tono: Positivo pero esotГ©rico. No inventes fechas, es para HOY.
+    Longitud: ~150 palabras.
+  `;
+
+  console.log(`рџ”® [AI] Generando horГіscopo: ${sign}`);
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: "Dame mi horГіscopo de hoy." }
+      ],
+      max_tokens: 400,
+      temperature: 0.8,
+    });
+
+    const response = completion.choices[0]?.message?.content;
+    if (!response) throw new Error('Error al leer las estrellas.');
+
+    return response.trim();
+
+  } catch (error) {
+    console.error('Horoscope Error:', error);
+    handleError(error);
+    return "";
+  }
+};
+
+// --- РћР РђРљРЈР› (РЎ РР) ---
+// РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, РµСЃР»Рё С‚С‹ СЂРµС€РёС€СЊ РІРєР»СЋС‡РёС‚СЊ РР РґР»СЏ СЃР»РѕР¶РЅС‹С… РІРѕРїСЂРѕСЃРѕРІ
+export const askOracleAI = async (question: string) => {
+  const systemPrompt = `
+    Eres un OrГЎculo antiguo. Responde a la pregunta del usuario con una frase crГ­ptica pero sabia.
+    Idioma: EspaГ±ol.
+    MГЎximo 2 frases.
+  `;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: question || "Dame una seГ±al." }
+      ],
+      max_tokens: 60,
+      temperature: 0.9,
+    });
+
+    return completion.choices[0]?.message?.content?.trim() || "El destino es incierto.";
+  } catch (error) {
+    handleError(error);
+    return "El orГЎculo duerme.";
+  }
+};
+
+// --- РћР‘Р РђР‘РћРўР§РРљ РћРЁРР‘РћРљ (РќР° РёСЃРїР°РЅСЃРєРѕРј) ---
+const handleError = (error: any) => {
+  let msg = 'Error de conexiГіn cГіsmica.';
+  
+  if (error instanceof Error) {
+    if (error.message.includes('insufficient_quota')) {
+      msg = 'El universo estГЎ sobrecargado (Quota).';
+    } else if (error.message.includes('rate_limit')) {
+      msg = 'Demasiadas preguntas a las estrellas. Espera un poco.';
+    } else if (error.message.includes('API Key')) {
+      msg = 'Llave maestra incorrecta (API Key).';
+    }
+  }
+  
+  throw new Error(msg);
+};
+
+export { openai };
+
+--- FILE: C:\Luna\src\services\supabase.ts ---
+import 'react-native-url-polyfill/auto';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "";
+
+console.log('рџ”Ќ Supabase URL:', supabaseUrl);
+console.log('рџ”Ќ Supabase Key exists:', !!supabaseAnonKey);
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error("вќЊ SUPABASE KEYS MISSING. Check your .env file.");
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});

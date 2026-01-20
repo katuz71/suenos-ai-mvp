@@ -1,20 +1,18 @@
 import * as Notifications from 'expo-notifications';
-// 👇 ИСПРАВЛЕНИЕ 1: Импортируем из текущей папки services
 import { supabase } from './supabase'; 
 import { Platform } from 'react-native';
 
-// 1. Настройка: Показываем уведомление, даже если приложение открыто
+// 1. Setup: Show notifications even if the app is open
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
+    shouldShowAlert: true,
     shouldShowBanner: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
-    shouldShowList: true,
-    shouldShowAlert: true, // <--- ЭТА СТРОЧКА ИСПРАВИТ ОШИБКУ
   }),
 });
 
-// 2. Регистрация и получение токена
+// 2. Registration and token retrieval
 export async function registerForPushNotificationsAsync() {
   let token;
 
@@ -36,24 +34,22 @@ export async function registerForPushNotificationsAsync() {
   }
 
   if (finalStatus !== 'granted') {
-    console.log('⚠️ Push: Permiso denegado');
+    console.log('Push: Permission denied');
     return;
   }
 
   try {
-    // Получаем токен
     const tokenData = await Notifications.getExpoPushTokenAsync();
     token = tokenData.data;
-    console.log('🚀 Push Token:', token);
+    console.log('Push Token retrieved');
 
-    // Сохраняем в Supabase
     await saveTokenToSupabase(token);
   } catch (error) {
-    console.log('❌ Error al obtener token:', error);
+    console.log('Error getting token:', error);
   }
 }
 
-// 3. Сохранение токена в базу данных
+// 3. Save token to Database
 async function saveTokenToSupabase(token: string) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -64,23 +60,22 @@ async function saveTokenToSupabase(token: string) {
         .update({ push_token: token })
         .eq('id', user.id);
 
-      if (error) console.error('❌ Error DB:', error.message);
-      else console.log('💾 Token guardado en Supabase');
+      if (error) console.error('DB Error:', error.message);
+      else console.log('Token saved to Supabase');
     }
   } catch (e) {
     console.log('Error saveToken:', e);
   }
 }
 
-// 4. Планирование утреннего напоминания (Local Notification)
+// 4. Schedule daily morning reminder
 export async function scheduleDailyReminder() {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
-  // 👇 ИСПРАВЛЕНИЕ 2: Используем 'as any' для trigger, чтобы успокоить TypeScript, 
-  // так как структура { hour, minute, repeats } верна для Expo, но типы иногда строгие.
+  // Set trigger to 08:30 AM as per Strategy
   const trigger: any = {
-    hour: 9,
-    minute: 0,
+    hour: 8,
+    minute: 30,
     repeats: true,
   };
 
@@ -92,5 +87,5 @@ export async function scheduleDailyReminder() {
     },
     trigger,
   });
-  console.log("⏰ Recordatorio diario configurado a las 9:00");
+  console.log("Daily reminder scheduled at 08:30");
 }

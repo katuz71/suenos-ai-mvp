@@ -11,9 +11,8 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        // Цвета обновлены под "Золотую/Магическую" тему
-        tabBarActiveTintColor: '#FFD700', // Золотой активный
-        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)', // Полупрозрачный белый
+        tabBarActiveTintColor: '#FFD700', 
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)', 
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
@@ -21,19 +20,19 @@ export default function TabLayout() {
           marginBottom: Platform.OS === 'android' ? 8 : 0,
         },
         tabBarStyle: {
-          backgroundColor: '#0f0c29', // Глубокий темно-синий (как на фонах экранов)
-          borderTopColor: 'rgba(255, 215, 0, 0.1)', // Тонкая золотая линия сверху
-          height: 70 + insets.bottom, // Чуть компактнее
+          backgroundColor: '#0f0c29', 
+          borderTopColor: 'rgba(255, 215, 0, 0.1)', 
+          height: 70 + insets.bottom, 
           paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
-          elevation: 0, // Убираем тень на Android для чистого вида
+          elevation: 0, 
         },
       }}
     >
       <Tabs.Screen
         name="suenos"
         options={{
-          title: 'Sueños', // Перевод
+          title: 'Sueños', 
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "moon" : "moon-outline"} size={24} color={color} />
           ),
@@ -42,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="horoscope"
         options={{
-          title: 'Horóscopo', // Перевод
+          title: 'Horóscopo', 
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "star" : "star-outline"} size={24} color={color} />
           ),
@@ -51,7 +50,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="oracle"
         options={{
-          title: 'Oráculo', // Перевод
+          title: 'Oráculo', 
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "sparkles" : "sparkles-outline"} size={24} color={color} />
           ),

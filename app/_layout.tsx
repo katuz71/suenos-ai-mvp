@@ -7,10 +7,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import Purchases from 'react-native-purchases';
 import mobileAds from 'react-native-google-mobile-ads';
 import { Settings } from 'react-native-fbsdk-next';
-// Импортируем наш новый сервис
 import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../src/services/NotificationService';
 
-// Игнорируем ошибку сплэша
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync().catch((e) => {
   console.warn("SplashScreen warning:", e);
 });
@@ -23,28 +22,31 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
+        // 1. Load basic assets
         await Font.loadAsync(Ionicons.font);
 
-        // --- 1. Инициализация SDK ---
+        // 2. Initialize AdMob
         await mobileAds().initialize();
-        console.log("✅ AdMob: Инициализирован");       
+        console.log("AdMob: Initialized");       
 
-        await Settings.initializeSDK();
+        // 3. Initialize Meta (Facebook) SDK with full tracking permissions
+        // This is crucial for purchase analytics and ad optimization
         await Settings.setAdvertiserTrackingEnabled(true);
-        console.log("✅ Meta SDK: Инициализирован");    
+        await Settings.initializeSDK();
+        await Settings.setAutoLogAppEventsEnabled(true);
+        console.log("Meta SDK: Fully Initialized");    
 
+        // 4. Initialize RevenueCat
         await Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);        
         await Purchases.configure({ apiKey: REVENUECAT_API_KEY });    
-        console.log("✅ RevenueCat: Инициализирован"); 
+        console.log("RevenueCat: Initialized"); 
 
-        // --- 2. Настройка Уведомлений ---
-        // Запрашиваем права и сохраняем токен
+        // 5. Setup Push Notifications
         await registerForPushNotificationsAsync();
-        // Ставим будильник на утро
         await scheduleDailyReminder();
 
       } catch (e) {
-        console.warn("Ошибка при подготовке приложения:", e);
+        console.warn("Error during app preparation:", e);
       } finally {
         setAppReady(true);
         await SplashScreen.hideAsync();

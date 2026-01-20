@@ -1,10 +1,8 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
-import { useDailyBonus } from '../hooks/useDailyBonus';
-import MagicAlert from '../components/MagicAlert';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -13,16 +11,10 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [bonusAlertVisible, setBonusAlertVisible] = useState(false);
   
   const segments = useSegments();
   const router = useRouter();
   const navigationState = useRootNavigationState();
-  
-  useDailyBonus({
-    onBonusGranted: () => setBonusAlertVisible(true),
-    onError: (error) => console.error('Daily bonus error:', error)
-  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -44,16 +36,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!isAuthChecked || !navigationState) return;
 
     const currentSegment = segments[0];
-    const inTabs = currentSegment === '(tabs)';
     const inRoot = !currentSegment;
-    const isPaywall = currentSegment === 'paywall';
-    const isEnergy = currentSegment === 'energy';
 
     if (session) {
-      if (isPaywall || isEnergy) {
-        return;
-      }
-      
       if (inRoot) {
         router.replace('/(tabs)/suenos');
       }
@@ -72,17 +57,5 @@ export function AuthProvider({ children }: AuthProviderProps) {
     );
   }
 
-  return (
-    <>
-      {children}
-      <MagicAlert 
-        visible={bonusAlertVisible}
-        title="Regalo de las Estrellas"
-        message="El universo agradece tu retorno. Has recibido energía cósmica para tus consultas."
-        icon="sparkles"
-        confirmText="Recibir Energía"
-        onConfirm={() => setBonusAlertVisible(false)}
-      />
-    </>
-  );
+  return <>{children}</>;
 }

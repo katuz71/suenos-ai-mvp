@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "suenos-ai-mvp",
+    "name": "Luna",
     "slug": "suenos-ai-mvp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -53,7 +53,7 @@
         {
           "appID": "1145794384111849",
           "clientToken": "ffb5c511af4ceef5cdd8a1ca7a3467a6",
-          "displayName": "Luna AI",
+          "displayName": "Luna",
           "advertiserIDCollectionEnabled": true,
           "autoLogAppEventsEnabled": true
         }

@@ -1,10 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
-// import { 
-//   RewardedAd, 
-//   RewardedAdEventType, 
-//   TestIds 
-// } from 'react-native-google-mobile-ads';
 import { supabase } from '../services/supabase';
 import { useMonetization } from './useMonetization';
 
@@ -14,7 +9,7 @@ export function useRewardedAd() {
   const { refreshStatus } = useMonetization();
 
   useEffect(() => {
-    // Симуляция загрузки
+    // Ad loading simulation
     const timer = setTimeout(() => setLoaded(true), 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -39,14 +34,13 @@ export function useRewardedAd() {
         .eq('id', user.id);
 
       await refreshStatus();
-      Alert.alert('Успех!', 'Тестовая награда получена (+1 ✨)');
+      Alert.alert('¡Éxito!', 'Has recibido una recompensa estelar (+1 ✨)');
       
-      // Перезагрузка "рекламы"
       setLoaded(false);
       setTimeout(() => setLoaded(true), 2000);
     } catch (e) {
       console.error(e);
-      Alert.alert('Ошибка', 'Сбой начисления');
+      Alert.alert('Error', 'No se pudo procesar la recompensa.');
     } finally {
       setLoading(false);
     }
@@ -54,11 +48,11 @@ export function useRewardedAd() {
 
   const showAd = () => {
     Alert.alert(
-      "Режим разработки",
-      "Видео недоступно в Expo Go. Начислить награду сразу?",
+      "Modo de Desarrollo",
+      "El video no está disponible en Expo Go. ¿Deseas recibir la recompensa ahora?",
       [
-        { text: "Отмена", style: "cancel" },
-        { text: "Да, начислить", onPress: grantReward }
+        { text: "Cancelar", style: "cancel" },
+        { text: "Sí, recibir", onPress: grantReward }
       ]
     );
   };

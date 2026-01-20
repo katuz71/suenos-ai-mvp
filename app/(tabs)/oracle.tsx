@@ -12,7 +12,7 @@ import MagicAlert from '../../src/components/MagicAlert';
 
 const { width, height } = Dimensions.get('window');
 
-// --- ЛОКАЛЬНЫЕ ОТВЕТЫ (ESPAÑOL) ---
+// --- LOCAL ANSWERS (ESPAÑOL) ---
 const MAGICAL_ANSWERS = [
   "Las estrellas dicen: SÍ.",
   "El destino es incierto, pregunta más tarde.",
@@ -28,7 +28,7 @@ const MAGICAL_ANSWERS = [
   "La suerte está de tu lado."
 ];
 
-// Компонент мерцающей звезды
+// Component for twinkling stars effect
 const TwinklingStar = ({ index }: { index: number }) => {
   const opacity = useRef(new Animated.Value(Math.random() * 0.8 + 0.1)).current;
   
@@ -77,7 +77,6 @@ export default function OracleScreen() {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [showEnergyAlert, setShowEnergyAlert] = useState(false);
   
-  // Анимации
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0.3)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -86,6 +85,7 @@ export default function OracleScreen() {
   const flashAnim = useRef(new Animated.Value(0)).current;
   const hintTextOpacity = useRef(new Animated.Value(0)).current;
 
+  // Background animations init
   React.useEffect(() => {
     const pulse = Animated.loop(
       Animated.sequence([
@@ -119,8 +119,6 @@ export default function OracleScreen() {
     }, [])
   );
 
-  React.useEffect(() => { fetchProfile(); }, []);
-
   const fetchProfile = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -139,7 +137,7 @@ export default function OracleScreen() {
     if (!oracleAnswer) return;
     try {
       await Share.share({
-        message: `🔮 Oráculo dice:\n\n${oracleAnswer}\n\n✨ Sueños AI`,
+        message: `🔮 Oráculo dice:\n\n${oracleAnswer}\n\n✨ Luna`,
         url: 'https://suenos-ai.app'
       });
     } catch (error) { console.log('Error sharing:', error); }
@@ -354,33 +352,30 @@ export default function OracleScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000000' },
   stardustContainer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  star: { position: 'absolute', width: 2, height: 2, borderRadius: 1, backgroundColor: '#fff', shadowColor: '#fff', shadowOpacity: 0.8, shadowRadius: 2, elevation: 3 },
+  star: { position: 'absolute', width: 2, height: 2, borderRadius: 1, backgroundColor: '#fff' },
   content: { flex: 1, paddingHorizontal: 24, paddingVertical: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 40, marginBottom: 60 },
   headerTextContainer: { flex: 1 },
-  greeting: { fontSize: 28, fontWeight: '700', color: '#fff', letterSpacing: 0.5, textShadowColor: 'rgba(147, 51, 234, 0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 },
-  zodiacText: { fontSize: 18, color: '#ffd700', marginTop: 4, fontWeight: '500', opacity: 0.9 },
+  greeting: { fontSize: 28, fontWeight: '700', color: '#fff' },
+  zodiacText: { fontSize: 18, color: '#ffd700', marginTop: 4 },
   energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 215, 0, 0.1)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', marginTop: -20 },
   energyText: { color: '#ffd700', fontWeight: 'bold', fontSize: 16, marginLeft: 6 },
-
   hintContainer: { alignItems: 'center', marginBottom: 40 },
-  hintText: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 16, fontStyle: 'italic', textAlign: 'center', lineHeight: 24 },
-
+  hintText: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 16, fontStyle: 'italic', textAlign: 'center' },
   oracleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  sphereContainer: { alignItems: 'center', justifyContent: 'center', position: 'relative' },
-  outerGlow: { position: 'absolute', width: 240, height: 240, borderRadius: 120, backgroundColor: 'rgba(147, 51, 234, 0.3)', shadowColor: '#9333EA', shadowOpacity: 0.8, shadowRadius: 40, elevation: 30 },
-  sphere: { width: 200, height: 200, borderRadius: 100, shadowColor: '#9333EA', shadowOpacity: 0.6, shadowRadius: 30, elevation: 20 },
+  sphereContainer: { alignItems: 'center', justifyContent: 'center' },
+  outerGlow: { position: 'absolute', width: 240, height: 240, borderRadius: 120, backgroundColor: 'rgba(147, 51, 234, 0.3)' },
+  sphere: { width: 200, height: 200, borderRadius: 100 },
   sphereGradient: { flex: 1, borderRadius: 100, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'rgba(147, 51, 234, 0.4)' },
   sphereContent: { alignItems: 'center' },
-  sphereText: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 12, marginTop: 12, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 2, textAlign: 'center' },
-
+  sphereText: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 12, marginTop: 12, letterSpacing: 2 },
   answerContainer: { alignItems: 'center', width: '100%' },
   answerSphere: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(255, 215, 0, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 20, borderWidth: 2, borderColor: 'rgba(255, 215, 0, 0.3)' },
   answerBox: { backgroundColor: 'rgba(255, 215, 0, 0.05)', borderRadius: 20, padding: 20, marginTop: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)', minHeight: 100 },
   answerHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, justifyContent: 'space-between' },
   answerTitle: { fontSize: 18, fontWeight: '700', color: '#ffd700', textAlign: 'center', flex: 1 },
-  shareButton: { padding: 8, borderRadius: 20, backgroundColor: 'rgba(255, 215, 0, 0.1)', borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)' },
-  answerText: { color: '#ffd700', fontSize: 20, lineHeight: 28, textAlign: 'center', fontStyle: 'italic', fontWeight: '500', textShadowColor: 'rgba(255, 215, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
-  resetButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', backgroundColor: 'rgba(255, 215, 0, 0.05)' },
-  resetText: { color: '#ffd700', fontSize: 14, fontWeight: '500', marginLeft: 8 },
+  shareButton: { padding: 8, borderRadius: 20, backgroundColor: 'rgba(255, 215, 0, 0.1)' },
+  answerText: { color: '#ffd700', fontSize: 20, lineHeight: 28, textAlign: 'center', fontStyle: 'italic' },
+  resetButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', marginTop: 20 },
+  resetText: { color: '#ffd700', fontSize: 14, marginLeft: 8 },
 });

@@ -4,13 +4,12 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useMonetization } from '../src/hooks/useMonetization';
-// Исправленный импорт аналитики для устранения WARN
 import firebaseAnalytics from '@react-native-firebase/analytics';
 
 const ENERGY_PACKS = [
-  { id: 'energy_10_v2', amount: 10, price: '199 ₽', numericPrice: 199, icon: 'flash-outline' },
-  { id: 'energy_50_v2', amount: 50, price: '799 ₽', numericPrice: 799, icon: 'flash', popular: true },
-  { id: 'energy_150_v2', amount: 150, price: '1 990 ₽', numericPrice: 1990, icon: 'thunderstorm' },
+  { id: 'energy_10_v2', amount: 10, price: '1,99 €', numericPrice: 1.99, icon: 'flash-outline' },
+  { id: 'energy_50_v2', amount: 50, price: '3,99 €', numericPrice: 3.99, icon: 'flash', popular: true },
+  { id: 'energy_150_v2', amount: 150, price: '9,99 €', numericPrice: 9.99, icon: 'thunderstorm' },
 ];
 
 export default function PaywallScreen() {
@@ -23,7 +22,6 @@ export default function PaywallScreen() {
     if (!pack) return;
 
     try {
-      // 1. Логируем попытку покупки (современный синтаксис)
       await firebaseAnalytics().logEvent('energy_purchase_attempt', {
         item_id: selectedPack,
         energy_amount: pack.amount
@@ -32,21 +30,18 @@ export default function PaywallScreen() {
       const success = await buyPremium(selectedPack);
       
       if (success) {
-        // 2. Логируем успех с передачей ценности (Revenue)
         await firebaseAnalytics().logEvent('energy_purchase_success', {
           item_id: selectedPack,
           value: pack.numericPrice,
-          currency: 'RUB', // Важно для отчетов о доходах
+          currency: 'EUR', 
           energy_amount: pack.amount
         });
-        
-        console.log(`📈 Аналитика: Событие покупки ${selectedPack} на сумму ${pack.numericPrice} RUB отправлено`);
         
         await refreshStatus();
         router.replace('/(tabs)/suenos');
       }
     } catch (error) {
-      console.error('Ошибка покупки:', error);
+      console.error('Error de compra:', error);
     }
   };
 
@@ -62,8 +57,8 @@ export default function PaywallScreen() {
         <ScrollView contentContainerStyle={styles.scroll}>
           <View style={styles.header}>
             <Ionicons name="sparkles" size={60} color="#ffd700" />
-            <Text style={styles.title}>Заряди свою Луну</Text>
-            <Text style={styles.subtitle}>Энергия нужна для толкования снов и глубоких предсказаний.</Text>
+            <Text style={styles.title}>Recarga tu Energía</Text>
+            <Text style={styles.subtitle}>La energía es necesaria para interpretar tus sueños y recibir predicciones profundas.</Text>
           </View>
 
           {ENERGY_PACKS.map((pack) => (
@@ -75,8 +70,8 @@ export default function PaywallScreen() {
               <View style={styles.planInfo}>
                 <Ionicons name={pack.icon as any} size={24} color={selectedPack === pack.id ? "#ffd700" : "#fff"} />
                 <View style={{ marginLeft: 15 }}>
-                  <Text style={styles.planTitle}>{pack.amount} Энергии</Text>
-                  {pack.popular && <Text style={styles.popularTag}>ПОПУЛЯРНО</Text>}
+                  <Text style={styles.planTitle}>{pack.amount} Energías</Text>
+                  {pack.popular && <Text style={styles.popularTag}>MÁS POPULAR</Text>}
                 </View>
               </View>
               <Text style={styles.planPrice}>{pack.price}</Text>
@@ -86,7 +81,7 @@ export default function PaywallScreen() {
 
         <View style={styles.footer}>
           <TouchableOpacity style={styles.cta} onPress={handlePurchase} disabled={loading}>
-            {loading ? <ActivityIndicator color="#0f0c29" /> : <Text style={styles.ctaText}>Купить энергию</Text>}
+            {loading ? <ActivityIndicator color="#0f0c29" /> : <Text style={styles.ctaText}>Obtener Energía</Text>}
           </TouchableOpacity>
         </View>
       </View>
