@@ -10,7 +10,8 @@ const ENERGY_VALUES: Record<string, number> = {
 };
 
 const BONUS_DATE_KEY = 'daily_bonus_date_v1';
-const DAILY_BONUS_AMOUNT = 3; 
+// 👇 ТУТ СТАВИМ 1 (Это бонус за удержание со второго дня)
+const DAILY_BONUS_AMOUNT = 1; 
 
 export const useMonetization = () => {
   const [credits, setCredits] = useState(0);
@@ -134,12 +135,12 @@ export const useMonetization = () => {
 
   return { 
     credits, 
-    isPremium: false, // 👈 ВОТ ЭТО ИСПРАВЛЯЕТ ОШИБКУ КРАСНОГО ПОДЧЕРКИВАНИЯ
+    isPremium: false,
     loading, 
     buyPremium, 
     addFreeEnergy, 
     spendEnergy, 
-    checkDailyBonus, // 👈 ВОТ ЭТО НУЖНО ДЛЯ БОНУСА
+    checkDailyBonus,
     refreshStatus: fetchStatus 
   };
 };

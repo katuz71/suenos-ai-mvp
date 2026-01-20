@@ -37,33 +37,31 @@ type Message = {
 
 type ScreenMode = 'input' | 'chat';
 
+const BONUS_DATE_KEY = 'daily_bonus_date_v1';
+
 export default function SuenosScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  // 👇 ДОБАВИЛ checkDailyBonus СЮДА
   const { credits, isPremium, refreshStatus, spendEnergy, checkDailyBonus } = useMonetization();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   
+  const bonusCheckLock = useRef(false);
+
   const [userName, setUserName] = useState<string>('Viajero');
   const [userZodiac, setUserZodiac] = useState('');
-
   const [mode, setMode] = useState<ScreenMode>('input');
   const [currentDreamId, setCurrentDreamId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  
   const [dreamText, setDreamText] = useState(''); 
   const [chatInputText, setChatInputText] = useState(''); 
   const [loading, setLoading] = useState(false);
-  
   const [dreamHistory, setDreamHistory] = useState<DreamEntry[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false); 
   const [refreshing, setRefreshing] = useState(false);
-
   const [magicAlert, setMagicAlert] = useState({ visible: false, title: '', message: '', icon: '' });
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
-
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -83,47 +81,59 @@ export default function SuenosScreen() {
     return () => kbdShow.remove();
   }, [messages, mode, loading]);
 
+  // --- ГЛАВНАЯ ЛОГИКА БОНУСОВ ---
   useEffect(() => {
-    const loadLocalProfile = async () => {
+    const handleWelcomeAndBonus = async () => {
       const name = await AsyncStorage.getItem('user_name');
       const sign = await AsyncStorage.getItem('user_zodiac');
       if (name) setUserName(name);
       if (sign) setUserZodiac(sign);
 
+      // СЦЕНАРИЙ 1: НОВИЧОК (Только что зарегистрировался)
       if (params.welcome === 'true') {
+        if (bonusCheckLock.current) return;
+        bonusCheckLock.current = true;
+
+        // Ставим "галочку" на сегодня, чтобы не дать ежедневный бонус сверху
+        const today = new Date().toISOString().split('T')[0];
+        await AsyncStorage.setItem(BONUS_DATE_KEY, today);
+
+        // Показываем красивый алерт (визуализация 3 энергий от базы)
         setMagicAlert({
           visible: true,
           title: "¡Regalo Estelar! ✨",
           message: "Has recibido 3 energías para empezar.",
           icon: "star"
         });
+        
         router.setParams({ welcome: '' });
+        return; 
       }
-    };
-    loadLocalProfile();
-  }, [params.welcome]);
 
-  // 👇 НОВЫЙ БЛОК ДЛЯ ПРОВЕРКИ БОНУСА
-  useEffect(() => {
-    const runBonusCheck = async () => {
-      setTimeout(async () => {
-        // Проверяем, существует ли функция, перед вызовом (на всякий случай)
-        if (checkDailyBonus) {
+      // СЦЕНАРИЙ 2: СТАРЫЙ ЮЗЕР (Ежедневный бонус)
+      if (!bonusCheckLock.current) {
+        bonusCheckLock.current = true;
+        setTimeout(async () => {
+          if (checkDailyBonus) {
+            // Эта функция проверит галочку. Если мы сегодня уже были "новичком", 
+            // она вернет false. Если зашли завтра - вернет true и даст +1.
             const bonusGiven = await checkDailyBonus();
             if (bonusGiven) {
               setMagicAlert({
                 visible: true,
                 title: "¡Regalo Diario! 🎁",
-                message: "Has recibido +3 energías por volver hoy.",
+                message: "Has recibido +1 energía por volver hoy.",
                 icon: "star"
               });
             }
-        }
-      }, 1000);
+          }
+        }, 1500);
+      }
     };
-    runBonusCheck();
-  }, []);
-  // 👆 КОНЕЦ БЛОКА БОНУСА
+
+    handleWelcomeAndBonus();
+  }, [params.welcome]);
+
 
   const loadData = useCallback(async (showLoading = false) => {
     try {
