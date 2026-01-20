@@ -11,7 +11,8 @@ import { supabase } from '../../src/services/supabase';
 import { useMonetization } from '../../src/hooks/useMonetization';
 import { generateDailyHoroscope } from '../../src/services/openai';
 import MagicAlert from '../../src/components/MagicAlert';
-import AdBanner from '../../src/components/AdBanner';
+// 👇 Убедитесь, что этот путь правильный
+import AdBanner from '../../src/components/AdBanner'; 
 
 const { width } = Dimensions.get('window');
 
@@ -221,7 +222,7 @@ export default function HoroscopeScreen() {
                <ActivityIndicator color="#FFD700" style={{ margin: 20 }} />
              ) : (
                <Text style={styles.predictionText}>
-                 {/* ПРИМЕНЯЕМ ОЧИСТКУ ТЕКСТА ЗДЕСЬ */}
+                 {/* ОЧИСТКА ТЕКСТА */}
                  {(!isUnlocked && !isPremium && prediction) 
                    ? cleanText(prediction).substring(0, 70) + '...' 
                    : cleanText(prediction) || "Conectando..."}
@@ -242,6 +243,7 @@ export default function HoroscopeScreen() {
           </View>
         </View>
         
+        {/* 👇 БАННЕР ВСТАВЛЕН ЗДЕСЬ */}
         <AdBanner />
       </ScrollView>
 

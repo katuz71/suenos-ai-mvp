@@ -4,8 +4,6 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Purchases from 'react-native-purchases';
-// Импорты для баннера
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { useMonetization } from '../src/hooks/useMonetization';
 import WatchAdButton from '../src/components/WatchAdButton';
 import MagicAlert from '../src/components/MagicAlert';
@@ -13,10 +11,6 @@ import firebaseAnalytics from '@react-native-firebase/analytics';
 
 const PRIVACY_POLICY_URL = 'https://docs.google.com/document/d/1I-yKqNSVKNgyb7m4wtqVBtA-9MNHwOxax7NMOoKVX84';
 const TERMS_URL = 'https://docs.google.com/document/d/1OJo14MGTZXWDDucssR7kNZ74UKDI2AxO1zS8pu2YWU4';
-
-// ID баннера
-const productionBannerId = 'ca-app-pub-8147866560220122/6890947761';
-const bannerUnitId = __DEV__ ? TestIds.BANNER : productionBannerId;
 
 const PRICE_MAP: Record<string, { value: number, amount: number }> = {
   'energy_10_v2': { value: 0.99, amount: 10 },
@@ -113,8 +107,8 @@ export default function EnergyScreen() {
               <Ionicons name="gift-outline" size={32} color="#ffd700" />
               <Text style={styles.cardTitle}>Regalo Astral</Text>
             </View>
-            <Text style={styles.cardDescription}>Mira una visión corta и recibe +1 energía.</Text>
-            {/* Передаем правильную функцию начисления */}
+            <Text style={styles.cardDescription}>Mira una visión corta y recibe +1 energía.</Text>
+            {/* Кнопка просмотра видео за награду */}
             <WatchAdButton onReward={addFreeEnergy} />
           </View>
         </View>
@@ -176,7 +170,7 @@ export default function EnergyScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* LEGAL FOOTER (Вернули на место) */}
+        {/* LEGAL FOOTER */}
         <View style={styles.legalFooter}>
           <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}>
             <Text style={styles.restoreBtnText}>Restaurar Compras</Text>
@@ -190,16 +184,6 @@ export default function EnergyScreen() {
               <Text style={styles.linkText}>Privacidad</Text>
             </TouchableOpacity>
           </View>
-        </View>
-
-        {/* БАННЕР В САМОМ НИЗУ */}
-        <View style={styles.bannerContainer}>
-          <BannerAd
-            unitId={bannerUnitId}
-            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-            requestOptions={{ requestNonPersonalizedAdsOnly: true }}
-            onAdFailedToLoad={(error) => console.log('Banner error:', error)}
-          />
         </View>
         
         <View style={{height: 40}} />
@@ -250,14 +234,12 @@ const styles = StyleSheet.create({
   purchasePrice: { fontSize: 18, fontWeight: '700', color: '#fff' },
   oldPrice: { fontSize: 12, color: 'rgba(255, 255, 255, 0.4)', textDecorationLine: 'line-through' },
   
-  // Стили для подвала и баннера
   legalFooter: { marginTop: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20, paddingBottom: 10 },
   restoreBtn: { marginBottom: 10 },
   restoreBtnText: { color: '#ffd700', fontSize: 14 },
   linksRow: { flexDirection: 'row', alignItems: 'center' },
   linkText: { color: 'rgba(255,255,255,0.5)', fontSize: 12 },
   linkDivider: { color: 'rgba(255,255,255,0.3)', marginHorizontal: 10 },
-  bannerContainer: { alignItems: 'center', marginTop: 10, minHeight: 60, paddingBottom: 20 },
   
   loaderOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }
 });

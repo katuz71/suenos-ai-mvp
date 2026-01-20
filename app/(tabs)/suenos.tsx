@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MagicAlert from '../../src/components/MagicAlert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AdBanner from '../../src/components/AdBanner';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -39,7 +40,8 @@ type ScreenMode = 'input' | 'chat';
 export default function SuenosScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { credits, isPremium, refreshStatus } = useMonetization();
+  // 👇 ДОБАВИЛ checkDailyBonus СЮДА
+  const { credits, isPremium, refreshStatus, spendEnergy, checkDailyBonus } = useMonetization();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   
@@ -71,7 +73,6 @@ export default function SuenosScreen() {
     ]).start();
   }, [credits]);
 
-  // Авто-скролл при появлении сообщений или клавиатуры
   useEffect(() => {
     if (mode === 'chat') {
       setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
@@ -101,6 +102,28 @@ export default function SuenosScreen() {
     };
     loadLocalProfile();
   }, [params.welcome]);
+
+  // 👇 НОВЫЙ БЛОК ДЛЯ ПРОВЕРКИ БОНУСА
+  useEffect(() => {
+    const runBonusCheck = async () => {
+      setTimeout(async () => {
+        // Проверяем, существует ли функция, перед вызовом (на всякий случай)
+        if (checkDailyBonus) {
+            const bonusGiven = await checkDailyBonus();
+            if (bonusGiven) {
+              setMagicAlert({
+                visible: true,
+                title: "¡Regalo Diario! 🎁",
+                message: "Has recibido +3 energías por volver hoy.",
+                icon: "star"
+              });
+            }
+        }
+      }, 1000);
+    };
+    runBonusCheck();
+  }, []);
+  // 👆 КОНЕЦ БЛОКА БОНУСА
 
   const loadData = useCallback(async (showLoading = false) => {
     try {
@@ -180,6 +203,7 @@ export default function SuenosScreen() {
       setMagicAlert({ visible: true, title: "Luna escucha", message: "Cuéntame tu sueño primero.", icon: "moon" });
       return;
     }
+    
     if (!isPremium && credits < 1) {
       setMagicAlert({ visible: true, title: "Poca Energía", message: "¿Recargar en la tienda?", icon: "flash" });
       return;
@@ -191,10 +215,12 @@ export default function SuenosScreen() {
       if (!user) return;
 
       if (!isPremium) {
-        // Прямое списание для надежности
-        const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
-        if (p) await supabase.from('profiles').update({ credits: p.credits - 1 }).eq('id', user.id);
-        refreshStatus(); 
+        const success = await spendEnergy(1);
+        if (!success) {
+           setLoading(false);
+           setMagicAlert({ visible: true, title: "Error", message: "Error de saldo. Intenta recargar.", icon: "flash" });
+           return;
+        }
       }
 
       const aiResponse = await interpretDream(dreamText, { name: userName, zodiac: userZodiac });
@@ -236,18 +262,16 @@ export default function SuenosScreen() {
 
     const userMsgText = chatInputText;
     setChatInputText(''); 
-    // Не скрываем клавиатуру полностью, чтобы было удобно писать дальше, 
-    // но если нужно - раскомментируй: Keyboard.dismiss();
     setLoading(true);
 
     try {
       if (!isPremium) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-             const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
-             if (p) await supabase.from('profiles').update({ credits: p.credits - 1 }).eq('id', user.id);
-        }
-        refreshStatus(); 
+         const success = await spendEnergy(1);
+         if (!success) {
+            setLoading(false);
+            setMagicAlert({ visible: true, title: "Poca Energía", message: "¿Recargar?", icon: "flash" });
+            return;
+         }
       }
 
       const newUserMsg: Message = { id: Date.now().toString(), text: userMsgText, sender: 'user' };
@@ -393,16 +417,16 @@ export default function SuenosScreen() {
           ) : (
             <View style={styles.diaryEmpty}><Text style={styles.diaryEmptyText}>Tu diario está vacío</Text></View>
           )}
+
+          <AdBanner />
         </ScrollView>
       )}
 
-      {/* CHAT MODE - ИСПРАВЛЕНА КЛАВИАТУРА */}
+      {/* CHAT MODE */}
       {mode === 'chat' && (
         <KeyboardAvoidingView 
           style={{ flex: 1 }} 
-          // Для Android часто лучше работает 'height' или 'padding' с отступом
           behavior={Platform.OS === "ios" ? "padding" : "height"} 
-          // Отступ сверху (чтобы хедер не перекрывал)
           keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 90}
         >
           <ScrollView 

@@ -1,11 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-// import { 
-//   BannerAd, 
-//   BannerAdSize, 
-//   TestIds 
-// } from 'react-native-google-mobile-ads';
+import { View, StyleSheet, Platform } from 'react-native';
+import { 
+  BannerAd, 
+  BannerAdSize, 
+  TestIds 
+} from 'react-native-google-mobile-ads';
 import { useMonetization } from '../hooks/useMonetization';
+
+// Ваш реальный ID баннера (взят из energy.tsx)
+// Если захотите создать отдельный баннер для Снов/Гороскопа - поменяйте этот ID
+const productionAdUnitId = 'ca-app-pub-8147866560220122/6890947761';
+
+const adUnitId = __DEV__ ? TestIds.BANNER : productionAdUnitId;
 
 export default function AdBanner() {
   const { isPremium } = useMonetization();
@@ -15,30 +21,29 @@ export default function AdBanner() {
     return null;
   }
 
-  // Заглушка для Expo Go
   return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>Рекламный баннер (Скрыт в Expo Go)</Text>
+    <View style={styles.container}>
+      <BannerAd
+        unitId={adUnitId}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+        }}
+        onAdFailedToLoad={(error) => {
+           console.log('AdBanner error:', error);
+           // Здесь можно было бы вернуть null, чтобы скрыть место,
+           // но пока оставим как есть, чтобы видеть ошибки в логах
+        }}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  placeholder: {
+  container: {
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 16,
-    height: 50,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 215, 0, 0.3)',
-    borderStyle: 'dashed',
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 215, 0, 0.05)',
-  },
-  placeholderText: {
-    color: 'rgba(255, 215, 0, 0.5)',
-    fontSize: 12,
-    fontStyle: 'italic',
-    textAlign: 'center',
+    // Убрали стили "заглушки" (рамки и цвет), чтобы реклама выглядела чисто
   },
 });

@@ -10,6 +10,7 @@ Notifications.setNotificationHandler({
     shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowList: true,
+    shouldShowAlert: true, // <--- ЭТА СТРОЧКА ИСПРАВИТ ОШИБКУ
   }),
 });
 
