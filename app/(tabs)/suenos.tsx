@@ -16,6 +16,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdBanner from '../../src/components/AdBanner';
 import analytics from '@react-native-firebase/analytics';
 
+// --- ИМПОРТ СЕРВИСА УВЕДОМЛЕНИЙ (НОВОЕ) ---
+import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/services/NotificationService';
+
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -249,6 +252,23 @@ export default function SuenosScreen() {
       setDreamText(''); 
       setMode('chat');
       loadData(false);
+
+      // --- 🚀 SMART PUSH STRATEGY (НОВАЯ ЛОГИКА) ---
+      // Спрашиваем разрешение только ПОСЛЕ того, как пользователь получил ценность (интерпретацию)
+      setTimeout(async () => {
+        try {
+          // Эта функция сама проверит, есть ли права, и если нет — покажет системный диалог
+          const token = await registerForPushNotificationsAsync();
+          if (token) {
+            // Если пользователь нажал "Разрешить", планируем напоминание
+            await scheduleDailyReminder();
+            console.log("Smart Push: Permission granted & reminder set.");
+          }
+        } catch (e) {
+          console.log("Smart Push: Dialog skipped or failed", e);
+        }
+      }, 3500); // Задержка 3.5 секунды, пока пользователь читает ответ
+      // ----------------------------------------------
 
     } catch (e) {
       console.error(e);

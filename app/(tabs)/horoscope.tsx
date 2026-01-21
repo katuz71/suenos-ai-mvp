@@ -14,20 +14,25 @@ import MagicAlert from '../../src/components/MagicAlert';
 import AdBanner from '../../src/components/AdBanner'; 
 import analytics from '@react-native-firebase/analytics';
 
-// Enable LayoutAnimation for Android
+// Включаем анимацию для Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+// Очистка текста от лишних символов Markdown (**bold** и т.д.)
 const cleanText = (text: string) => {
   if (!text) return "";
   return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '').trim();
 };
 
+// Генерация характеристик дня (псевдо-случайно на основе даты и знака)
+// Это экономит токены: мы не спрашиваем AI про цифры, а считаем их сами.
 const getDailyStats = (sign: string) => {
   if (!sign) return { love: 0, health: 0, money: 0, luckyNumber: 0, color: '...' };
   const todayStr = new Date().toISOString().split('T')[0];
   const seedString = `${sign}-${todayStr}`;
+  
+  // Простой генератор случайных чисел с seed (чтобы цифры не менялись при перезагрузке)
   const pseudoRandom = (seed: string) => {
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
@@ -68,12 +73,13 @@ export default function HoroscopeScreen() {
       const { data: profile } = await supabase.from('profiles').select('display_name, zodiac_sign').eq('id', user.id).single();
 
       if (profile) {
-        setName(profile.display_name || 'Viajero');
+        setName(profile.display_name || 'Viajero'); // Имя для заголовка (UI)
         const sign = profile.zodiac_sign || '';
         setZodiacSign(sign);
         if (sign) {
           setStats(getDailyStats(sign));
-          await fetchDailyHoroscope(sign, profile.display_name);
+          // ИСПРАВЛЕНИЕ: Передаем 'Viajero' для генерации текста, чтобы кэш был общим
+          await fetchDailyHoroscope(sign, 'Viajero'); 
         }
       }
     } catch (e) {
@@ -83,21 +89,28 @@ export default function HoroscopeScreen() {
     }
   };
 
-  const fetchDailyHoroscope = async (sign: string, userName: string) => {
+  const fetchDailyHoroscope = async (sign: string, genericName: string) => {
     const today = new Date().toISOString().split('T')[0];
     try {
+      // 1. Ищем готовый гороскоп в базе
       const { data: existing } = await supabase.from('daily_horoscopes').select('prediction_text').eq('zodiac_sign', sign).eq('date', today).maybeSingle();
+      
       if (existing) {
         setPrediction(existing.prediction_text);
       } else {
+        // 2. Если нет - генерируем новый через AI
         setIsGenerating(true);
-        const text = await generateDailyHoroscope(sign, userName);
+        // Генерируем текст с нейтральным именем (genericName), чтобы он подходил всем
+        const text = await generateDailyHoroscope(sign, genericName);
+        
+        // 3. Сохраняем в общую базу для всех пользователей этого знака
         await supabase.from('daily_horoscopes').insert({ zodiac_sign: sign, date: today, prediction_text: text });
+        
         setPrediction(text);
         setIsGenerating(false);
       }
     } catch (e) {
-      setPrediction("Las estrellas están nubladas hoy.");
+      setPrediction("Las estrellas están nubladas hoy. Intenta más tarde.");
       setIsGenerating(false);
     }
   };
@@ -105,9 +118,9 @@ export default function HoroscopeScreen() {
   useFocusEffect(
     useCallback(() => {
       analytics().logScreenView({
-      screen_name: 'Horóscopo',
-      screen_class: 'HoroscopoScreen',
-    });
+        screen_name: 'Horóscopo',
+        screen_class: 'HoroscopoScreen',
+      });
       loadData();
       refreshStatus();
     }, [])
@@ -123,6 +136,7 @@ export default function HoroscopeScreen() {
     if (success) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setIsUnlocked(true);
+      analytics().logEvent('horoscope_unlocked', { sign: zodiacSign });
     }
   };
 
@@ -152,6 +166,8 @@ export default function HoroscopeScreen() {
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#24243e']} style={StyleSheet.absoluteFill} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* HEADER: Здесь показываем реальное имя пользователя */}
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Hola, {name}</Text>
@@ -163,6 +179,7 @@ export default function HoroscopeScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* АТРИБУТЫ (Цифра и Цвет) */}
         <View style={styles.attributesContainer}>
            <View style={styles.attributeBox}>
               <Text style={styles.attrLabel}>NÚMERO</Text>
@@ -174,6 +191,7 @@ export default function HoroscopeScreen() {
            </View>
         </View>
 
+        {/* СТАТИСТИКА (Amor, Salud, Dinero) */}
         <View style={styles.statsCard}>
            <Text style={styles.statsTitle}>Tu Energía Hoy</Text>
            <StatBar label="Amor" value={stats.love} color="#FF6B6B" icon="heart" />
@@ -181,6 +199,7 @@ export default function HoroscopeScreen() {
            <StatBar label="Dinero" value={stats.money} color="#FFD93D" icon="cash" />
         </View>
 
+        {/* ТЕКСТ ГОРОСКОПА (С Блокировкой) */}
         <View style={styles.predictionCard}>
           <View style={styles.cardHeader}>
             <Ionicons name="moon" size={20} color="#ffd700" />
@@ -193,11 +212,12 @@ export default function HoroscopeScreen() {
              ) : (
                <Text style={styles.predictionText}>
                  {(!isUnlocked && !isPremium && prediction) 
-                   ? cleanText(prediction).substring(0, 70) + '...' 
+                   ? cleanText(prediction).substring(0, 70) + '...' // Размытый текст для бесплатных
                    : cleanText(prediction) || "Conectando..."}
                </Text>
              )}
 
+             {/* ОВЕРЛЕЙ БЛОКИРОВКИ */}
              {!isUnlocked && !isPremium && !isGenerating && prediction && (
                <View style={styles.lockOverlay}>
                  <LinearGradient colors={['transparent', '#0f0c29']} style={StyleSheet.absoluteFill} />
@@ -214,6 +234,7 @@ export default function HoroscopeScreen() {
         <AdBanner />
       </ScrollView>
 
+      {/* АЛЕРТЫ */}
       <MagicAlert 
         visible={alertConfig.visible} title={alertConfig.title} message={alertConfig.message} icon={alertConfig.icon as any}
         confirmText={alertConfig.title === "Poca Energía" ? "Ir a Tienda" : "Aceptar"}
