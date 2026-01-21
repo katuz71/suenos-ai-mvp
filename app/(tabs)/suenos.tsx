@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MagicAlert from '../../src/components/MagicAlert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdBanner from '../../src/components/AdBanner';
+import analytics from '@react-native-firebase/analytics';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -161,6 +162,10 @@ export default function SuenosScreen() {
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
+      analytics().logScreenView({
+      screen_name: 'Sueños (Main)',
+      screen_class: 'SuenosScreen',
+    });
       const loadAndRefresh = async () => {
         if (!isActive) return;
         const shouldShowSpinner = dreamHistory.length === 0;

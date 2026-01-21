@@ -12,6 +12,7 @@ import { useMonetization } from '../../src/hooks/useMonetization';
 import { generateDailyHoroscope } from '../../src/services/openai';
 import MagicAlert from '../../src/components/MagicAlert';
 import AdBanner from '../../src/components/AdBanner'; 
+import analytics from '@react-native-firebase/analytics';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -103,6 +104,10 @@ export default function HoroscopeScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      analytics().logScreenView({
+      screen_name: 'Horóscopo',
+      screen_class: 'HoroscopoScreen',
+    });
       loadData();
       refreshStatus();
     }, [])

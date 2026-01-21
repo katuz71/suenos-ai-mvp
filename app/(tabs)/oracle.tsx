@@ -9,6 +9,7 @@ import { supabase } from '../../src/services/supabase';
 import { useMonetization } from '../../src/hooks/useMonetization';
 import { useFocusEffect } from '@react-navigation/native';
 import MagicAlert from '../../src/components/MagicAlert';
+import analytics from '@react-native-firebase/analytics';
 
 const { width, height } = Dimensions.get('window');
 
@@ -68,7 +69,16 @@ const TwinklingStar = ({ index }: { index: number }) => {
 
 export default function OracleScreen() {
   const router = useRouter();
-  const { isPremium, credits, refreshStatus } = useMonetization();
+  const { isPremium, credits, spendEnergy, refreshStatus } = useMonetization();
+  useFocusEffect(
+    useCallback(() => {
+      analytics().logScreenView({
+        screen_name: 'Oráculo',
+        screen_class: 'OracleScreen',
+      });
+      refreshStatus(); 
+    }, [])
+  );
   
   const [isPulsing, setIsPulsing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -161,8 +171,8 @@ export default function OracleScreen() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       
-      const { error } = await supabase.rpc('consume_credit', { user_id: user.id });
-      if (error) throw error;
+      const success = await spendEnergy(1);
+    if (!success) return;
 
       await refreshStatus();
       await executeOracle();
