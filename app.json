@@ -15,6 +15,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#120d26"
     },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.katuz71.suenosaimvp",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "Esto nos permite mostrarte visiones y anuncios que resuenen con tu energía.",
+        "NSPhotoLibraryUsageDescription": "Necesario si deseas guardar capturas de tus sueños."
+      }
+    },
     "android": {
       "package": "com.katuz71.suenosaimvp",
       "versionCode": 12,
@@ -22,11 +30,14 @@
       "permissions": [
         "com.android.vending.BILLING",
         "com.google.android.gms.permission.AD_ID",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.POST_NOTIFICATIONS"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#120d26"
       }
     },
     "plugins": [
@@ -37,15 +48,17 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "1.9.25"
+            "kotlinVersion": "1.9.25",
+            "extraProguardRules": "-keep class com.google.android.gms.internal.consent.** { *; }"
           }
         }
       ],
       [
         "expo-notifications",
         {
-          "icon": "./assets/icon.png",
-          "color": "#ffffff"
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default"
         }
       ],
       [
