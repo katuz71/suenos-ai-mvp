@@ -20,14 +20,34 @@
       "bundleIdentifier": "com.katuz71.suenosaimvp",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "Esto nos permite mostrarte visiones y anuncios que resuenen con tu energía.",
-        "NSPhotoLibraryUsageDescription": "Necesario si deseas guardar capturas de tus sueños."
+        "NSPhotoLibraryUsageDescription": "Necesario si deseas guardar capturas de tus sueños.",
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ]
       }
     },
     "android": {
       "package": "com.katuz71.suenosaimvp",
-      "versionCode": 15,
+      "versionCode": 16,
       "googleServicesFile": "./google-services.json",
       "permissions": [
+        "com.android.vending.BILLING",
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.POST_NOTIFICATIONS",
         "com.android.vending.BILLING",
         "com.google.android.gms.permission.AD_ID",
         "android.permission.INTERNET",
@@ -48,8 +68,8 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 35,  // <--- ДОБАВЛЕНО
-            "targetSdkVersion": 35,   // <--- ДОБАВЛЕНО (Исправляет ошибку Google)
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
             "kotlinVersion": "1.9.25",
             "extraProguardRules": "-keep class com.google.android.gms.internal.consent.** { *; }"
           }
@@ -86,6 +106,12 @@
       "eas": {
         "projectId": "cebb1e47-84d1-42e2-bac6-c3d10817432f"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/cebb1e47-84d1-42e2-bac6-c3d10817432f"
     }
   }
 }

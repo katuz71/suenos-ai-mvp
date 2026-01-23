@@ -27,6 +27,9 @@ import { supabase } from '../src/services/supabase';
 import analytics from '@react-native-firebase/analytics';
 import { AppEventsLogger } from 'react-native-fbsdk-next';
 
+// --- ИМПОРТЫ РЕКЛАМЫ И СОГЛАСИЯ ---
+import mobileAds, { AdsConsent, AdsConsentStatus } from 'react-native-google-mobile-ads';
+
 const { width, height } = Dimensions.get('window');
 
 // Цветовая палитра
@@ -110,6 +113,27 @@ export default function Index() {
     top: Math.random() * height,
     delay: Math.random() * 3000,
   }))).current;
+
+  // --- ИНИЦИАЛИЗАЦИЯ GDPR И ADMOB ---
+  useEffect(() => {
+    const initializeGDRP = async () => {
+      try {
+        const consentInfo = await AdsConsent.requestInfoUpdate();
+
+        if (consentInfo.isConsentFormAvailable && 
+            consentInfo.status === AdsConsentStatus.REQUIRED) {
+          await AdsConsent.showForm();
+        }
+
+        await mobileAds().initialize();
+      } catch (e) {
+        console.log("GDPR Error: ", e);
+        mobileAds().initialize();
+      }
+    };
+
+    initializeGDRP();
+  }, []);
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 2000, useNativeDriver: true }).start();
