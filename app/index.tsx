@@ -114,25 +114,32 @@ export default function Index() {
     delay: Math.random() * 3000,
   }))).current;
 
-  // --- ИНИЦИАЛИЗАЦИЯ GDPR И ADMOB ---
+  // --- ИНИЦИАЛИЗАЦИЯ GDPR И ADMOB (ИСПРАВЛЕНО) ---
   useEffect(() => {
-    const initializeGDRP = async () => {
+    const initAds = async () => {
       try {
-        const consentInfo = await AdsConsent.requestInfoUpdate();
-
-        if (consentInfo.isConsentFormAvailable && 
-            consentInfo.status === AdsConsentStatus.REQUIRED) {
-          await AdsConsent.showForm();
-        }
-
-        await mobileAds().initialize();
+        console.log("Ads: Checking consent...");
+        // Мы НЕ используем await здесь для всей функции, чтобы не вешать поток
+        AdsConsent.requestInfoUpdate().then(async (consentInfo) => {
+          console.log("Ads: Consent status", consentInfo.status);
+          
+          if (consentInfo.isConsentFormAvailable && 
+              consentInfo.status === AdsConsentStatus.REQUIRED) {
+            await AdsConsent.showForm();
+          }
+          
+          await mobileAds().initialize();
+          console.log("Ads: Initialized ✅");
+        }).catch(e => {
+          console.log("Ads: Consent error", e);
+          mobileAds().initialize(); // Все равно запускаем рекламу
+        });
       } catch (e) {
-        console.log("GDPR Error: ", e);
         mobileAds().initialize();
       }
     };
 
-    initializeGDRP();
+    initAds();
   }, []);
 
   useEffect(() => {
