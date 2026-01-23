@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert, Share, Keyboard } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -10,6 +10,7 @@ import { useMonetization } from '../../src/hooks/useMonetization';
 import { useFocusEffect } from '@react-navigation/native';
 import MagicAlert from '../../src/components/MagicAlert';
 import analytics from '@react-native-firebase/analytics';
+import { THEME } from '../../src/constants/theme'; // Импорт
 
 const { width, height } = Dimensions.get('window');
 
@@ -69,7 +70,9 @@ const TwinklingStar = ({ index }: { index: number }) => {
 
 export default function OracleScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets(); // Хук для отступов
   const { isPremium, credits, spendEnergy, refreshStatus } = useMonetization();
+  
   useFocusEffect(
     useCallback(() => {
       analytics().logScreenView({
@@ -235,9 +238,9 @@ export default function OracleScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container}>
       <LinearGradient 
-        colors={['#2E004E', '#1A0029', '#000000']} 
+        colors={['#0f0c29', '#1A0029', '#000000']} 
         style={StyleSheet.absoluteFill} 
         start={{ x: 0.5, y: 0.3 }}
         end={{ x: 0.5, y: 1 }}
@@ -247,8 +250,8 @@ export default function OracleScreen() {
         {[...Array(50)].map((_, i) => ( <TwinklingStar key={i} index={i} /> ))}
       </View>
       
-      <View style={styles.content}>
-        <View style={styles.header}>
+      {/* HEADER */}
+      <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
           <View style={styles.headerTextContainer}>
             {userProfile ? (
               <>
@@ -267,8 +270,10 @@ export default function OracleScreen() {
             <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
             <Text style={styles.energyText}>{isPremium ? '∞' : credits}</Text>
           </TouchableOpacity>
-        </View>
+      </View>
 
+      <View style={styles.content}>
+        
         {!showAnswer && (
           <Animated.View style={[styles.hintContainer, { opacity: hintTextOpacity }]}>
             <Text style={styles.hintText}>Concéntrate en tu pregunta...</Text>
@@ -355,37 +360,53 @@ export default function OracleScreen() {
         onConfirm={() => { setShowEnergyAlert(false); router.push('/energy'); }}
         onCancel={() => setShowEnergyAlert(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000' },
+  container: { flex: 1, backgroundColor: '#0f0c29' },
   stardustContainer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   star: { position: 'absolute', width: 2, height: 2, borderRadius: 1, backgroundColor: '#fff' },
-  content: { flex: 1, paddingHorizontal: 24, paddingVertical: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 40, marginBottom: 60 },
+  content: { flex: 1, paddingHorizontal: 24, paddingBottom: 40 },
+  
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, minHeight: 50 },
   headerTextContainer: { flex: 1 },
-  greeting: { fontSize: 28, fontWeight: '700', color: '#fff' },
-  zodiacText: { fontSize: 18, color: '#ffd700', marginTop: 4 },
-  energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 215, 0, 0.1)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', marginTop: -20 },
-  energyText: { color: '#ffd700', fontWeight: 'bold', fontSize: 16, marginLeft: 6 },
-  hintContainer: { alignItems: 'center', marginBottom: 40 },
-  hintText: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 16, fontStyle: 'italic', textAlign: 'center' },
-  oracleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  
+  // --- ТИПОГРАФИКА ---
+  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
+  zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: '600', fontFamily: THEME.fonts.serif },
+  
+  energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
+  energyText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
+  
+  oracleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -40 },
+  
+  hintContainer: { alignItems: 'center', marginTop: 20, marginBottom: 20 },
+  hintText: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 16, fontStyle: 'italic', textAlign: 'center', fontFamily: THEME.fonts.serif },
+  
   sphereContainer: { alignItems: 'center', justifyContent: 'center' },
   outerGlow: { position: 'absolute', width: 240, height: 240, borderRadius: 120, backgroundColor: 'rgba(147, 51, 234, 0.3)' },
   sphere: { width: 200, height: 200, borderRadius: 100 },
   sphereGradient: { flex: 1, borderRadius: 100, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'rgba(147, 51, 234, 0.4)' },
   sphereContent: { alignItems: 'center' },
-  sphereText: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 12, marginTop: 12, letterSpacing: 2 },
+  
+  // Текст на шаре - Serif (очень важно для атмосферы)
+  sphereText: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 12, marginTop: 12, letterSpacing: 2, fontFamily: THEME.fonts.serif },
+  
   answerContainer: { alignItems: 'center', width: '100%' },
   answerSphere: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(255, 215, 0, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 20, borderWidth: 2, borderColor: 'rgba(255, 215, 0, 0.3)' },
-  answerBox: { backgroundColor: 'rgba(255, 215, 0, 0.05)', borderRadius: 20, padding: 20, marginTop: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)', minHeight: 100 },
+  answerBox: { backgroundColor: 'rgba(255, 215, 0, 0.05)', borderRadius: 20, padding: 20, marginTop: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.2)', minHeight: 100, width: '100%' },
   answerHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, justifyContent: 'space-between' },
-  answerTitle: { fontSize: 18, fontWeight: '700', color: '#ffd700', textAlign: 'center', flex: 1 },
+  
+  // Заголовок ответа - Serif
+  answerTitle: { fontSize: 18, fontWeight: '700', color: '#ffd700', textAlign: 'center', flex: 1, fontFamily: THEME.fonts.serif, letterSpacing: 2 },
+  
   shareButton: { padding: 8, borderRadius: 20, backgroundColor: 'rgba(255, 215, 0, 0.1)' },
-  answerText: { color: '#ffd700', fontSize: 20, lineHeight: 28, textAlign: 'center', fontStyle: 'italic' },
+  
+  // Сам ответ оракула - Serif (выглядит как пророчество)
+  answerText: { color: '#ffd700', fontSize: 20, lineHeight: 28, textAlign: 'center', fontStyle: 'italic', fontFamily: THEME.fonts.serif },
+  
   resetButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)', marginTop: 20 },
-  resetText: { color: '#ffd700', fontSize: 14, marginLeft: 8 },
+  resetText: { color: '#ffd700', fontSize: 14, marginLeft: 8, fontFamily: THEME.fonts.serif },
 });

@@ -23,6 +23,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MysticInput } from '../src/components/ui/MysticInput';
 import { supabase } from '../src/services/supabase';
 
+// --- ИМПОРТЫ АНАЛИТИКИ ---
+import analytics from '@react-native-firebase/analytics';
+import { AppEventsLogger } from 'react-native-fbsdk-next';
+
 const { width, height } = Dimensions.get('window');
 
 // Цветовая палитра
@@ -196,6 +200,21 @@ export default function Index() {
         await AsyncStorage.setItem('daily_bonus_date_v1', today);
         await AsyncStorage.setItem('has_launched_app', 'true');
 
+        // --- TRACKING EVENTS (Регистрация) ---
+        try {
+            // 1. Firebase Analytics
+            await analytics().logSignUp({ method: 'anonymous' });
+
+            // 2. Facebook (Meta) SDK
+            AppEventsLogger.logEvent(AppEventsLogger.AppEvents.CompletedRegistration, {
+                [AppEventsLogger.AppEventParams.RegistrationMethod]: 'anonymous'
+            });
+            console.log("Events tracked: SignUp (Firebase) & CompletedRegistration (FB)");
+        } catch (e) {
+            console.log("Error tracking events:", e);
+        }
+        // -------------------------------------
+
         setStep('animation');
       } catch (error) {
         Alert.alert('Error', 'Error de conexión');
@@ -316,13 +335,12 @@ const styles = StyleSheet.create({
     marginBottom: 10, letterSpacing: 2,
   },
 
-  // ▼▼▼ ИСПРАВЛЕНО ЗДЕСЬ ▼▼▼
   dividerContainer: { 
     flexDirection: 'row', 
     alignItems: 'center', 
     width: 200, 
     justifyContent: 'center',
-    alignSelf: 'center' // <-- Добавлено для центрирования
+    alignSelf: 'center' 
   },
   dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(212, 175, 55, 0.5)' },
   dividerIconContainer: { marginHorizontal: 10 },

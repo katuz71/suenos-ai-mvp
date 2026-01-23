@@ -13,6 +13,8 @@ import { generateDailyHoroscope } from '../../src/services/openai';
 import MagicAlert from '../../src/components/MagicAlert';
 import AdBanner from '../../src/components/AdBanner'; 
 import analytics from '@react-native-firebase/analytics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { THEME } from '../../src/constants/theme'; // Импорт
 
 // Включаем анимацию для Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -26,13 +28,11 @@ const cleanText = (text: string) => {
 };
 
 // Генерация характеристик дня (псевдо-случайно на основе даты и знака)
-// Это экономит токены: мы не спрашиваем AI про цифры, а считаем их сами.
 const getDailyStats = (sign: string) => {
   if (!sign) return { love: 0, health: 0, money: 0, luckyNumber: 0, color: '...' };
   const todayStr = new Date().toISOString().split('T')[0];
   const seedString = `${sign}-${todayStr}`;
   
-  // Простой генератор случайных чисел с seed (чтобы цифры не менялись при перезагрузке)
   const pseudoRandom = (seed: string) => {
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
@@ -54,6 +54,7 @@ const getDailyStats = (sign: string) => {
 
 export default function HoroscopeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { isPremium, credits, refreshStatus, spendEnergy } = useMonetization();
   
   const [loading, setLoading] = useState(true);
@@ -73,12 +74,11 @@ export default function HoroscopeScreen() {
       const { data: profile } = await supabase.from('profiles').select('display_name, zodiac_sign').eq('id', user.id).single();
 
       if (profile) {
-        setName(profile.display_name || 'Viajero'); // Имя для заголовка (UI)
+        setName(profile.display_name || 'Viajero');
         const sign = profile.zodiac_sign || '';
         setZodiacSign(sign);
         if (sign) {
           setStats(getDailyStats(sign));
-          // ИСПРАВЛЕНИЕ: Передаем 'Viajero' для генерации текста, чтобы кэш был общим
           await fetchDailyHoroscope(sign, 'Viajero'); 
         }
       }
@@ -92,20 +92,14 @@ export default function HoroscopeScreen() {
   const fetchDailyHoroscope = async (sign: string, genericName: string) => {
     const today = new Date().toISOString().split('T')[0];
     try {
-      // 1. Ищем готовый гороскоп в базе
       const { data: existing } = await supabase.from('daily_horoscopes').select('prediction_text').eq('zodiac_sign', sign).eq('date', today).maybeSingle();
       
       if (existing) {
         setPrediction(existing.prediction_text);
       } else {
-        // 2. Если нет - генерируем новый через AI
         setIsGenerating(true);
-        // Генерируем текст с нейтральным именем (genericName), чтобы он подходил всем
         const text = await generateDailyHoroscope(sign, genericName);
-        
-        // 3. Сохраняем в общую базу для всех пользователей этого знака
         await supabase.from('daily_horoscopes').insert({ zodiac_sign: sign, date: today, prediction_text: text });
-        
         setPrediction(text);
         setIsGenerating(false);
       }
@@ -165,21 +159,22 @@ export default function HoroscopeScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#24243e']} style={StyleSheet.absoluteFill} />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
-        {/* HEADER: Здесь показываем реальное имя пользователя */}
-        <View style={styles.header}>
+      
+      {/* HEADER */}
+      <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
           <View>
-            <Text style={styles.greeting}>Hola, {name}</Text>
+            <Text style={styles.greeting}>¡Hola, {name}!</Text>
             <Text style={styles.zodiacText}>{zodiacSign || '...'}</Text>
           </View>
           <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadgeBtn}>
             <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
             <Text style={styles.energyBadgeText}>{isPremium ? '∞' : credits}</Text>
           </TouchableOpacity>
-        </View>
+      </View>
 
-        {/* АТРИБУТЫ (Цифра и Цвет) */}
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* АТРИБУТЫ */}
         <View style={styles.attributesContainer}>
            <View style={styles.attributeBox}>
               <Text style={styles.attrLabel}>NÚMERO</Text>
@@ -191,7 +186,7 @@ export default function HoroscopeScreen() {
            </View>
         </View>
 
-        {/* СТАТИСТИКА (Amor, Salud, Dinero) */}
+        {/* СТАТИСТИКА */}
         <View style={styles.statsCard}>
            <Text style={styles.statsTitle}>Tu Energía Hoy</Text>
            <StatBar label="Amor" value={stats.love} color="#FF6B6B" icon="heart" />
@@ -199,7 +194,7 @@ export default function HoroscopeScreen() {
            <StatBar label="Dinero" value={stats.money} color="#FFD93D" icon="cash" />
         </View>
 
-        {/* ТЕКСТ ГОРОСКОПА (С Блокировкой) */}
+        {/* ПРЕДСКАЗАНИЕ */}
         <View style={styles.predictionCard}>
           <View style={styles.cardHeader}>
             <Ionicons name="moon" size={20} color="#ffd700" />
@@ -212,12 +207,12 @@ export default function HoroscopeScreen() {
              ) : (
                <Text style={styles.predictionText}>
                  {(!isUnlocked && !isPremium && prediction) 
-                   ? cleanText(prediction).substring(0, 70) + '...' // Размытый текст для бесплатных
+                   ? cleanText(prediction).substring(0, 70) + '...' 
                    : cleanText(prediction) || "Conectando..."}
                </Text>
              )}
 
-             {/* ОВЕРЛЕЙ БЛОКИРОВКИ */}
+             {/* БЛОКИРОВКА */}
              {!isUnlocked && !isPremium && !isGenerating && prediction && (
                <View style={styles.lockOverlay}>
                  <LinearGradient colors={['transparent', '#0f0c29']} style={StyleSheet.absoluteFill} />
@@ -231,6 +226,7 @@ export default function HoroscopeScreen() {
              )}
           </View>
         </View>
+        
         <AdBanner />
       </ScrollView>
 
@@ -250,18 +246,34 @@ export default function HoroscopeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f0c29' },
-  scrollContent: { paddingHorizontal: 20, paddingTop: 60, paddingBottom: 40 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
-  greeting: { fontSize: 26, fontWeight: '700', color: '#fff' },
-  zodiacText: { fontSize: 18, color: '#A855F7', marginTop: 4, fontWeight: '600' },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40 },
+  header: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginBottom: 10, 
+    minHeight: 50 
+  },
+  
+  // --- ТИПОГРАФИКА ---
+  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
+  zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: '600', fontFamily: THEME.fonts.serif },
+  
   energyBadgeBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
   energyBadgeText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
+  
   attributesContainer: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   attributeBox: { flex: 1, alignItems: 'center', paddingVertical: 15 },
   attrLabel: { color: '#94A3B8', fontSize: 12, letterSpacing: 1, marginBottom: 5 },
-  attrValue: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
+  
+  // Цифры характеристик - Serif для важности
+  attrValue: { color: '#fff', fontSize: 20, fontWeight: 'bold', fontFamily: THEME.fonts.serif },
+  
   statsCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-  statsTitle: { color: '#fff', fontSize: 18, fontWeight: '600', marginBottom: 15 },
+  
+  // Заголовок карточки - Serif
+  statsTitle: { color: '#fff', fontSize: 18, fontWeight: '600', marginBottom: 15, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
+  
   statRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   statLabelContainer: { flexDirection: 'row', alignItems: 'center', width: 85 },
   statLabel: { color: '#E2E8F0', marginLeft: 8, fontSize: 14 },
@@ -270,12 +282,17 @@ const styles = StyleSheet.create({
   statValue: { color: '#fff', fontSize: 14, fontWeight: 'bold', width: 35, textAlign: 'right' },
   predictionCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  cardTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10 },
+  
+  // Заголовок - Serif
+  cardTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
+  
   textContainer: { position: 'relative', minHeight: 80 },
   textLocked: { maxHeight: 100, overflow: 'hidden' },
   predictionText: { fontSize: 16, lineHeight: 26, color: 'rgba(255,255,255,0.85)' },
   lockOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, justifyContent: 'flex-end', alignItems: 'center' },
   unlockButton: { width: '100%', borderRadius: 20, shadowColor: '#FFB800', shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
   unlockGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14, borderRadius: 20 },
-  unlockText: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
+  
+  // Кнопка - Serif
+  unlockText: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 8, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
 });

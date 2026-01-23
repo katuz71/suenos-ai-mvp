@@ -15,6 +15,7 @@ import MagicAlert from '../../src/components/MagicAlert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdBanner from '../../src/components/AdBanner';
 import analytics from '@react-native-firebase/analytics';
+import { THEME } from '../../src/constants/theme'; // Импортируем тему
 
 // --- ИМПОРТ СЕРВИСА УВЕДОМЛЕНИЙ ---
 import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/services/NotificationService';
@@ -69,15 +70,13 @@ export default function SuenosScreen() {
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // --- ИСПРАВЛЕНИЕ ТАБОВ (ФИНАЛЬНОЕ) ---
-  // Мы явно задаем стили из TabLayout, чтобы они не сбрасывались в белый цвет.
+  // --- ЛОГИКА ТАБОВ ---
   useEffect(() => {
     if (mode === 'chat') {
       navigation.setOptions({
         tabBarStyle: { display: 'none' }
       });
     } else {
-      // ВОССТАНАВЛИВАЕМ СТИЛИ ИЗ TabLayout.tsx ТОЧЬ-В-ТОЧЬ
       navigation.setOptions({
         tabBarStyle: {
           backgroundColor: '#0f0c29', 
@@ -87,7 +86,7 @@ export default function SuenosScreen() {
           paddingTop: 10,
           elevation: 0,
           display: 'flex',
-          borderTopWidth: 1 // На всякий случай дублируем границу
+          borderTopWidth: 1
         }
       });
     }
@@ -384,7 +383,10 @@ export default function SuenosScreen() {
               <Text style={styles.backText}>Volver</Text>
             </TouchableOpacity>
           ) : (
-             <Text style={styles.greeting}>¡Hola, {userName}!</Text>
+             <View>
+                <Text style={styles.greeting}>¡Hola, {userName}!</Text>
+                <Text style={styles.zodiacText}>{userZodiac || ''}</Text>
+             </View>
           )}
         </View>
        
@@ -400,7 +402,6 @@ export default function SuenosScreen() {
       <View style={{ flex: 1 }}>
         {mode === 'input' && (
           <ScrollView
-            // flexGrow: 1 + Пружина внизу (View flex:1) + AdBanner = Идеальный футер
             contentContainerStyle={[styles.scrollContent, { paddingBottom: 40, flexGrow: 1 }]}
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffd700" />}
@@ -466,10 +467,7 @@ export default function SuenosScreen() {
               <View style={styles.diaryEmpty}><Text style={styles.diaryEmptyText}>Tu diario está vacío</Text></View>
             )}
 
-            {/* ЭТА ПРУЖИНА (flex: 1) ОТТАЛКИВАЕТ РЕКЛАМУ ВНИЗ */}
             <View style={{ flex: 1 }} />
-
-            {/* Рекламный блок теперь внизу списка */}
             <AdBanner />
             
           </ScrollView>
@@ -542,19 +540,32 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, minHeight: 50 },
   headerTextContainer: { flex: 1 },
-  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
-  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5 },
+  
+  // --- ТИПОГРАФИКА ---
+  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
+  zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: '600', fontFamily: THEME.fonts.serif },
+  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5, fontFamily: THEME.fonts.serif },
+  
   energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
   energyText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
   magicCard: { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10 },
+  
+  // Заголовок карточки тоже Serif
+  cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
+  
   dreamInput: { color: '#fff', fontSize: 16, minHeight: 100, textAlignVertical: 'top', marginBottom: 20, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 12 },
   mainButton: { borderRadius: 30, overflow: 'hidden' },
   buttonGradient: { flexDirection: 'row', height: 56, alignItems: 'center', justifyContent: 'center' },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  
+  // Текст на кнопке Serif
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: THEME.fonts.serif, letterSpacing: 1 },
+  
   diaryHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
-  diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1 },
+  
+  // Заголовок дневника Serif
+  diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
+  
   diaryCount: { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
   diaryCountText: { color: '#ffd700', fontSize: 14, fontWeight: '600' },
   diaryList: { paddingBottom: 20 },
@@ -565,7 +576,7 @@ const styles = StyleSheet.create({
   dreamItemDate: { fontSize: 12, color: '#ffd700', fontWeight: '500' },
   dreamItemText: { fontSize: 14, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 20 },
   diaryEmpty: { alignItems: 'center', padding: 20 },
-  diaryEmptyText: { color: 'rgba(255,255,255,0.3)' },
+  diaryEmptyText: { color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', fontFamily: THEME.fonts.serif },
   bubble: { padding: 16, borderRadius: 16, marginBottom: 16, maxWidth: '85%' },
   userBubble: { backgroundColor: '#4A00E0', alignSelf: 'flex-end', borderBottomRightRadius: 4 },
   lunaBubble: { backgroundColor: 'rgba(255,255,255,0.08)', alignSelf: 'flex-start', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
