@@ -8,8 +8,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import Purchases from 'react-native-purchases';
 import mobileAds from 'react-native-google-mobile-ads';
 import { Settings } from 'react-native-fbsdk-next';
-import * as Notifications from 'expo-notifications'; // Добавляем импорт Expo Notifications
-import { scheduleDailyReminder, registerForPushNotificationsAsync } from '../src/services/NotificationService';
+// LUNA: Убрали импорт уведомлений, чтобы обеспечить тишину на старте
+// import * as Notifications from 'expo-notifications'; 
+// import { scheduleDailyReminder } from '../src/services/NotificationService';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 
@@ -47,18 +48,10 @@ export default function RootLayout() {
             await Purchases.configure({ apiKey });    
         }
 
-        // 5. УВЕДОМЛЕНИЯ: НОВАЯ ТИХАЯ ЛОГИКА
-        // Не вызываем registerForPushNotificationsAsync() здесь!
-        // Только проверяем, есть ли уже права.
-        const { status } = await Notifications.getPermissionsAsync();
-        
-        if (status === 'granted') {
-           // Если права УЖЕ есть (вернувшийся юзер), обновляем расписание
-           await scheduleDailyReminder();
-           console.log("Notifications: Schedule updated (Silent check)");
-        } else {
-           console.log("Notifications: Permission not yet granted. Waiting for user action.");
-        }
+        // 5. УВЕДОМЛЕНИЯ: ПОЛНАЯ ТИШИНА НА СТАРТЕ 🤫
+        // Мы убрали отсюда "Silent check". Теперь уведомления планируются 
+        // ТОЛЬКО после того, как юзер получит толкование сна в Чате.
+        console.log("Notifications: Startup check skipped (Strict Strategy)");
 
       } catch (e) {
         console.warn("Error during app preparation:", e);

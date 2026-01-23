@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'; 
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, ActivityIndicator, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { Ionicons } from '@expo/vector-icons';
@@ -12,13 +12,15 @@ import * as Ads from 'react-native-google-mobile-ads';
 
 // Конфигурация
 const adUnitId = __DEV__ ? Ads.TestIds.REWARDED : 'ca-app-pub-8147866560220122/6913262165';
-const PRIVACY_URL = 'https://docs.google.com/document/d/1I-yKqNSVKNgyb7m4wtqVBtA-9MNHwOxax7NMOoKVX84';
-const TERMS_URL = 'https://docs.google.com/document/d/1OJo14MGTZXWDDucssR7kNZ74UKDI2AxO1zS8pu2YWU4';
+const PRIVACY_URL = 'https://aiinsightshub.site/privacy.html';
+const TERMS_URL = 'https://aiinsightshub.site/terms.html';
 
-const PRICE_MAP: Record<string, { value: number, amount: number, title: string }> = {
-  'energy_10_v2': { value: 0.99, amount: 10, title: 'Puñado de Estrellas' },
-  'energy_50_v2': { value: 3.99, amount: 50, title: 'Resplandor Místico' },
-  'energy_150_v2': { value: 9.99, amount: 150, title: 'Fuente Eterna' },
+// LUNA: Убрала жесткий символ €, чтобы не пугать пользователей из США.
+// В идеале позже нужно получать 'priceString' напрямую из RevenueCat.
+const PRICE_MAP: Record<string, { value: string, amount: number, title: string }> = {
+  'energy_10_v2': { value: '0.99', amount: 10, title: 'Puñado de Estrellas' },
+  'energy_50_v2': { value: '3.99', amount: 50, title: 'Resplandor Místico' },
+  'energy_150_v2': { value: '9.99', amount: 150, title: 'Fuente Eterna' },
 };
 
 export default function EnergyScreen() {
@@ -35,7 +37,6 @@ export default function EnergyScreen() {
     requestNonPersonalizedAdsOnly: true,
   });
 
-  // Загрузка рекламы и отслеживание ошибок
   useEffect(() => {
     if (load) load();
   }, [load]);
@@ -65,8 +66,15 @@ export default function EnergyScreen() {
       await analytics().logEvent('ad_reward_click');
       show();
     } else {
-      // Имитация для Expo Go или пока реклама не загружена
-      addFreeEnergy();
+      // LUNA FIX: Если реклама не готова, НЕ даем награду. 
+      // Иначе пользователи будут абузить это при плохом интернете.
+      if (__DEV__) {
+          Alert.alert("Dev Mode", "Simulando anuncio (DEV only)...");
+          addFreeEnergy(); // Только для тестов!
+      } else {
+          Alert.alert("Cargando...", "El video mágico se está preparando. Intenta en unos segundos.");
+          if (load) load(); // Пробуем перезагрузить
+      }
     }
   };
 
@@ -125,13 +133,21 @@ export default function EnergyScreen() {
               <Ionicons name="gift-outline" size={32} color="#ffd700" />
               <Text style={styles.cardTitle}>Regalo Astral</Text>
             </View>
-            <Text style={styles.cardDescription}>Mira una visión corta и recibe +1 ✨ gratuita.</Text>
+            <Text style={styles.cardDescription}>Mira una visión corta y recibe +1 ✨ gratuita.</Text>
             
-            <TouchableOpacity style={styles.adButton} onPress={handleWatchAd}>
+            <TouchableOpacity 
+              style={[styles.adButton, !isLoaded && { opacity: 0.7 }]} 
+              onPress={handleWatchAd}
+              activeOpacity={0.8}
+            >
               <LinearGradient colors={['#8E2DE2', '#4A00E0']} style={styles.adGradient}>
-                <Ionicons name="play-circle" size={20} color="#fff" style={{ marginRight: 8 }} />
+                {isLoaded ? (
+                   <Ionicons name="play-circle" size={20} color="#fff" style={{ marginRight: 8 }} />
+                ) : (
+                   <ActivityIndicator size="small" color="#fff" style={{ marginRight: 8 }} />
+                )}
                 <Text style={styles.adButtonText}>
-                  {isLoaded ? 'VER VIDEO (+1 ✨)' : 'OBTENER +1 ✨'}
+                  {isLoaded ? 'VER VIDEO (+1 ✨)' : 'Cargando magia...'}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -165,8 +181,9 @@ export default function EnergyScreen() {
                     </View>
                   </View>
                   <View style={styles.priceContainer}>
-                    {id === 'energy_50_v2' && <Text style={styles.oldPrice}>4.99 €</Text>}
-                    <Text style={styles.purchasePrice}>{info.value} €</Text>
+                    {/* LUNA: Убрали жесткий символ валюты. Оставили только цифры пока не подключим offerings */}
+                    {id === 'energy_50_v2' && <Text style={styles.oldPrice}>4.99</Text>}
+                    <Text style={styles.purchasePrice}>{info.value}</Text>
                   </View>
                 </View>
               </LinearGradient>

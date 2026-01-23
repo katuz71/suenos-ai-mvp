@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { 
-  View, Text, StyleSheet, TextInput, TouchableOpacity, 
-  ScrollView, ActivityIndicator, Alert, RefreshControl, Animated, Share, Keyboard, KeyboardAvoidingView, Platform 
+import {
+  View, Text, StyleSheet, TextInput, TouchableOpacity,
+  ScrollView, ActivityIndicator, Alert, RefreshControl, Animated, Share, Keyboard, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useMonetization } from '../../src/hooks/useMonetization';
-import { interpretDream } from '../../src/services/openai'; 
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { interpretDream } from '../../src/services/openai';
+import { useRouter, useLocalSearchParams, useNavigation } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdBanner from '../../src/components/AdBanner';
 import analytics from '@react-native-firebase/analytics';
 
-// --- ИМПОРТ СЕРВИСА УВЕДОМЛЕНИЙ (НОВОЕ) ---
+// --- ИМПОРТ СЕРВИСА УВЕДОМЛЕНИЙ ---
 import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/services/NotificationService';
 
 interface ChatMessage {
@@ -28,7 +28,7 @@ interface DreamEntry {
   id: string;
   dream_text: string;
   interpretation_text: string;
-  chat_history?: ChatMessage[]; 
+  chat_history?: ChatMessage[];
   created_at: string;
 }
 
@@ -36,7 +36,7 @@ type Message = {
   id: string;
   text: string;
   sender: 'user' | 'luna';
-  isDream?: boolean; 
+  isDream?: boolean;
 };
 
 type ScreenMode = 'input' | 'chat';
@@ -45,11 +45,12 @@ const BONUS_DATE_KEY = 'daily_bonus_date_v1';
 
 export default function SuenosScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const params = useLocalSearchParams();
   const { credits, isPremium, refreshStatus, spendEnergy, checkDailyBonus } = useMonetization();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
-  
+ 
   const bonusCheckLock = useRef(false);
 
   const [userName, setUserName] = useState<string>('Viajero');
@@ -57,16 +58,40 @@ export default function SuenosScreen() {
   const [mode, setMode] = useState<ScreenMode>('input');
   const [currentDreamId, setCurrentDreamId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [dreamText, setDreamText] = useState(''); 
-  const [chatInputText, setChatInputText] = useState(''); 
+  const [dreamText, setDreamText] = useState('');
+  const [chatInputText, setChatInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [dreamHistory, setDreamHistory] = useState<DreamEntry[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false); 
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [magicAlert, setMagicAlert] = useState({ visible: false, title: '', message: '', icon: '' });
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  // --- ИСПРАВЛЕНИЕ ТАБОВ (ФИНАЛЬНОЕ) ---
+  // Мы явно задаем стили из TabLayout, чтобы они не сбрасывались в белый цвет.
+  useEffect(() => {
+    if (mode === 'chat') {
+      navigation.setOptions({
+        tabBarStyle: { display: 'none' }
+      });
+    } else {
+      // ВОССТАНАВЛИВАЕМ СТИЛИ ИЗ TabLayout.tsx ТОЧЬ-В-ТОЧЬ
+      navigation.setOptions({
+        tabBarStyle: {
+          backgroundColor: '#0f0c29', 
+          borderTopColor: 'rgba(255, 215, 0, 0.1)', 
+          height: 70 + insets.bottom, 
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+          paddingTop: 10,
+          elevation: 0,
+          display: 'flex',
+          borderTopWidth: 1 // На всякий случай дублируем границу
+        }
+      });
+    }
+  }, [navigation, mode, insets.bottom]);
 
   // Energy animation
   useEffect(() => {
@@ -108,7 +133,7 @@ export default function SuenosScreen() {
           message: "Has recibido 3 energías para empezar.",
           icon: "star"
         });
-        
+       
         router.setParams({ welcome: '' });
       } else {
         setTimeout(async () => {
@@ -138,7 +163,7 @@ export default function SuenosScreen() {
         if (showLoading) setLoadingHistory(false);
         return;
       }
-      
+     
       const { data: profile } = await supabase.from('profiles').select('display_name, zodiac_sign').eq('id', user.id).maybeSingle();
       if (profile) {
         setUserName(profile.display_name);
@@ -152,7 +177,7 @@ export default function SuenosScreen() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(20);
-        
+       
       if (!error && history) setDreamHistory(history);
     } catch (error) {
       console.error('Error loading history:', error);
@@ -178,7 +203,7 @@ export default function SuenosScreen() {
       };
       loadAndRefresh();
       return () => { isActive = false; };
-    }, [loadData]) 
+    }, [loadData])
   );
 
   const onRefresh = useCallback(() => {
@@ -212,7 +237,7 @@ export default function SuenosScreen() {
       setMagicAlert({ visible: true, title: "Luna escucha", message: "Cuéntame tu sueño primero.", icon: "moon" });
       return;
     }
-    
+   
     if (!isPremium && credits < 1) {
       setMagicAlert({ visible: true, title: "Poca Energía", message: "¿Recargar en la tienda?", icon: "flash" });
       return;
@@ -233,7 +258,7 @@ export default function SuenosScreen() {
       }
 
       const aiResponse = await interpretDream(dreamText, { name: userName, zodiac: userZodiac });
-      
+     
       const { data, error } = await supabase.from('interpretations').insert({
           user_id: user.id,
           dream_text: dreamText,
@@ -244,31 +269,27 @@ export default function SuenosScreen() {
 
       if (error) throw error;
       if (data) setCurrentDreamId(data.id);
-      
+     
       const msgDream: Message = { id: 'dream', text: dreamText, sender: 'user', isDream: true };
       const msgLuna: Message = { id: 'luna-1', text: aiResponse, sender: 'luna' };
-      
+     
       setMessages([msgDream, msgLuna]);
-      setDreamText(''); 
+      setDreamText('');
       setMode('chat');
       loadData(false);
 
-      // --- 🚀 SMART PUSH STRATEGY (НОВАЯ ЛОГИКА) ---
-      // Спрашиваем разрешение только ПОСЛЕ того, как пользователь получил ценность (интерпретацию)
+      // --- SMART PUSH STRATEGY ---
       setTimeout(async () => {
         try {
-          // Эта функция сама проверит, есть ли права, и если нет — покажет системный диалог
           const token = await registerForPushNotificationsAsync();
           if (token) {
-            // Если пользователь нажал "Разрешить", планируем напоминание
             await scheduleDailyReminder();
             console.log("Smart Push: Permission granted & reminder set.");
           }
         } catch (e) {
           console.log("Smart Push: Dialog skipped or failed", e);
         }
-      }, 3500); // Задержка 3.5 секунды, пока пользователь читает ответ
-      // ----------------------------------------------
+      }, 3500);
 
     } catch (e) {
       console.error(e);
@@ -286,7 +307,7 @@ export default function SuenosScreen() {
     }
 
     const userMsgText = chatInputText;
-    setChatInputText(''); 
+    setChatInputText('');
     setLoading(true);
 
     try {
@@ -307,7 +328,7 @@ export default function SuenosScreen() {
       const fullPrompt = `HISTORIAL:\n${contextString}\nNUEVO:\n${userMsgText}\nResponde como Luna en Español.`;
 
       const aiReplyText = await interpretDream(fullPrompt, { name: userName, zodiac: userZodiac });
-      
+     
       const newLunaMsg: Message = { id: (Date.now() + 1).toString(), text: aiReplyText, sender: 'luna' };
       const finalMessages = [...newMessagesLocal, newLunaMsg];
       setMessages(finalMessages);
@@ -328,7 +349,7 @@ export default function SuenosScreen() {
     setMode('input');
     setMessages([]);
     setCurrentDreamId(null);
-    loadData(false); 
+    loadData(false);
   };
 
   const handleConfirmDelete = (id: string) => {
@@ -342,7 +363,7 @@ export default function SuenosScreen() {
       await supabase.from('interpretations').delete().eq('id', dreamToDelete);
       setDeleteAlertVisible(false);
       setDreamToDelete(null);
-      loadData(false); 
+      loadData(false);
     } catch (e) { Alert.alert("Error", "Error al borrar."); }
   };
 
@@ -353,7 +374,7 @@ export default function SuenosScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#1a1a2e']} style={StyleSheet.absoluteFill} />
-      
+     
       {/* HEADER */}
       <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
         <View style={styles.headerTextContainer}>
@@ -366,7 +387,7 @@ export default function SuenosScreen() {
              <Text style={styles.greeting}>¡Hola, {userName}!</Text>
           )}
         </View>
-        
+       
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadge}>
             <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
@@ -378,8 +399,9 @@ export default function SuenosScreen() {
       {/* CONTENT AREA */}
       <View style={{ flex: 1 }}>
         {mode === 'input' && (
-          <ScrollView 
-            contentContainerStyle={[styles.scrollContent, { paddingBottom: 20 }]} 
+          <ScrollView
+            // flexGrow: 1 + Пружина внизу (View flex:1) + AdBanner = Идеальный футер
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: 40, flexGrow: 1 }]}
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffd700" />}
           >
@@ -396,8 +418,8 @@ export default function SuenosScreen() {
                 value={dreamText}
                 onChangeText={setDreamText}
               />
-              <TouchableOpacity 
-                style={[styles.mainButton, loading && { opacity: 0.7 }]} 
+              <TouchableOpacity
+                style={[styles.mainButton, loading && { opacity: 0.7 }]}
                 onPress={handleSendDream}
                 disabled={loading}
                 activeOpacity={0.8}
@@ -414,13 +436,13 @@ export default function SuenosScreen() {
             </View>
 
             <View style={{ height: 20 }} />
-            
+           
             <View style={styles.diaryHeader}>
               <Ionicons name="book-outline" size={20} color="#ffd700" />
               <Text style={styles.diaryTitle}>DIARIO DE SUEÑOS</Text>
               <View style={styles.diaryCount}><Text style={styles.diaryCountText}>{dreamHistory.length}</Text></View>
             </View>
-            
+           
             {loadingHistory ? (
               <ActivityIndicator size="small" color="#ffd700" style={{ marginTop: 20 }} />
             ) : dreamHistory.length > 0 ? (
@@ -443,17 +465,24 @@ export default function SuenosScreen() {
             ) : (
               <View style={styles.diaryEmpty}><Text style={styles.diaryEmptyText}>Tu diario está vacío</Text></View>
             )}
+
+            {/* ЭТА ПРУЖИНА (flex: 1) ОТТАЛКИВАЕТ РЕКЛАМУ ВНИЗ */}
+            <View style={{ flex: 1 }} />
+
+            {/* Рекламный блок теперь внизу списка */}
+            <AdBanner />
+            
           </ScrollView>
         )}
 
         {mode === 'chat' && (
-          <KeyboardAvoidingView 
-            style={{ flex: 1 }} 
-            behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 90}
           >
-            <ScrollView 
-              ref={scrollViewRef} 
+            <ScrollView
+              ref={scrollViewRef}
               contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20, flexGrow: 1 }}
             >
               {messages.map((msg, index) => {
@@ -474,12 +503,12 @@ export default function SuenosScreen() {
             </ScrollView>
 
             <View style={[styles.chatInputBar]}>
-              <TextInput 
-                style={styles.chatInput} 
-                placeholder="Pregúntale a Luna..." 
-                placeholderTextColor="#888" 
-                value={chatInputText} 
-                onChangeText={setChatInputText} 
+              <TextInput
+                style={styles.chatInput}
+                placeholder="Pregúntale a Luna..."
+                placeholderTextColor="#888"
+                value={chatInputText}
+                onChangeText={setChatInputText}
               />
               <TouchableOpacity style={[styles.chatSendBtn, (!chatInputText.trim() || loading) && { opacity: 0.5 }]} onPress={handleReply} disabled={!chatInputText.trim() || loading}>
                 <Ionicons name="arrow-up" size={20} color="#000" />
@@ -490,18 +519,13 @@ export default function SuenosScreen() {
         )}
       </View>
 
-      {/* FIXED BANNER AT BOTTOM */}
-      <View style={[styles.fixedBannerContainer, { paddingBottom: Math.max(insets.bottom, 10) }]}>
-        <AdBanner />
-      </View>
-      
       {/* ALERTS */}
       <MagicAlert visible={deleteAlertVisible} title="¿Borrar sueño?" message="No se puede deshacer." icon="trash-bin" onConfirm={performDelete} onCancel={() => setDeleteAlertVisible(false)} confirmText="Borrar" />
-      <MagicAlert 
-        visible={magicAlert.visible} 
-        title={magicAlert.title} 
-        message={magicAlert.message} 
-        icon={magicAlert.icon as any} 
+      <MagicAlert
+        visible={magicAlert.visible}
+        title={magicAlert.title}
+        message={magicAlert.message}
+        icon={magicAlert.icon as any}
         confirmText={magicAlert.title === "Poca Energía" ? "Ir a Tienda" : "Aceptar"}
         onConfirm={() => {
            if (magicAlert.title === "Poca Energía") router.push('/energy');
@@ -556,11 +580,4 @@ const styles = StyleSheet.create({
   chatInput: { flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 20, paddingHorizontal: 15, paddingVertical: 10, color: '#fff', maxHeight: 100 },
   chatSendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFD700', justifyContent: 'center', alignItems: 'center' },
   costText: { fontSize: 10, color: '#000', fontWeight: 'bold', marginTop: -2 },
-  fixedBannerContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-    paddingTop: 5,
-  },
 });
