@@ -17,7 +17,8 @@
     "production": {
       "channel": "production",
       "android": {
-        "image": "sdk-52"
+        "image": "sdk-52",
+        "buildType": "app-bundle"
       },
       "env": {
         "EXPO_PUBLIC_OPENAI_API_KEY": "SECRETS"
