@@ -77,8 +77,20 @@ export default function EnergyScreen() {
     requestNonPersonalizedAdsOnly: true,
   });
 
-  useEffect(() => { if (load) load(); }, [load]);
-  useEffect(() => { if (error) console.log('AdMob Load Error:', error.message); }, [error]);
+  useEffect(() => {
+    if (load) load();
+  }, [load]);
+
+  useEffect(() => {
+    if (error) {
+      console.log('AdMob Load Error:', error.message);
+      // Если видео не загрузилось, пробуем еще раз через 5 секунд автоматически
+      const retryTimer = setTimeout(() => {
+        if (load) load();
+      }, 5000);
+      return () => clearTimeout(retryTimer);
+    }
+  }, [error, load]);
 
   useEffect(() => {
     if (isEarnedReward) {
@@ -179,10 +191,11 @@ export default function EnergyScreen() {
               </View>
             </View>
             
-            <TouchableOpacity 
-              style={[styles.adButton, !isLoaded && { opacity: 0.7 }]} 
-              onPress={handleWatchAd}
-              activeOpacity={0.8}
+           <TouchableOpacity 
+             style={[styles.adButton, !isLoaded && { opacity: 0.5, backgroundColor: '#444' }]} 
+             onPress={handleWatchAd}
+             disabled={!isLoaded} // Блокируем нажатие, пока не загрузится
+             activeOpacity={0.8}
             >
               <LinearGradient colors={['#8E2DE2', '#4A00E0']} start={{x:0, y:0}} end={{x:1, y:0}} style={styles.adGradient}>
                 {isLoaded ? (

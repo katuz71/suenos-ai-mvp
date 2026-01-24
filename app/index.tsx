@@ -114,26 +114,27 @@ export default function Index() {
   }))).current;
 
   // --- ИНИЦИАЛИЗАЦИЯ GDPR И ADMOB ---
-  // 🚨 ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ДИАГНОСТИКИ
   useEffect(() => {
-    /* const initAds = async () => {
+    const initAds = async () => {
+      // Отключаем рекламу только в режиме разработки, чтобы не получить бан от Google
+      if (__DEV__) {
+        console.log("⚠️ ADS DISABLED FOR DEBUGGING");
+        return;
+      }
+
       try {
-        console.log("Ads: Checking consent...");
-        AdsConsent.requestInfoUpdate().then(async (consentInfo) => {
-          if (consentInfo.isConsentFormAvailable && 
-              consentInfo.status === AdsConsentStatus.REQUIRED) {
-            await AdsConsent.showForm();
-          }
-          await mobileAds().initialize();
-        }).catch(e => {
-          mobileAds().initialize(); 
-        });
+        const consentInfo = await AdsConsent.requestInfoUpdate();
+        if (consentInfo.isConsentFormAvailable && 
+            consentInfo.status === AdsConsentStatus.REQUIRED) {
+          await AdsConsent.showForm();
+        }
+        await mobileAds().initialize();
       } catch (e) {
+        // Если что-то пошло не так с согласием, всё равно пытаемся запустить рекламу
         mobileAds().initialize();
       }
     };
-    initAds(); */
-    console.log("⚠️ ADS DISABLED FOR DEBUGGING");
+    initAds();
   }, []);
 
   useEffect(() => {
@@ -250,11 +251,8 @@ export default function Index() {
         };
 
         Alert.alert(
-            'DIAGNOSTIC REPORT',
-            `Error: ${debugInfo.errMessage}\n\n` +
-            `URL Present: ${debugInfo.hasUrl}\n` +
-            `Key Present: ${debugInfo.hasKey}\n` +
-            `URL Start: ${debugInfo.urlStart}`
+            'Error de conexión',
+            'No pudimos conectar con las estrellas. Por favor, revisa tu conexión a internet.'
         );
         
         console.error("Registration error full:", error);
