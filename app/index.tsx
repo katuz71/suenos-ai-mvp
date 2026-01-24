@@ -201,9 +201,13 @@ export default function Index() {
   const handleContinue = async () => {
     console.log("Button pressed, current step:", step);
     if (step === 'intro') {
-      setStep('input');
-      fadeAnim.setValue(0);
-      Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
+      // Сначала плавно скрываем текущий текст
+      Animated.timing(fadeAnim, { toValue: 0, duration: 250, useNativeDriver: true }).start(() => {
+        // Только когда текст исчез, меняем шаг на ввод данных
+        setStep('input');
+        // И плавно проявляем новый экран
+        Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+      });
     } else if (step === 'input') {
       if (!name.trim()) { setErrors({...errors, name: 'Requerido'}); return; }
       if (!birthDate.trim()) { setErrors({...errors, birthDate: 'Requerido'}); return; }
@@ -247,9 +251,30 @@ export default function Index() {
         // -------------------------------------
 
         setStep('animation');
-      } catch (error) {
-        Alert.alert('Error', 'Error de conexión');
+     } catch (error: any) {
         setIsLoading(false);
+        
+        // Диагностика ключей
+        const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+        const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+        
+        const debugInfo = {
+            hasUrl: !!url,
+            hasKey: !!key,
+            urlStart: url ? url.substring(0, 8) : 'N/A', // Покажет начало URL (https://)
+            errMessage: error.message || JSON.stringify(error)
+        };
+
+        // Показываем подробный отчет на экране
+        Alert.alert(
+            'DIAGNOSTIC REPORT',
+            `Error: ${debugInfo.errMessage}\n\n` +
+            `URL Present: ${debugInfo.hasUrl}\n` +
+            `Key Present: ${debugInfo.hasKey}\n` +
+            `URL Start: ${debugInfo.urlStart}`
+        );
+        
+        console.error("Registration error full:", error);
       }
     }
   };
