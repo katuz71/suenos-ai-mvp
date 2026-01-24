@@ -1,20 +1,22 @@
 const { withAndroidManifest, withAppBuildGradle } = require('@expo/config-plugins');
 
 module.exports = function withAndroidFixes(config) {
-  // 1. Принудительно разрешаем извлечение нативных библиотек в манифесте
+  // 1. Указываем системе НЕ извлекать библиотеки (важно для 16 КБ!)
   config = withAndroidManifest(config, (config) => {
     const mainApplication = config.modResults.manifest.application[0];
-    mainApplication.$['android:extractNativeLibs'] = 'true'; // Это ключ к решению для 16 КБ
+    
+    // В 2026 году для SDK 35 значение ДОЛЖНО быть false
+    mainApplication.$['android:extractNativeLibs'] = 'false'; 
     return config;
   });
 
-  // 2. Настраиваем Gradle для выравнивания страниц
+  // 2. Настраиваем упаковку так, чтобы библиотеки не сжимались
   config = withAppBuildGradle(config, (config) => {
     if (config.modResults.contents.includes('android {')) {
       const packagingFix = `
         packagingOptions {
             jniLibs {
-                useLegacyPackaging = true // Включаем для корректного выравнивания
+                useLegacyPackaging = false // false заставляет библиотеки лежать несжатыми
             }
         }
       `;
