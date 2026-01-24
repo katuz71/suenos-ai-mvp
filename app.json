@@ -16,7 +16,7 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "2.0.21", 
+            "kotlinVersion": "2.1.20", 
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
             "buildToolsVersion": "35.0.0",
@@ -39,7 +39,7 @@
     ],
     "android": {
       "package": "com.katuz71.suenosaimvp",
-      "versionCode": 36,
+      "versionCode": 37,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "com.android.vending.BILLING",
