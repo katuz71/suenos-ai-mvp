@@ -23,9 +23,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MysticInput } from '../src/components/ui/MysticInput';
 import { supabase } from '../src/services/supabase';
 
-// --- ИМПОРТЫ АНАЛИТИКИ ---
+// --- ИМПОРТЫ АНАЛИТИКИ (Facebook УБРАН) ---
 import analytics from '@react-native-firebase/analytics';
-import { AppEventsLogger } from 'react-native-fbsdk-next';
 
 // --- ИМПОРТЫ РЕКЛАМЫ И СОГЛАСИЯ ---
 import mobileAds, { AdsConsent, AdsConsentStatus } from 'react-native-google-mobile-ads';
@@ -115,33 +114,26 @@ export default function Index() {
   }))).current;
 
   // --- ИНИЦИАЛИЗАЦИЯ GDPR И ADMOB ---
-  // 🚨 ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ДИАГНОСТИКИ ПРОБЛЕМЫ С РЕГИСТРАЦИЕЙ
+  // 🚨 ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ДИАГНОСТИКИ
   useEffect(() => {
     /* const initAds = async () => {
       try {
         console.log("Ads: Checking consent...");
         AdsConsent.requestInfoUpdate().then(async (consentInfo) => {
-          console.log("Ads: Consent status", consentInfo.status);
-          
           if (consentInfo.isConsentFormAvailable && 
               consentInfo.status === AdsConsentStatus.REQUIRED) {
             await AdsConsent.showForm();
           }
-          
           await mobileAds().initialize();
-          console.log("Ads: Initialized ✅");
         }).catch(e => {
-          console.log("Ads: Consent error", e);
           mobileAds().initialize(); 
         });
       } catch (e) {
         mobileAds().initialize();
       }
     };
-
-    initAds();
-    */
-    console.log("⚠️ ADS & GDPR TEMPORARILY DISABLED FOR DEBUGGING");
+    initAds(); */
+    console.log("⚠️ ADS DISABLED FOR DEBUGGING");
   }, []);
 
   useEffect(() => {
@@ -234,20 +226,17 @@ export default function Index() {
         await AsyncStorage.setItem('daily_bonus_date_v1', today);
         await AsyncStorage.setItem('has_launched_app', 'true');
 
-        // --- TRACKING EVENTS (Регистрация) ---
+        // --- TRACKING EVENTS (Facebook УБРАН) ---
         try {
             await analytics().logSignUp({ method: 'anonymous' });
-            AppEventsLogger.logEvent(AppEventsLogger.AppEvents.CompletedRegistration, {
-                [AppEventsLogger.AppEventParams.RegistrationMethod]: 'anonymous'
-            });
-            console.log("Events tracked");
+            console.log("Events tracked: Firebase");
         } catch (e) {
-            console.log("Error tracking events (non-critical):", e);
+            console.log("Error tracking events:", e);
         }
 
         setStep('animation');
       } catch (error: any) {
-        // 🚨 ДИАГНОСТИЧЕСКИЙ БЛОК (ВМЕСТО ПРОСТОЙ ОШИБКИ)
+        // 🚨 ДИАГНОСТИЧЕСКИЙ БЛОК
         setIsLoading(false);
         
         const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -257,7 +246,7 @@ export default function Index() {
             errMessage: error.message || JSON.stringify(error),
             hasUrl: !!url,
             hasKey: !!key,
-            urlStart: url ? url.substring(0, 8) : 'N/A' // Показывает начало (https://)
+            urlStart: url ? url.substring(0, 8) : 'N/A'
         };
 
         Alert.alert(
