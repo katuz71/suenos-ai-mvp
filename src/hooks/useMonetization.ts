@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../services/supabase';
 import Purchases from 'react-native-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppEventsLogger } from 'react-native-fbsdk-next';
+// Facebook удален 🗑️
 import analytics from '@react-native-firebase/analytics';
 
 const ENERGY_VALUES: Record<string, number> = {
@@ -79,8 +79,7 @@ export const useMonetization = () => {
       await supabase.from('profiles').update({ credits: newTotal }).eq('id', user.id);
       setCredits(newTotal);
 
-      // Аналитика успеха
-      AppEventsLogger.logPurchase(price, currency, { content_id: packageId });
+      // Аналитика успеха (Только Firebase)
       await analytics().logPurchase({
         value: price, currency,
         items: [{ item_id: packageId, item_name: `Pack ${ENERGY_VALUES[packageId]}`, quantity: 1 }]

@@ -4,8 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RewardedAd, RewardedAdEventType, AdEventType, TestIds } from 'react-native-google-mobile-ads';
 // 👇 Аналитика
-import { AppEventsLogger } from 'react-native-fbsdk-next'; 
-import analytics from '@react-native-firebase/analytics'; // ✅ Добавили Google
+// Facebook SDK удален, чтобы починить билд 🗑️
+import analytics from '@react-native-firebase/analytics'; // ✅ Google Analytics остался
 import MagicAlert from './MagicAlert';
 
 const productionAdUnitId = 'ca-app-pub-8147866560220122/2478181377';
@@ -35,16 +35,13 @@ export default function WatchAdButton({ onReward }: { onReward?: () => void }) {
       
       // --- ОТПРАВКА АНАЛИТИКИ ---
       
-      // Facebook
-      AppEventsLogger.logEvent('ad_watched_rewarded');
-      
       // Google Analytics (Firebase)
       await analytics().logEvent('ad_watched_rewarded', {
         type: 'video',
         reward: 1
       });
 
-      console.log('📨 [Analytics] События отправлены в FB и Google');
+      console.log('📨 [Analytics] Событие отправлено в Google');
       // ---------------------------
     });
 
