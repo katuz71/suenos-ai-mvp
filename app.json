@@ -7,9 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "suenosai",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "plugins": [
       "./withAndroidFixes.js",
       "expo-router",
@@ -33,24 +31,9 @@
         }
       ]
     ],
-    "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.katuz71.suenosaimvp",
-      "infoPlist": {
-        "NSUserTrackingUsageDescription": "Esto nos permite mostrarte anuncios relevantes.",
-        "SKAdNetworkItems": [
-          {
-            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
-          },
-          {
-            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
-          }
-        ]
-      }
-    },
     "android": {
       "package": "com.katuz71.suenosaimvp",
-      "versionCode": 28,
+      "versionCode": 29,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "com.android.vending.BILLING",
@@ -66,9 +49,6 @@
     "extra": {
       "eas": {
         "projectId": "cebb1e47-84d1-42e2-bac6-c3d10817432f"
-      },
-      "router": {
-        "origin": false
       }
     }
   }
