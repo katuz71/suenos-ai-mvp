@@ -22,6 +22,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MysticInput } from '../src/components/ui/MysticInput';
 import { supabase } from '../src/services/supabase';
+import { setBootstrapProfile } from '../src/services/bootstrapProfile';
 
 // --- ИМПОРТЫ АНАЛИТИКИ (Facebook УБРАН) ---
 import analytics from '@react-native-firebase/analytics';
@@ -171,7 +172,8 @@ export default function Index() {
 
       const timer = setTimeout(() => {
         clearInterval(interval);
-        router.replace({ pathname: '/(tabs)/suenos', params: { welcome: 'true' } });
+        setBootstrapProfile({ name, zodiac: detectedZodiac || 'Desconocido' });
+        router.replace({ pathname: '/(tabs)/suenos', params: { name, date: birthDate, zodiac: detectedZodiac || 'Desconocido', welcome: 'true' } });
       }, 5000);
 
       return () => { clearTimeout(timer); clearInterval(interval); };
@@ -224,6 +226,10 @@ export default function Index() {
 
         await AsyncStorage.setItem('user_name', name);
         await AsyncStorage.setItem('user_zodiac', zodiacSign);
+        setBootstrapProfile({ name, zodiac: zodiacSign });
+        if (authData.session?.user?.id) {
+          await AsyncStorage.setItem('last_user_id_v1', authData.session.user.id);
+        }
         await AsyncStorage.setItem('daily_bonus_date_v1', today);
         await AsyncStorage.setItem('has_launched_app', 'true');
 

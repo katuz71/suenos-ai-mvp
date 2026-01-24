@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
   ScrollView, ActivityIndicator, Alert, RefreshControl, Animated, Share, Keyboard, KeyboardAvoidingView, Platform
@@ -15,7 +15,8 @@ import MagicAlert from '../../src/components/MagicAlert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdBanner from '../../src/components/AdBanner';
 import analytics from '@react-native-firebase/analytics';
-import { THEME } from '../../src/constants/theme'; // Импортируем тему
+import { THEME } from '../../src/constants/theme';
+import { getBootstrapProfile } from '../../src/services/bootstrapProfile';
 
 // --- ИМПОРТ СЕРВИСА УВЕДОМЛЕНИЙ ---
 import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/services/NotificationService';
@@ -54,8 +55,24 @@ export default function SuenosScreen() {
  
   const bonusCheckLock = useRef(false);
 
-  const [userName, setUserName] = useState<string>('Viajero');
-  const [userZodiac, setUserZodiac] = useState('');
+  const paramToString = (value: unknown): string | undefined => {
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value) && typeof value[0] === 'string') return value[0];
+    return undefined;
+  };
+
+  const paramName = paramToString(params.name);
+  const paramZodiac = paramToString(params.zodiac);
+  const bootstrapProfile = getBootstrapProfile();
+
+  const [userName, setUserName] = useState<string>(
+    (paramName && paramName.trim() ? paramName : undefined) ||
+    (bootstrapProfile?.name && bootstrapProfile.name.trim() ? bootstrapProfile.name : undefined) ||
+    'Viajero'
+  );
+  const [userZodiac, setUserZodiac] = useState(
+    paramZodiac || bootstrapProfile?.zodiac || ''
+  );
   const [mode, setMode] = useState<ScreenMode>('input');
   const [currentDreamId, setCurrentDreamId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -68,15 +85,59 @@ export default function SuenosScreen() {
   const [magicAlert, setMagicAlert] = useState({ visible: false, title: '', message: '', icon: '' });
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
+  const [headerHydrated, setHeaderHydrated] = useState(
+    typeof paramName === 'string' && paramName.trim().length > 0
+  );
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // --- ЛОГИКА ТАБОВ ---
+  useEffect(() => {
+    const hydrateFromParams = async () => {
+      const nextName = paramName && paramName.trim() ? paramName : null;
+      const nextZodiac = typeof paramZodiac === 'string' ? paramZodiac : null;
+
+      if (!nextName && !nextZodiac) return;
+
+      if (nextName) {
+        setUserName(nextName);
+        setHeaderHydrated(true);
+        try { await AsyncStorage.setItem('user_name', nextName); } catch (e) { /* ignore */ }
+      }
+      if (nextZodiac !== null) {
+        setUserZodiac(nextZodiac);
+        setHeaderHydrated(true);
+        try { await AsyncStorage.setItem('user_zodiac', nextZodiac); } catch (e) { /* ignore */ }
+      }
+    };
+
+    hydrateFromParams();
+  }, [paramName, paramZodiac]);
+
+  useLayoutEffect(() => {
+    const hydrateHeaderFromCache = async () => {
+      try {
+        const name = await AsyncStorage.getItem('user_name');
+        const sign = await AsyncStorage.getItem('user_zodiac');
+
+        if (name) setUserName(name);
+        if (sign) setUserZodiac(sign);
+        if (name || sign) setHeaderHydrated(true);
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    hydrateHeaderFromCache();
+  }, []);
+
+  // --- ИСПРАВЛЕНИЕ ТАБОВ (ФИНАЛЬНОЕ) ---
+  // Мы явно задаем стили из TabLayout, чтобы они не сбрасывались в белый цвет.
   useEffect(() => {
     if (mode === 'chat') {
       navigation.setOptions({
         tabBarStyle: { display: 'none' }
       });
     } else {
+      // ВОССТАНАВЛИВАЕМ СТИЛИ ИЗ TabLayout.tsx ТОЧЬ-В-ТОЧЬ
       navigation.setOptions({
         tabBarStyle: {
           backgroundColor: '#0f0c29', 
@@ -86,7 +147,7 @@ export default function SuenosScreen() {
           paddingTop: 10,
           elevation: 0,
           display: 'flex',
-          borderTopWidth: 1
+          borderTopWidth: 1 // На всякий случай дублируем границу
         }
       });
     }
@@ -165,9 +226,13 @@ export default function SuenosScreen() {
      
       const { data: profile } = await supabase.from('profiles').select('display_name, zodiac_sign').eq('id', user.id).maybeSingle();
       if (profile) {
-        setUserName(profile.display_name);
-        setUserZodiac(profile.zodiac_sign || '');
-        await AsyncStorage.setItem('user_name', profile.display_name || '');
+        const displayName = profile.display_name || 'Viajero';
+        const sign = profile.zodiac_sign || '';
+        setUserName(displayName);
+        setUserZodiac(sign);
+        setHeaderHydrated(true);
+        await AsyncStorage.setItem('user_name', displayName);
+        await AsyncStorage.setItem('user_zodiac', sign);
       }
 
       const { data: history, error } = await supabase
@@ -383,10 +448,10 @@ export default function SuenosScreen() {
               <Text style={styles.backText}>Volver</Text>
             </TouchableOpacity>
           ) : (
-             <View>
-                <Text style={styles.greeting}>¡Hola, {userName}!</Text>
-                <Text style={styles.zodiacText}>{userZodiac || ''}</Text>
-             </View>
+            <>
+              <Text style={styles.greeting}>¡Hola, {userName}!</Text>
+              <Text style={styles.zodiacText}>{userZodiac || '...'}</Text>
+            </>
           )}
         </View>
        
@@ -402,6 +467,7 @@ export default function SuenosScreen() {
       <View style={{ flex: 1 }}>
         {mode === 'input' && (
           <ScrollView
+            // flexGrow: 1 + Пружина внизу (View flex:1) + AdBanner = Идеальный футер
             contentContainerStyle={[styles.scrollContent, { paddingBottom: 40, flexGrow: 1 }]}
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffd700" />}
@@ -467,7 +533,10 @@ export default function SuenosScreen() {
               <View style={styles.diaryEmpty}><Text style={styles.diaryEmptyText}>Tu diario está vacío</Text></View>
             )}
 
+            {/* ЭТА ПРУЖИНА (flex: 1) ОТТАЛКИВАЕТ РЕКЛАМУ ВНИЗ */}
             <View style={{ flex: 1 }} />
+
+            {/* Рекламный блок теперь внизу списка */}
             <AdBanner />
             
           </ScrollView>
@@ -538,34 +607,22 @@ export default function SuenosScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, minHeight: 50 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, minHeight: 50 },
   headerTextContainer: { flex: 1 },
-  
-  // --- ТИПОГРАФИКА ---
   greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
   zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: '600', fontFamily: THEME.fonts.serif },
-  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5, fontFamily: THEME.fonts.serif },
-  
+  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5 },
   energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
   energyText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
   magicCard: { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  
-  // Заголовок карточки тоже Serif
-  cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
-  
+  cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10 },
   dreamInput: { color: '#fff', fontSize: 16, minHeight: 100, textAlignVertical: 'top', marginBottom: 20, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 12 },
   mainButton: { borderRadius: 30, overflow: 'hidden' },
   buttonGradient: { flexDirection: 'row', height: 56, alignItems: 'center', justifyContent: 'center' },
-  
-  // Текст на кнопке Serif
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: THEME.fonts.serif, letterSpacing: 1 },
-  
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   diaryHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
-  
-  // Заголовок дневника Serif
-  diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
-  
+  diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1 },
   diaryCount: { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
   diaryCountText: { color: '#ffd700', fontSize: 14, fontWeight: '600' },
   diaryList: { paddingBottom: 20 },
@@ -576,7 +633,7 @@ const styles = StyleSheet.create({
   dreamItemDate: { fontSize: 12, color: '#ffd700', fontWeight: '500' },
   dreamItemText: { fontSize: 14, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 20 },
   diaryEmpty: { alignItems: 'center', padding: 20 },
-  diaryEmptyText: { color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', fontFamily: THEME.fonts.serif },
+  diaryEmptyText: { color: 'rgba(255,255,255,0.3)' },
   bubble: { padding: 16, borderRadius: 16, marginBottom: 16, maxWidth: '85%' },
   userBubble: { backgroundColor: '#4A00E0', alignSelf: 'flex-end', borderBottomRightRadius: 4 },
   lunaBubble: { backgroundColor: 'rgba(255,255,255,0.08)', alignSelf: 'flex-start', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
@@ -592,3 +649,4 @@ const styles = StyleSheet.create({
   chatSendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFD700', justifyContent: 'center', alignItems: 'center' },
   costText: { fontSize: 10, color: '#000', fontWeight: 'bold', marginTop: -2 },
 });
+

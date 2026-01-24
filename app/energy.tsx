@@ -43,7 +43,7 @@ const TwinklingStar = ({ index }: { index: number }) => {
   );
 };
 
-const adUnitId = __DEV__ ? Ads.TestIds.REWARDED : 'ca-app-pub-8147866560220122/6913262165';
+const adUnitId = __DEV__ ? Ads.TestIds.REWARDED : 'ca-app-pub-8147866560220122/2478181377';
 const PRIVACY_URL = 'https://aiinsightshub.site/privacy.html';
 const TERMS_URL = 'https://aiinsightshub.site/terms.html';
 

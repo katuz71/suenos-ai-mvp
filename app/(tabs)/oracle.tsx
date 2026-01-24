@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert, Share, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import MagicAlert from '../../src/components/MagicAlert';
 import analytics from '@react-native-firebase/analytics';
 import { THEME } from '../../src/constants/theme'; // Импорт
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getBootstrapProfile } from '../../src/services/bootstrapProfile';
 
 const { width, height } = Dimensions.get('window');
 
@@ -87,8 +89,33 @@ export default function OracleScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [oracleAnswer, setOracleAnswer] = useState<string>('');
   const [showAnswer, setShowAnswer] = useState(false);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const bootstrapProfile = getBootstrapProfile();
+  const [userProfile, setUserProfile] = useState<any>(
+    bootstrapProfile?.name || bootstrapProfile?.zodiac
+      ? { display_name: bootstrapProfile?.name, zodiac_sign: bootstrapProfile?.zodiac }
+      : null
+  );
   const [showEnergyAlert, setShowEnergyAlert] = useState(false);
+
+  useLayoutEffect(() => {
+    const hydrateFromCache = async () => {
+      try {
+        const cachedName = await AsyncStorage.getItem('user_name');
+        const cachedSign = await AsyncStorage.getItem('user_zodiac');
+
+        if (cachedName || cachedSign) {
+          setUserProfile((prev: any) => ({
+            display_name: cachedName ?? prev?.display_name,
+            zodiac_sign: cachedSign ?? prev?.zodiac_sign,
+          }));
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    hydrateFromCache();
+  }, []);
   
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0.3)).current;
@@ -141,7 +168,17 @@ export default function OracleScreen() {
           .select('display_name, zodiac_sign')
           .eq('id', user.id)
           .maybeSingle();
-        setUserProfile(data);
+        setUserProfile((prev: any) => ({
+          display_name: data?.display_name ?? prev?.display_name,
+          zodiac_sign: data?.zodiac_sign ?? prev?.zodiac_sign,
+        }));
+
+        if (data?.display_name) {
+          await AsyncStorage.setItem('user_name', data.display_name);
+        }
+        if (typeof data?.zodiac_sign === 'string') {
+          await AsyncStorage.setItem('user_zodiac', data.zodiac_sign);
+        }
       }
     } catch (e) { console.log('Error loading profile:', e); }
   };
@@ -253,14 +290,8 @@ export default function OracleScreen() {
       {/* HEADER */}
       <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
           <View style={styles.headerTextContainer}>
-            {userProfile ? (
-              <>
-                <Text style={styles.greeting}>¡Hola, {userProfile.display_name || 'Viajero'}!</Text>
-                <Text style={styles.zodiacText}>{userProfile.zodiac_sign || 'Misterioso'}</Text>
-              </>
-            ) : (
-              <ActivityIndicator size="small" color="#FFD700" />
-            )}
+            <Text style={styles.greeting}>¡Hola, {userProfile?.display_name || 'Viajero'}!</Text>
+            <Text style={styles.zodiacText}>{userProfile?.zodiac_sign || '...'}</Text>
           </View>
           
           <TouchableOpacity 

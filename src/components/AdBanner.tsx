@@ -9,7 +9,7 @@ import { useMonetization } from '../hooks/useMonetization';
 
 // Ваш реальный ID баннера (взят из energy.tsx)
 // Если захотите создать отдельный баннер для Снов/Гороскопа - поменяйте этот ID
-const productionAdUnitId = 'ca-app-pub-8147866560220122/6890947761';
+const productionAdUnitId = 'ca-app-pub-8147866560220122/1165099709';
 
 const adUnitId = __DEV__ ? TestIds.BANNER : productionAdUnitId;
 
