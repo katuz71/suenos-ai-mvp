@@ -114,12 +114,12 @@ export default function Index() {
     delay: Math.random() * 3000,
   }))).current;
 
-  // --- ИНИЦИАЛИЗАЦИЯ GDPR И ADMOB (ИСПРАВЛЕНО) ---
+  // --- ИНИЦИАЛИЗАЦИЯ GDPR И ADMOB ---
+  // 🚨 ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ДИАГНОСТИКИ ПРОБЛЕМЫ С РЕГИСТРАЦИЕЙ
   useEffect(() => {
-    const initAds = async () => {
+    /* const initAds = async () => {
       try {
         console.log("Ads: Checking consent...");
-        // Мы НЕ используем await здесь для всей функции, чтобы не вешать поток
         AdsConsent.requestInfoUpdate().then(async (consentInfo) => {
           console.log("Ads: Consent status", consentInfo.status);
           
@@ -132,7 +132,7 @@ export default function Index() {
           console.log("Ads: Initialized ✅");
         }).catch(e => {
           console.log("Ads: Consent error", e);
-          mobileAds().initialize(); // Все равно запускаем рекламу
+          mobileAds().initialize(); 
         });
       } catch (e) {
         mobileAds().initialize();
@@ -140,6 +140,8 @@ export default function Index() {
     };
 
     initAds();
+    */
+    console.log("⚠️ ADS & GDPR TEMPORARILY DISABLED FOR DEBUGGING");
   }, []);
 
   useEffect(() => {
@@ -201,11 +203,8 @@ export default function Index() {
   const handleContinue = async () => {
     console.log("Button pressed, current step:", step);
     if (step === 'intro') {
-      // Сначала плавно скрываем текущий текст
       Animated.timing(fadeAnim, { toValue: 0, duration: 250, useNativeDriver: true }).start(() => {
-        // Только когда текст исчез, меняем шаг на ввод данных
         setStep('input');
-        // И плавно проявляем новый экран
         Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }).start();
       });
     } else if (step === 'input') {
@@ -237,35 +236,30 @@ export default function Index() {
 
         // --- TRACKING EVENTS (Регистрация) ---
         try {
-            // 1. Firebase Analytics
             await analytics().logSignUp({ method: 'anonymous' });
-
-            // 2. Facebook (Meta) SDK
             AppEventsLogger.logEvent(AppEventsLogger.AppEvents.CompletedRegistration, {
                 [AppEventsLogger.AppEventParams.RegistrationMethod]: 'anonymous'
             });
-            console.log("Events tracked: SignUp (Firebase) & CompletedRegistration (FB)");
+            console.log("Events tracked");
         } catch (e) {
-            console.log("Error tracking events:", e);
+            console.log("Error tracking events (non-critical):", e);
         }
-        // -------------------------------------
 
         setStep('animation');
-     } catch (error: any) {
+      } catch (error: any) {
+        // 🚨 ДИАГНОСТИЧЕСКИЙ БЛОК (ВМЕСТО ПРОСТОЙ ОШИБКИ)
         setIsLoading(false);
         
-        // Диагностика ключей
         const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
         const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
         
         const debugInfo = {
+            errMessage: error.message || JSON.stringify(error),
             hasUrl: !!url,
             hasKey: !!key,
-            urlStart: url ? url.substring(0, 8) : 'N/A', // Покажет начало URL (https://)
-            errMessage: error.message || JSON.stringify(error)
+            urlStart: url ? url.substring(0, 8) : 'N/A' // Показывает начало (https://)
         };
 
-        // Показываем подробный отчет на экране
         Alert.alert(
             'DIAGNOSTIC REPORT',
             `Error: ${debugInfo.errMessage}\n\n` +
@@ -287,7 +281,7 @@ export default function Index() {
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-             
+              
              <View style={[styles.content, { paddingBottom: insets.bottom + 20, paddingTop: insets.top + 60 }]}>
                 
                 {/* --- INTRO --- */}
