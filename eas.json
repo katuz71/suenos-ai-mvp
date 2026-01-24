@@ -16,6 +16,9 @@
     },
     "production": {
       "channel": "production",
+      "android": {
+        "image": "sdk-52"
+      },
       "env": {
         "EXPO_PUBLIC_OPENAI_API_KEY": "SECRETS"
       }
