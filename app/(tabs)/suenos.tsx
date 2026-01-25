@@ -18,13 +18,16 @@ import analytics from '@react-native-firebase/analytics';
 import { THEME } from '../../src/constants/theme';
 import { getBootstrapProfile } from '../../src/services/bootstrapProfile';
 
+
 // --- ИМПОРТ СЕРВИСА УВЕДОМЛЕНИЙ ---
 import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/services/NotificationService';
+
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
+
 
 interface DreamEntry {
   id: string;
@@ -34,6 +37,7 @@ interface DreamEntry {
   created_at: string;
 }
 
+
 type Message = {
   id: string;
   text: string;
@@ -41,9 +45,12 @@ type Message = {
   isDream?: boolean;
 };
 
+
 type ScreenMode = 'input' | 'chat';
 
+
 const BONUS_DATE_KEY = 'daily_bonus_date_v1';
+
 
 export default function SuenosScreen() {
   const router = useRouter();
@@ -55,15 +62,18 @@ export default function SuenosScreen() {
  
   const bonusCheckLock = useRef(false);
 
+
   const paramToString = (value: unknown): string | undefined => {
     if (typeof value === 'string') return value;
     if (Array.isArray(value) && typeof value[0] === 'string') return value[0];
     return undefined;
   };
 
+
   const paramName = paramToString(params.name);
   const paramZodiac = paramToString(params.zodiac);
   const bootstrapProfile = getBootstrapProfile();
+
 
   const [userName, setUserName] = useState<string>(
     (paramName && paramName.trim() ? paramName : undefined) ||
@@ -90,12 +100,19 @@ export default function SuenosScreen() {
   );
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+
+  // Рассчитываем высоту хедера для отступа клавиатуры (Top Insets + Padding + MinHeight + MarginBottom)
+  const headerHeight = insets.top + 10 + 50 + 20;
+
+
   useEffect(() => {
     const hydrateFromParams = async () => {
       const nextName = paramName && paramName.trim() ? paramName : null;
       const nextZodiac = typeof paramZodiac === 'string' ? paramZodiac : null;
 
+
       if (!nextName && !nextZodiac) return;
+
 
       if (nextName) {
         setUserName(nextName);
@@ -109,14 +126,17 @@ export default function SuenosScreen() {
       }
     };
 
+
     hydrateFromParams();
   }, [paramName, paramZodiac]);
+
 
   useLayoutEffect(() => {
     const hydrateHeaderFromCache = async () => {
       try {
         const name = await AsyncStorage.getItem('user_name');
         const sign = await AsyncStorage.getItem('user_zodiac');
+
 
         if (name) setUserName(name);
         if (sign) setUserZodiac(sign);
@@ -126,32 +146,33 @@ export default function SuenosScreen() {
       }
     };
 
+
     hydrateHeaderFromCache();
   }, []);
 
-  // --- ИСПРАВЛЕНИЕ ТАБОВ (ФИНАЛЬНОЕ) ---
-  // Мы явно задаем стили из TabLayout, чтобы они не сбрасывались в белый цвет.
+
+  // --- ИСПРАВЛЕНИЕ ТАБОВ ---
   useEffect(() => {
     if (mode === 'chat') {
       navigation.setOptions({
         tabBarStyle: { display: 'none' }
       });
     } else {
-      // ВОССТАНАВЛИВАЕМ СТИЛИ ИЗ TabLayout.tsx ТОЧЬ-В-ТОЧЬ
       navigation.setOptions({
         tabBarStyle: {
-          backgroundColor: '#0f0c29', 
-          borderTopColor: 'rgba(255, 215, 0, 0.1)', 
-          height: 70 + insets.bottom, 
+          backgroundColor: '#0f0c29',
+          borderTopColor: 'rgba(255, 215, 0, 0.1)',
+          height: 70 + insets.bottom,
           paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
           elevation: 0,
           display: 'flex',
-          borderTopWidth: 1 // На всякий случай дублируем границу
+          borderTopWidth: 1
         }
       });
     }
   }, [navigation, mode, insets.bottom]);
+
 
   // Energy animation
   useEffect(() => {
@@ -160,6 +181,7 @@ export default function SuenosScreen() {
       Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
     ]).start();
   }, [credits]);
+
 
   // Chat autoscroll logic
   useEffect(() => {
@@ -172,6 +194,7 @@ export default function SuenosScreen() {
     return () => kbdShow.remove();
   }, [messages, mode, loading]);
 
+
   // --- UNIFIED BONUS LOGIC ---
   useEffect(() => {
     const handleBonuses = async () => {
@@ -180,12 +203,15 @@ export default function SuenosScreen() {
       if (name) setUserName(name);
       if (sign) setUserZodiac(sign);
 
+
       if (bonusCheckLock.current) return;
       bonusCheckLock.current = true;
+
 
       if (params.welcome === 'true') {
         const today = new Date().toISOString().split('T')[0];
         await AsyncStorage.setItem(BONUS_DATE_KEY, today);
+
 
         setMagicAlert({
           visible: true,
@@ -212,8 +238,10 @@ export default function SuenosScreen() {
       }
     };
 
+
     handleBonuses();
   }, [params.welcome]);
+
 
   const loadData = useCallback(async (showLoading = false) => {
     try {
@@ -235,6 +263,7 @@ export default function SuenosScreen() {
         await AsyncStorage.setItem('user_zodiac', sign);
       }
 
+
       const { data: history, error } = await supabase
         .from('interpretations')
         .select('*')
@@ -250,6 +279,7 @@ export default function SuenosScreen() {
       setRefreshing(false);
     }
   }, []);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -270,11 +300,13 @@ export default function SuenosScreen() {
     }, [loadData])
   );
 
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadData(false);
     refreshStatus();
   }, [loadData, refreshStatus]);
+
 
   const handleOpenDream = (dream: DreamEntry) => {
     setCurrentDreamId(dream.id);
@@ -295,6 +327,7 @@ export default function SuenosScreen() {
     setMode('chat');
   };
 
+
   const handleSendDream = async () => {
     Keyboard.dismiss();
     if (!dreamText.trim()) {
@@ -308,9 +341,11 @@ export default function SuenosScreen() {
     }
     setLoading(true);
 
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
 
       if (!isPremium) {
         const success = await spendEnergy(1);
@@ -320,6 +355,7 @@ export default function SuenosScreen() {
            return;
         }
       }
+
 
       const aiResponse = await interpretDream(dreamText, { name: userName, zodiac: userZodiac });
      
@@ -331,6 +367,7 @@ export default function SuenosScreen() {
           created_at: new Date().toISOString()
         }).select().single();
 
+
       if (error) throw error;
       if (data) setCurrentDreamId(data.id);
      
@@ -341,6 +378,7 @@ export default function SuenosScreen() {
       setDreamText('');
       setMode('chat');
       loadData(false);
+
 
       // --- SMART PUSH STRATEGY ---
       setTimeout(async () => {
@@ -355,6 +393,7 @@ export default function SuenosScreen() {
         }
       }, 3500);
 
+
     } catch (e) {
       console.error(e);
       Alert.alert("Error", "La conexión cósmica falló.");
@@ -363,6 +402,7 @@ export default function SuenosScreen() {
     }
   };
 
+
   const handleReply = async () => {
     if (!chatInputText.trim()) return;
     if (!isPremium && credits < 1) {
@@ -370,9 +410,11 @@ export default function SuenosScreen() {
       return;
     }
 
+
     const userMsgText = chatInputText;
     setChatInputText('');
     setLoading(true);
+
 
     try {
       if (!isPremium) {
@@ -384,12 +426,15 @@ export default function SuenosScreen() {
          }
       }
 
+
       const newUserMsg: Message = { id: Date.now().toString(), text: userMsgText, sender: 'user' };
       const newMessagesLocal = [...messages, newUserMsg];
       setMessages(newMessagesLocal);
 
+
       const contextString = messages.map(m => `${m.sender === 'user' ? 'USUARIO' : 'LUNA'}: ${m.text}`).join('\n');
       const fullPrompt = `HISTORIAL:\n${contextString}\nNUEVO:\n${userMsgText}\nResponde como Luna en Español.`;
+
 
       const aiReplyText = await interpretDream(fullPrompt, { name: userName, zodiac: userZodiac });
      
@@ -397,10 +442,12 @@ export default function SuenosScreen() {
       const finalMessages = [...newMessagesLocal, newLunaMsg];
       setMessages(finalMessages);
 
+
       if (currentDreamId) {
         const historyToSave = finalMessages.filter(m => m.id !== 'dream' && m.id !== 'luna-1').map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }));
         await supabase.from('interpretations').update({ chat_history: historyToSave }).eq('id', currentDreamId);
       }
+
 
     } catch (e) {
       Alert.alert("Error", "Magia interrumpida...");
@@ -409,6 +456,7 @@ export default function SuenosScreen() {
     }
   };
 
+
   const handleBackToInput = () => {
     setMode('input');
     setMessages([]);
@@ -416,10 +464,12 @@ export default function SuenosScreen() {
     loadData(false);
   };
 
+
   const handleConfirmDelete = (id: string) => {
     setDreamToDelete(id);
     setDeleteAlertVisible(true);
   };
+
 
   const performDelete = async () => {
     if (!dreamToDelete) return;
@@ -431,15 +481,17 @@ export default function SuenosScreen() {
     } catch (e) { Alert.alert("Error", "Error al borrar."); }
   };
 
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
   };
+
 
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#1a1a2e']} style={StyleSheet.absoluteFill} />
      
-      {/* HEADER */}
+      {/* HEADER: Расположен вне KeyboardAvoidingView */}
       <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
         <View style={styles.headerTextContainer}>
           {mode === 'chat' ? (
@@ -463,11 +515,11 @@ export default function SuenosScreen() {
         </Animated.View>
       </View>
 
+
       {/* CONTENT AREA */}
       <View style={{ flex: 1 }}>
         {mode === 'input' && (
           <ScrollView
-            // flexGrow: 1 + Пружина внизу (View flex:1) + AdBanner = Идеальный футер
             contentContainerStyle={[styles.scrollContent, { paddingBottom: 40, flexGrow: 1 }]}
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffd700" />}
@@ -502,6 +554,7 @@ export default function SuenosScreen() {
               </TouchableOpacity>
             </View>
 
+
             <View style={{ height: 20 }} />
            
             <View style={styles.diaryHeader}>
@@ -533,24 +586,23 @@ export default function SuenosScreen() {
               <View style={styles.diaryEmpty}><Text style={styles.diaryEmptyText}>Tu diario está vacío</Text></View>
             )}
 
-            {/* ЭТА ПРУЖИНА (flex: 1) ОТТАЛКИВАЕТ РЕКЛАМУ ВНИЗ */}
-            <View style={{ flex: 1 }} />
 
-            {/* Рекламный блок теперь внизу списка */}
+            <View style={{ flex: 1 }} />
             <AdBanner />
-            
           </ScrollView>
         )}
+
 
         {mode === 'chat' && (
           <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 90}
+            behavior={Platform.OS === "ios" ? "padding" : "padding"}
+            keyboardVerticalOffset={headerHeight}
           >
             <ScrollView
               ref={scrollViewRef}
               contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20, flexGrow: 1 }}
+              keyboardShouldPersistTaps="handled"
             >
               {messages.map((msg, index) => {
                 const isUser = msg.sender === 'user';
@@ -569,7 +621,11 @@ export default function SuenosScreen() {
               {loading && <View style={styles.loadingBubble}><ActivityIndicator color="#FFD700" size="small" /><Text style={styles.loadingText}>Los astros susurran...</Text></View>}
             </ScrollView>
 
-            <View style={[styles.chatInputBar]}>
+
+            <View style={[
+              styles.chatInputBar,
+              { paddingBottom: Math.max(insets.bottom, 10) }
+            ]}>
               <TextInput
                 style={styles.chatInput}
                 placeholder="Pregúntale a Luna..."
@@ -585,6 +641,7 @@ export default function SuenosScreen() {
           </KeyboardAvoidingView>
         )}
       </View>
+
 
       {/* ALERTS */}
       <MagicAlert visible={deleteAlertVisible} title="¿Borrar sueño?" message="No se puede deshacer." icon="trash-bin" onConfirm={performDelete} onCancel={() => setDeleteAlertVisible(false)} confirmText="Borrar" />
@@ -604,27 +661,28 @@ export default function SuenosScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, minHeight: 50 },
   headerTextContainer: { flex: 1 },
-  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
-  zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: '600', fontFamily: THEME.fonts.serif },
-  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5 },
+  greeting: { fontSize: 24, fontWeight: Platform.OS === 'ios' ? '700' : 'normal', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
+  zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: Platform.OS === 'ios' ? '600' : 'normal', fontFamily: THEME.fonts.serif },
+  backText: { fontSize: 18, color: '#FFD700', marginLeft: 5, fontFamily: THEME.fonts.serif },
   energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
   energyText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },
   magicCard: { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10 },
+  cardTitle: { fontSize: 16, fontWeight: '600', color: '#fff', opacity: 0.8, marginLeft: 10, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
   dreamInput: { color: '#fff', fontSize: 16, minHeight: 100, textAlignVertical: 'top', marginBottom: 20, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 12 },
   mainButton: { borderRadius: 30, overflow: 'hidden' },
   buttonGradient: { flexDirection: 'row', height: 56, alignItems: 'center', justifyContent: 'center' },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: THEME.fonts.serif, letterSpacing: 1 },
   diaryHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
-  diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1 },
+  diaryTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginLeft: 10, flex: 1, fontFamily: THEME.fonts.serif, letterSpacing: 1 },
   diaryCount: { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
-  diaryCountText: { color: '#ffd700', fontSize: 14, fontWeight: '600' },
+  diaryCountText: { color: '#ffd700', fontSize: 14, fontWeight: '600', fontFamily: THEME.fonts.serif },
   diaryList: { paddingBottom: 20 },
   dreamItemContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
   dreamItem: { flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.05)' },

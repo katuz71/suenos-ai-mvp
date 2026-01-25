@@ -1,29 +1,69 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../services/supabase';
-import Purchases from 'react-native-purchases';
+import Purchases, { CustomerInfo } from 'react-native-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// Facebook удален 🗑️
 import analytics from '@react-native-firebase/analytics';
 
+const BONUS_DATE_KEY = 'daily_bonus_date_v1';
+const DAILY_BONUS_AMOUNT = 1;
+
+// ID вашего entitlement в RevenueCat (для подписок, если есть)
+const ENTITLEMENT_ID = 'pro_access'; 
+
+// МАППИНГ ПАКЕТОВ ЭНЕРГИИ (Важно для вашего магазина)
 const ENERGY_VALUES: Record<string, number> = {
   'energy_10_v2': 10,
   'energy_50_v2': 50,
   'energy_150_v2': 150,
 };
 
-const BONUS_DATE_KEY = 'daily_bonus_date_v1';
-const DAILY_BONUS_AMOUNT = 1;
-
 export const useMonetization = () => {
   const [credits, setCredits] = useState(0);
+  const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
   const isProcessing = useRef(false);
 
-  // 1. Получение баланса
+  const checkPremiumStatus = useCallback((info: CustomerInfo) => {
+    const isActive = typeof info.entitlements.active[ENTITLEMENT_ID] !== "undefined";
+    setIsPremium(isActive);
+  }, []);
+
+  // 1. Инициализация и слушатель RevenueCat
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const info = await Purchases.getCustomerInfo();
+        checkPremiumStatus(info);
+      } catch (e) {
+        console.log("RC Init Error", e);
+      }
+    };
+
+    init();
+
+    // Создаем функцию слушателя
+    const customerInfoUpdateListener = (info: CustomerInfo) => {
+      checkPremiumStatus(info);
+    };
+
+    // Подписываемся
+    Purchases.addCustomerInfoUpdateListener(customerInfoUpdateListener);
+
+    return () => {
+      // Отписываемся, передавая ту же функцию
+      Purchases.removeCustomerInfoUpdateListener(customerInfoUpdateListener);
+    };
+  }, [checkPremiumStatus]);
+
+  // 2. Получение баланса
   const fetchStatus = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      
+      // Синхронизируем ID пользователя с RevenueCat
+      await Purchases.logIn(user.id);
+
       const { data } = await supabase.from('profiles').select('credits').eq('id', user.id).maybeSingle();
       if (data) setCredits(data.credits || 0);
     } catch (e) { console.error('Fetch error:', e); } finally { setLoading(false); }
@@ -31,7 +71,7 @@ export const useMonetization = () => {
 
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
 
-  // 2. Ежедневный бонус (+1 энергия)
+  // 3. Ежедневный бонус
   const checkDailyBonus = async (): Promise<boolean> => {
     try {
       const today = new Date().toISOString().split('T')[0];
@@ -59,7 +99,7 @@ export const useMonetization = () => {
     return false;
   };
 
-  // 3. Покупка энергии
+  // 4. Покупка (Поддержка и подписок, и пакетов энергии)
   const buyPremium = async (packageId: string) => {
     setLoading(true);
     try {
@@ -67,23 +107,35 @@ export const useMonetization = () => {
       if (!user) return false;
 
       const offerings = await Purchases.getOfferings();      
-      const pkg = offerings.current?.availablePackages.find(p => p.product.identifier === packageId);
-      if (!pkg) return false;
+      // Ищем пакет во всех offerings (current и default)
+      const pkg = offerings.current?.availablePackages.find(p => p.product.identifier === packageId) || 
+                  offerings.all['default']?.availablePackages.find(p => p.product.identifier === packageId);
+                  
+      if (!pkg) {
+         console.error("Package not found:", packageId);
+         return false;
+      }
       
       const { customerInfo } = await Purchases.purchasePackage(pkg);
-      const price = pkg.product.price;
-      const currency = pkg.product.currencyCode;
-
-      const { data: profile } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
-      const newTotal = (profile?.credits || 0) + (ENERGY_VALUES[packageId] || 0);
-      await supabase.from('profiles').update({ credits: newTotal }).eq('id', user.id);
-      setCredits(newTotal);
-
-      // Аналитика успеха (Только Firebase)
-      await analytics().logPurchase({
-        value: price, currency,
-        items: [{ item_id: packageId, item_name: `Pack ${ENERGY_VALUES[packageId]}`, quantity: 1 }]
-      });
+      
+      // А. Если это подписка (Pro Access)
+      if (typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined") {
+        setIsPremium(true);
+        await analytics().logEvent('subscription_started', { package_id: packageId });
+      } 
+      
+      // Б. Если это пакет энергий (Consumable)
+      const energyAmount = ENERGY_VALUES[packageId];
+      if (energyAmount) {
+         const { data: profile } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+         const newTotal = (profile?.credits || 0) + energyAmount;
+         
+         // Начисляем кредиты в базу
+         await supabase.from('profiles').update({ credits: newTotal }).eq('id', user.id);
+         setCredits(newTotal);
+         
+         await analytics().logEvent('energy_purchased', { amount: energyAmount, package: packageId });
+      }
 
       return true;
     } catch (e: any) { 
@@ -96,8 +148,27 @@ export const useMonetization = () => {
     } finally { setLoading(false); }
   };
 
-  // 4. Списание энергии (для Оракула и Снов)
+  // 5. Восстановление покупок
+  const restorePurchases = async () => {
+      setLoading(true);
+      try {
+          const info = await Purchases.restorePurchases();
+          checkPremiumStatus(info);
+          if (typeof info.entitlements.active[ENTITLEMENT_ID] !== "undefined") {
+              return true;
+          }
+      } catch (e) {
+          console.error(e);
+      } finally {
+          setLoading(false);
+      }
+      return false;
+  };
+
+  // 6. Списание энергии
   const spendEnergy = useCallback(async (amount: number): Promise<boolean> => {
+    if (isPremium) return true; // Бесплатно для премиум
+
     if (credits < amount) return false;
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -111,17 +182,20 @@ export const useMonetization = () => {
       await analytics().logEvent('energy_spent', { amount, remaining: newTotal });
       return true;
     } catch (e) { console.error(e); return false; }
-  }, [credits]);
+  }, [credits, isPremium]);
 
-  // 5. Бесплатная энергия (Реклама)
+  // 7. Бесплатная энергия (Реклама)
   const addFreeEnergy = useCallback(async () => {
     if (isProcessing.current) return;
     isProcessing.current = true;
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      
       const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
-      const nt = (p?.credits || 0) + 1;
+      const currentCredits = p?.credits || 0;
+      const nt = currentCredits + 1;
+      
       await supabase.from('profiles').update({ credits: nt }).eq('id', user.id);
       setCredits(nt);
       await analytics().logEvent('ad_reward_completed', { balance: nt });
@@ -137,7 +211,8 @@ export const useMonetization = () => {
     addFreeEnergy, 
     spendEnergy, 
     checkDailyBonus, 
+    restorePurchases, 
     refreshStatus: fetchStatus, 
-    isPremium: false 
+    isPremium 
   };
 };

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert, Share, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Animated, Dimensions, Alert, Share, Keyboard, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -404,9 +404,9 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, minHeight: 50 },
   headerTextContainer: { flex: 1 },
   
-  // --- ТИПОГРАФИКА ---
-  greeting: { fontSize: 24, fontWeight: '700', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
-  zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: '600', fontFamily: THEME.fonts.serif },
+  // --- ТИПОГРАФИЯ ---
+  greeting: { fontSize: 24, fontWeight: Platform.OS === 'ios' ? '700' : 'normal', color: '#fff', letterSpacing: 0.5, fontFamily: THEME.fonts.serif },
+  zodiacText: { fontSize: 16, color: '#A855F7', marginTop: 4, fontWeight: Platform.OS === 'ios' ? '600' : 'normal', fontFamily: THEME.fonts.serif },
   
   energyBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,215,0,0.3)' },
   energyText: { color: '#FFD700', fontWeight: 'bold', fontSize: 16 },

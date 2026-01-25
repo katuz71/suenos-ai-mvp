@@ -1,20 +1,20 @@
 import * as Notifications from 'expo-notifications';
 import { supabase } from './supabase'; 
 import { Platform } from 'react-native';
-import Constants from 'expo-constants'; // Рекомендуется для стабильности
+import Constants from 'expo-constants';
 
-// 1. Setup: Show notifications even if the app is open
+// 1. Setup: Настройка поведения (показывать уведомление, даже если приложение открыто)
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldShowBanner: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowList: true,
   }),
 });
 
 // 2. Registration and token retrieval
-// ВАЖНО: Теперь функция возвращает Promise<string | undefined>
 export async function registerForPushNotificationsAsync() {
   let token;
 
@@ -37,15 +37,15 @@ export async function registerForPushNotificationsAsync() {
 
   if (finalStatus !== 'granted') {
     console.log('Push: Permission denied');
-    return undefined; // Возвращаем undefined, если отказали
+    return undefined;
   }
 
   try {
-    // Получаем Project ID безопасно (важно для Expo SDK 49+)
+    // Получаем Project ID для Expo SDK 49+
     const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
 
     const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: projectId, // Если projectId undefined, Expo попытается найти его сама
+      projectId: projectId,
     });
     
     token = tokenData.data;
@@ -53,7 +53,7 @@ export async function registerForPushNotificationsAsync() {
 
     await saveTokenToSupabase(token);
     
-    return token; // <--- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Возвращаем токен UI-компоненту
+    return token;
 
   } catch (error) {
     console.log('Error getting token:', error);
@@ -72,7 +72,7 @@ async function saveTokenToSupabase(token: string) {
         .update({ push_token: token })
         .eq('id', user.id);
 
-      if (error) console.error('DB Error:', error.message);
+      if (error) console.error('DB Error (Push):', error.message);
       else console.log('Token saved to Supabase');
     }
   } catch (e) {
@@ -83,21 +83,22 @@ async function saveTokenToSupabase(token: string) {
 // 4. Schedule daily morning reminder (STRATEGY: 08:30 AM)
 export async function scheduleDailyReminder() {
   try {
-    // Сначала очищаем старые, чтобы не дублировать
+    // Сначала очищаем старые
     await Notifications.cancelAllScheduledNotificationsAsync();
 
-    const trigger: any = {
+    // ИСПРАВЛЕНИЕ ТИПОВ: Явное указание типа триггера
+    const trigger: Notifications.NotificationTriggerInput = {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour: 8,
       minute: 30,
-      repeats: true,
     };
 
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "✨ Hora de la magia...",
-        body: "¿Qué soñaste hoy? Escríbelo antes de que se desvanezca.",
+        body: "¿Qué soñaste hoy? Cuéntaselo a Luna antes de que se desvanezca.",
         sound: true,
-        data: { screen: 'input' }, // Полезно для редиректа при клике
+        data: { screen: 'input' },
       },
       trigger,
     });

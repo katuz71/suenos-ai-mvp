@@ -43,10 +43,13 @@ const TwinklingStar = ({ index }: { index: number }) => {
   );
 };
 
+// ID рекламы: Тестовый для Dev, Реальный для Prod
 const adUnitId = __DEV__ ? Ads.TestIds.REWARDED : 'ca-app-pub-8147866560220122/2478181377';
+
 const PRIVACY_URL = 'https://aiinsightshub.site/privacy.html';
 const TERMS_URL = 'https://aiinsightshub.site/terms.html';
 
+// ВАШИ ЦЕНЫ (Хардкод стратегия)
 const PRICE_MAP: Record<string, { value: string, amount: number, title: string, iconScale: number }> = {
   'energy_10_v2': { value: '0.99', amount: 10, title: 'Puñado de Estrellas', iconScale: 1 },
   'energy_50_v2': { value: '3.99', amount: 50, title: 'Resplandor Místico', iconScale: 1.2 },
@@ -78,15 +81,15 @@ export default function EnergyScreen() {
   });
 
   useEffect(() => {
-    if (load) load();
+    load(); // Загружаем рекламу сразу при входе
   }, [load]);
 
   useEffect(() => {
     if (error) {
       console.log('AdMob Load Error:', error.message);
-      // Если видео не загрузилось, пробуем еще раз через 5 секунд автоматически
+      // Retry через 5 сек
       const retryTimer = setTimeout(() => {
-        if (load) load();
+        load();
       }, 5000);
       return () => clearTimeout(retryTimer);
     }
@@ -97,8 +100,9 @@ export default function EnergyScreen() {
       addFreeEnergy();
       setAlertConfig({ title: "¡Gracias!", message: "Has recibido +1 ✨ por ver el video.", icon: "sparkles" });
       setMagicVisible(true);
+      load(); // Грузим следующую
     }
-  }, [isEarnedReward]);
+  }, [isEarnedReward, addFreeEnergy, load]);
 
   useFocusEffect(
     useCallback(() => {
@@ -117,7 +121,7 @@ export default function EnergyScreen() {
           addFreeEnergy(); 
       } else {
           Alert.alert("Cargando...", "El video mágico se está preparando. Intenta en unos segundos.");
-          if (load) load(); 
+          load(); 
       }
     }
   };
@@ -126,9 +130,9 @@ export default function EnergyScreen() {
     if (isPurchasing) return;
     setIsPurchasing(true);
     try {
+      // Здесь мы передаем ID пакета ('energy_10_v2'), useMonetization должен его обработать
       const success = await buyPremium(id);
       if (success) {
-        await refreshStatus(); 
         setAlertConfig({ 
           title: "¡Éxito!", 
           message: `Has recibido las energías estelares correctamente.`, 
@@ -191,11 +195,11 @@ export default function EnergyScreen() {
               </View>
             </View>
             
-           <TouchableOpacity 
-             style={[styles.adButton, !isLoaded && { opacity: 0.5, backgroundColor: '#444' }]} 
-             onPress={handleWatchAd}
-             disabled={!isLoaded} // Блокируем нажатие, пока не загрузится
-             activeOpacity={0.8}
+            <TouchableOpacity 
+              style={[styles.adButton, !isLoaded && { opacity: 0.5, backgroundColor: '#444' }]} 
+              onPress={handleWatchAd}
+              disabled={!isLoaded} 
+              activeOpacity={0.8}
             >
               <LinearGradient colors={['#8E2DE2', '#4A00E0']} start={{x:0, y:0}} end={{x:1, y:0}} style={styles.adGradient}>
                 {isLoaded ? (
@@ -233,7 +237,6 @@ export default function EnergyScreen() {
                 >
                   <LinearGradient 
                     colors={isPopular 
-                      // ЧИСТЫЙ СВЕТЛЫЙ ГРАДИЕНТ (Убрали желтизну, чтобы не было "коричневого")
                       ? ['rgba(255, 255, 255, 0.12)', 'rgba(255, 255, 255, 0.02)'] 
                       : ['rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.02)']} 
                     style={styles.cardGradient}
@@ -335,11 +338,9 @@ const styles = StyleSheet.create({
   purchaseCardContainer: { marginBottom: 16 },
   purchaseCard: { borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
   
-  // --- ЧИСТАЯ ЗОЛОТАЯ ОБВОДКА БЕЗ ТЕНИ ВНУТРИ ---
   popularCard: { 
-    borderColor: '#FFD700', // Чистое золото
-    borderWidth: 1,         // Тонкая линия
-    // Убрали тень, чтобы не было "грязи"
+    borderColor: '#FFD700', 
+    borderWidth: 1, 
   },
   
   cardGradient: { padding: 18 },

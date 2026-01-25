@@ -23,6 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MysticInput } from '../src/components/ui/MysticInput';
 import { supabase } from '../src/services/supabase';
 import { setBootstrapProfile } from '../src/services/bootstrapProfile';
+import { THEME as APP_THEME } from '../src/constants/theme';
 
 // --- ИМПОРТЫ АНАЛИТИКИ (Facebook УБРАН) ---
 import analytics from '@react-native-firebase/analytics';
@@ -366,15 +367,15 @@ const styles = StyleSheet.create({
   centerContent: { alignItems: 'center', width: '100%' },
 
   topHeader: {
-    fontFamily: THEME.fontSerif, fontSize: 18, color: '#FFF', letterSpacing: 4,
+    fontFamily: APP_THEME.fonts.serif, fontSize: 18, color: '#FFF', letterSpacing: 4,
     textTransform: 'uppercase', marginBottom: 15, textAlign: 'center', fontWeight: '300'
   },
   serifSubtitle: {
-    fontFamily: THEME.fontSerif, fontSize: 20, color: '#FFF', textAlign: 'center',
+    fontFamily: APP_THEME.fonts.serif, fontSize: 20, color: '#FFF', textAlign: 'center',
     lineHeight: 30, marginTop: 20, fontWeight: '400', marginBottom: 0
   },
   brandName: {
-    fontFamily: THEME.fontSerif, fontSize: 56, color: '#FFF', marginTop: 20,
+    fontFamily: APP_THEME.fonts.serif, fontSize: 56, color: '#FFF', marginTop: 20,
     marginBottom: 10, letterSpacing: 2,
   },
 
@@ -404,7 +405,7 @@ const styles = StyleSheet.create({
   introButtonMargin: { marginTop: 50 },
   goldButtonText: {
     color: '#000', fontSize: 16, fontWeight: 'bold', letterSpacing: 2,
-    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
+    fontFamily: APP_THEME.fonts.serif,
   },
 
   formSpacer: { height: 40 },
@@ -413,8 +414,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(212, 175, 55, 0.1)', padding: 12, borderRadius: 8, 
     borderWidth: 1, borderColor: THEME.goldDim, marginTop: 10 
   },
-  zodiacText: { color: THEME.gold, fontSize: 18, fontFamily: THEME.fontSerif },
-  zodiacNote: { fontSize: 14, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 15, fontStyle: 'italic', fontFamily: THEME.fontSerif },
+  zodiacText: { color: THEME.gold, fontSize: 18, fontFamily: APP_THEME.fonts.serif },
+  zodiacNote: { fontSize: 14, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 15, fontStyle: 'italic', fontFamily: APP_THEME.fonts.serif },
 
   pulsingSphere: {
     width: 120,
@@ -428,5 +429,5 @@ const styles = StyleSheet.create({
     shadowRadius: 30,
     elevation: 20,
   },
-  loaderText: { color: THEME.gold, fontSize: 20, fontFamily: THEME.fontSerif, letterSpacing: 1, marginTop: 10, textAlign: 'center' }
+  loaderText: { color: THEME.gold, fontSize: 20, fontFamily: APP_THEME.fonts.serif, letterSpacing: 1, marginTop: 10, textAlign: 'center' }
 });
