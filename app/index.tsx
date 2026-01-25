@@ -35,10 +35,10 @@ const { width, height } = Dimensions.get('window');
 
 // Цветовая палитра
 const THEME = {
-  bg: '#090C15', 
-  gold: '#D4AF37', 
+  bg: '#090C15',
+  gold: '#D4AF37',
   goldDim: '#8A7120',
-  violet: '#3B005D', 
+  violet: '#3B005D',
   text: '#F0F0F0',
   fontSerif: Platform.select({ ios: 'Georgia', android: 'serif' }),
 };
@@ -68,7 +68,7 @@ const MysticDivider = () => (
   <View style={styles.dividerContainer}>
     <View style={styles.dividerLine} />
     <View style={styles.dividerIconContainer}>
-       <Ionicons name="sunny-outline" size={16} color={THEME.gold} />
+      <Ionicons name="sunny-outline" size={16} color={THEME.gold} />
     </View>
     <View style={styles.dividerLine} />
   </View>
@@ -103,8 +103,8 @@ export default function Index() {
   const [loadingText, setLoadingText] = useState('Conectando con las estrellas...');
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const floatAnim = useRef(new Animated.Value(0)).current; 
-  const glowAnim = useRef(new Animated.Value(1)).current; 
+  const floatAnim = useRef(new Animated.Value(0)).current;
+  const glowAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const stars = useRef([...Array(30)].map((_, i) => ({
@@ -126,8 +126,8 @@ export default function Index() {
 
       try {
         const consentInfo = await AdsConsent.requestInfoUpdate();
-        if (consentInfo.isConsentFormAvailable && 
-            consentInfo.status === AdsConsentStatus.REQUIRED) {
+        if (consentInfo.isConsentFormAvailable &&
+          consentInfo.status === AdsConsentStatus.REQUIRED) {
           await AdsConsent.showForm();
         }
         await mobileAds().initialize();
@@ -187,8 +187,8 @@ export default function Index() {
     let formatted = cleaned;
     if (cleaned.length > 2) formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
     if (cleaned.length > 4) formatted = formatted.slice(0, 5) + '/' + cleaned.slice(4, 8);
-    if (formatted.length <= 10) { 
-      setBirthDate(formatted); setErrors({ ...errors, birthDate: '' }); 
+    if (formatted.length <= 10) {
+      setBirthDate(formatted); setErrors({ ...errors, birthDate: '' });
       if (cleaned.length >= 4) {
         const sign = getZodiacSign(parseInt(cleaned.slice(0, 2)), parseInt(cleaned.slice(2, 4)));
         if (sign) setDetectedZodiac(sign);
@@ -204,9 +204,9 @@ export default function Index() {
         Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }).start();
       });
     } else if (step === 'input') {
-      if (!name.trim()) { setErrors({...errors, name: 'Requerido'}); return; }
-      if (!birthDate.trim()) { setErrors({...errors, birthDate: 'Requerido'}); return; }
-      
+      if (!name.trim()) { setErrors({ ...errors, name: 'Requerido' }); return; }
+      if (!birthDate.trim()) { setErrors({ ...errors, birthDate: 'Requerido' }); return; }
+
       setIsLoading(true);
       try {
         const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
@@ -215,12 +215,22 @@ export default function Index() {
         const zodiacSign = detectedZodiac || 'Desconocido';
         const today = new Date().toISOString().split('T')[0];
 
+        // START: Update metadata immediately
+        const { error: updateError } = await supabase.auth.updateUser({
+          data: {
+            display_name: name,
+            zodiac_sign: zodiacSign,
+          }
+        });
+        if (updateError) console.log("Metadata update error:", updateError);
+        // END: Update metadata
+
         await supabase.from('profiles').upsert({
           id: authData.session?.user.id,
           display_name: name,
           birth_date: birthDate,
           zodiac_sign: zodiacSign,
-          credits: 3, 
+          credits: 3,
           last_daily_bonus: today,
           updated_at: new Date().toISOString(),
         });
@@ -236,32 +246,32 @@ export default function Index() {
 
         // --- TRACKING EVENTS (Facebook УБРАН) ---
         try {
-            await analytics().logSignUp({ method: 'anonymous' });
-            console.log("Events tracked: Firebase");
+          await analytics().logSignUp({ method: 'anonymous' });
+          console.log("Events tracked: Firebase");
         } catch (e) {
-            console.log("Error tracking events:", e);
+          console.log("Error tracking events:", e);
         }
 
         setStep('animation');
       } catch (error: any) {
         // 🚨 ДИАГНОСТИЧЕСКИЙ БЛОК
         setIsLoading(false);
-        
+
         const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
         const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-        
+
         const debugInfo = {
-            errMessage: error.message || JSON.stringify(error),
-            hasUrl: !!url,
-            hasKey: !!key,
-            urlStart: url ? url.substring(0, 8) : 'N/A'
+          errMessage: error.message || JSON.stringify(error),
+          hasUrl: !!url,
+          hasKey: !!key,
+          urlStart: url ? url.substring(0, 8) : 'N/A'
         };
 
         Alert.alert(
-            'Error de conexión',
-            'No pudimos conectar con las estrellas. Por favor, revisa tu conexión a internet.'
+          'Error de conexión',
+          'No pudimos conectar con las estrellas. Por favor, revisa tu conexión a internet.'
         );
-        
+
         console.error("Registration error full:", error);
       }
     }
@@ -275,84 +285,84 @@ export default function Index() {
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-              
-             <View style={[styles.content, { paddingBottom: insets.bottom + 20, paddingTop: insets.top + 60 }]}>
-                
-                {/* --- INTRO --- */}
-                {step === 'intro' && (
-                  <Animated.View style={[styles.centerContent, { opacity: fadeAnim }]}>
-                    <Text style={styles.topHeader}>CONEXIÓN INTERIOR</Text>
-                    <MysticDivider />
-                    <Text style={styles.serifSubtitle}>Explora el significado de tus{'\n'}sueños cada día</Text>
 
-                    <View style={{ height: 60 }} />
+          <View style={[styles.content, { paddingBottom: insets.bottom + 20, paddingTop: insets.top + 60 }]}>
 
-                    <Animated.View style={[styles.moonContainer, { transform: [{ translateY: floatAnim }] }]}>
-                       <Animated.View style={[styles.goldGlow, { transform: [{ scale: glowAnim }] }]} />
-                       <Image 
-                          source={require('../assets/moon-glitter.png')} 
-                          style={styles.moonImage}
-                          resizeMode="contain"
-                       />
+            {/* --- INTRO --- */}
+            {step === 'intro' && (
+              <Animated.View style={[styles.centerContent, { opacity: fadeAnim }]}>
+                <Text style={styles.topHeader}>CONEXIÓN INTERIOR</Text>
+                <MysticDivider />
+                <Text style={styles.serifSubtitle}>Explora el significado de tus{'\n'}sueños cada día</Text>
+
+                <View style={{ height: 60 }} />
+
+                <Animated.View style={[styles.moonContainer, { transform: [{ translateY: floatAnim }] }]}>
+                  <Animated.View style={[styles.goldGlow, { transform: [{ scale: glowAnim }] }]} />
+                  <Image
+                    source={require('../assets/moon-glitter.png')}
+                    style={styles.moonImage}
+                    resizeMode="contain"
+                  />
+                </Animated.View>
+
+                <Text style={styles.brandName}>Luna</Text>
+
+                <TouchableOpacity
+                  style={[styles.goldButton, styles.introButtonMargin, { zIndex: 100 }]}
+                  onPress={handleContinue}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.goldButtonText}>COMENZAR</Text>
+                </TouchableOpacity>
+              </Animated.View>
+            )}
+
+            {/* --- INPUT --- */}
+            {step === 'input' && (
+              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <Animated.View style={{ width: '100%', opacity: fadeAnim }}>
+                  <Text style={styles.topHeader}>TU PERFIL ASTRAL</Text>
+                  <MysticDivider />
+                  <View style={styles.formSpacer} />
+
+                  <MysticInput
+                    label="Nombre" placeholder="Nombre" value={name} onChangeText={(t) => { setName(t); setErrors({ ...errors, name: '' }) }} error={errors.name} containerStyle={{ marginBottom: 20 }}
+                  />
+                  <MysticInput
+                    label="Fecha de Nacimiento" placeholder="DD/MM/AAAA" value={birthDate} onChangeText={handleDateChange} error={errors.birthDate} keyboardType="numeric" maxLength={10} containerStyle={{ marginBottom: 20 }}
+                  />
+
+                  {detectedZodiac ? (
+                    <Animated.View style={styles.zodiacBadge}>
+                      <Ionicons name="sparkles" size={16} color={THEME.gold} />
+                      <Text style={styles.zodiacText}>{detectedZodiac}</Text>
                     </Animated.View>
+                  ) : (
+                    <Text style={styles.zodiacNote}>La fecha revela tu destino</Text>
+                  )}
 
-                    <Text style={styles.brandName}>Luna</Text>
+                  <TouchableOpacity
+                    style={[styles.goldButton, { marginTop: 40, zIndex: 100 }]}
+                    onPress={handleContinue}
+                    disabled={isLoading}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.goldButtonText}>{isLoading ? 'CONECTANDO...' : 'CONTINUAR'}</Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              </TouchableWithoutFeedback>
+            )}
 
-                    <TouchableOpacity 
-                        style={[styles.goldButton, styles.introButtonMargin, { zIndex: 100 }]} 
-                        onPress={handleContinue} 
-                        activeOpacity={0.8}
-                    >
-                        <Text style={styles.goldButtonText}>COMENZAR</Text>
-                    </TouchableOpacity>
-                  </Animated.View>
-                )}
+            {/* --- ANIMATION --- */}
+            {step === 'animation' && (
+              <Animated.View style={[styles.centerContent, { opacity: fadeAnim, justifyContent: 'center', flex: 1 }]}>
+                <Animated.View style={[styles.pulsingSphere, { transform: [{ scale: pulseAnim }] }]} />
+                <Text style={styles.loaderText}>{loadingText}</Text>
+              </Animated.View>
+            )}
 
-                {/* --- INPUT --- */}
-                {step === 'input' && (
-                  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <Animated.View style={{ width: '100%', opacity: fadeAnim }}>
-                        <Text style={styles.topHeader}>TU PERFIL ASTRAL</Text>
-                        <MysticDivider />
-                        <View style={styles.formSpacer} />
-
-                        <MysticInput 
-                            label="Nombre" placeholder="Nombre" value={name} onChangeText={(t) => {setName(t); setErrors({...errors, name: ''})}} error={errors.name} containerStyle={{ marginBottom: 20 }}
-                        />
-                        <MysticInput 
-                            label="Fecha de Nacimiento" placeholder="DD/MM/AAAA" value={birthDate} onChangeText={handleDateChange} error={errors.birthDate} keyboardType="numeric" maxLength={10} containerStyle={{ marginBottom: 20 }}
-                        />
-                        
-                        {detectedZodiac ? (
-                            <Animated.View style={styles.zodiacBadge}>
-                                <Ionicons name="sparkles" size={16} color={THEME.gold} />
-                                <Text style={styles.zodiacText}>{detectedZodiac}</Text>
-                            </Animated.View>
-                        ) : (
-                            <Text style={styles.zodiacNote}>La fecha revela tu destino</Text>
-                        )}
-
-                        <TouchableOpacity 
-                            style={[styles.goldButton, { marginTop: 40, zIndex: 100 }]} 
-                            onPress={handleContinue} 
-                            disabled={isLoading} 
-                            activeOpacity={0.8}
-                        >
-                        <Text style={styles.goldButtonText}>{isLoading ? 'CONECTANDO...' : 'CONTINUAR'}</Text>
-                        </TouchableOpacity>
-                    </Animated.View>
-                  </TouchableWithoutFeedback>
-                )}
-
-                {/* --- ANIMATION --- */}
-                {step === 'animation' && (
-                  <Animated.View style={[styles.centerContent, { opacity: fadeAnim, justifyContent: 'center', flex: 1 }]}>
-                    <Animated.View style={[styles.pulsingSphere, { transform: [{ scale: pulseAnim }] }]} />
-                    <Text style={styles.loaderText}>{loadingText}</Text>
-                  </Animated.View>
-                )}
-
-             </View>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -379,12 +389,12 @@ const styles = StyleSheet.create({
     marginBottom: 10, letterSpacing: 2,
   },
 
-  dividerContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    width: 200, 
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 200,
     justifyContent: 'center',
-    alignSelf: 'center' 
+    alignSelf: 'center'
   },
   dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(212, 175, 55, 0.5)' },
   dividerIconContainer: { marginHorizontal: 10 },
@@ -409,10 +419,10 @@ const styles = StyleSheet.create({
   },
 
   formSpacer: { height: 40 },
-  zodiacBadge: { 
+  zodiacBadge: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: 'rgba(212, 175, 55, 0.1)', padding: 12, borderRadius: 8, 
-    borderWidth: 1, borderColor: THEME.goldDim, marginTop: 10 
+    backgroundColor: 'rgba(212, 175, 55, 0.1)', padding: 12, borderRadius: 8,
+    borderWidth: 1, borderColor: THEME.goldDim, marginTop: 10
   },
   zodiacText: { color: THEME.gold, fontSize: 18, fontFamily: APP_THEME.fonts.serif },
   zodiacNote: { fontSize: 14, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 15, fontStyle: 'italic', fontFamily: APP_THEME.fonts.serif },
@@ -421,7 +431,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: THEME.violet, 
+    backgroundColor: THEME.violet,
     marginBottom: 40,
     shadowColor: THEME.violet,
     shadowOffset: { width: 0, height: 0 },

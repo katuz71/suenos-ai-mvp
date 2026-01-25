@@ -7,7 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "suenosai",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       "./withAndroidFixes.js",
       "expo-router",
@@ -16,7 +18,7 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "2.1.20", 
+            "kotlinVersion": "2.1.20",
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
             "buildToolsVersion": "35.0.0",
@@ -39,8 +41,8 @@
     ],
     "android": {
       "package": "com.katuz71.suenosaimvp",
-      "versionCode": 38,
-      "softwareKeyboardLayoutMode": "resize", 
+      "versionCode": 39,
+      "softwareKeyboardLayoutMode": "resize",
       "edgeToEdgeEnabled": true,
       "googleServicesFile": "./google-services.json",
       "permissions": [

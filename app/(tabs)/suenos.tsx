@@ -17,7 +17,7 @@ import AdBanner from '../../src/components/AdBanner';
 import analytics from '@react-native-firebase/analytics';
 import { THEME } from '../../src/constants/theme';
 import { getBootstrapProfile } from '../../src/services/bootstrapProfile';
-
+import { useAuth } from '../../src/providers/AuthProvider'; // NEW IMPORT
 
 // --- ИМПОРТ СЕРВИСА УВЕДОМЛЕНИЙ ---
 import { registerForPushNotificationsAsync, scheduleDailyReminder } from '../../src/services/NotificationService';
@@ -59,9 +59,14 @@ export default function SuenosScreen() {
   const { credits, isPremium, refreshStatus, spendEnergy, checkDailyBonus } = useMonetization();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
- 
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const bonusCheckLock = useRef(false);
 
+  // --- AUTH CONTEXT ---
+  const { user, loading: authLoading } = useAuth();
+
+  const metadataName = user?.user_metadata?.display_name;
+  const metadataZodiac = user?.user_metadata?.zodiac_sign;
 
   const paramToString = (value: unknown): string | undefined => {
     if (typeof value === 'string') return value;
@@ -69,20 +74,26 @@ export default function SuenosScreen() {
     return undefined;
   };
 
-
   const paramName = paramToString(params.name);
   const paramZodiac = paramToString(params.zodiac);
   const bootstrapProfile = getBootstrapProfile();
 
-
   const [userName, setUserName] = useState<string>(
+    (metadataName && metadataName.trim() ? metadataName : undefined) ||
     (paramName && paramName.trim() ? paramName : undefined) ||
     (bootstrapProfile?.name && bootstrapProfile.name.trim() ? bootstrapProfile.name : undefined) ||
     'Viajero'
   );
   const [userZodiac, setUserZodiac] = useState(
-    paramZodiac || bootstrapProfile?.zodiac || ''
+    metadataZodiac || paramZodiac || bootstrapProfile?.zodiac || ''
   );
+
+  // Keep state synced with Auth Context
+  useEffect(() => {
+    if (metadataName) setUserName(metadataName);
+    if (metadataZodiac) setUserZodiac(metadataZodiac);
+  }, [metadataName, metadataZodiac]);
+
   const [mode, setMode] = useState<ScreenMode>('input');
   const [currentDreamId, setCurrentDreamId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -95,60 +106,10 @@ export default function SuenosScreen() {
   const [magicAlert, setMagicAlert] = useState({ visible: false, title: '', message: '', icon: '' });
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
-  const [headerHydrated, setHeaderHydrated] = useState(
-    typeof paramName === 'string' && paramName.trim().length > 0
-  );
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const [headerHydrated, setHeaderHydrated] = useState(true);
 
-
-  // Рассчитываем высоту хедера для отступа клавиатуры (Top Insets + Padding + MinHeight + MarginBottom)
   const headerHeight = insets.top + 10 + 50 + 20;
 
-
-  useEffect(() => {
-    const hydrateFromParams = async () => {
-      const nextName = paramName && paramName.trim() ? paramName : null;
-      const nextZodiac = typeof paramZodiac === 'string' ? paramZodiac : null;
-
-
-      if (!nextName && !nextZodiac) return;
-
-
-      if (nextName) {
-        setUserName(nextName);
-        setHeaderHydrated(true);
-        try { await AsyncStorage.setItem('user_name', nextName); } catch (e) { /* ignore */ }
-      }
-      if (nextZodiac !== null) {
-        setUserZodiac(nextZodiac);
-        setHeaderHydrated(true);
-        try { await AsyncStorage.setItem('user_zodiac', nextZodiac); } catch (e) { /* ignore */ }
-      }
-    };
-
-
-    hydrateFromParams();
-  }, [paramName, paramZodiac]);
-
-
-  useLayoutEffect(() => {
-    const hydrateHeaderFromCache = async () => {
-      try {
-        const name = await AsyncStorage.getItem('user_name');
-        const sign = await AsyncStorage.getItem('user_zodiac');
-
-
-        if (name) setUserName(name);
-        if (sign) setUserZodiac(sign);
-        if (name || sign) setHeaderHydrated(true);
-      } catch (e) {
-        // ignore
-      }
-    };
-
-
-    hydrateHeaderFromCache();
-  }, []);
 
 
   // --- ИСПРАВЛЕНИЕ ТАБОВ ---
@@ -219,7 +180,7 @@ export default function SuenosScreen() {
           message: "Has recibido 3 energías para empezar.",
           icon: "star"
         });
-       
+
         router.setParams({ welcome: '' });
       } else {
         setTimeout(async () => {
@@ -251,7 +212,7 @@ export default function SuenosScreen() {
         if (showLoading) setLoadingHistory(false);
         return;
       }
-     
+
       const { data: profile } = await supabase.from('profiles').select('display_name, zodiac_sign').eq('id', user.id).maybeSingle();
       if (profile) {
         const displayName = profile.display_name || 'Viajero';
@@ -270,7 +231,7 @@ export default function SuenosScreen() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(20);
-       
+
       if (!error && history) setDreamHistory(history);
     } catch (error) {
       console.error('Error loading history:', error);
@@ -285,9 +246,9 @@ export default function SuenosScreen() {
     useCallback(() => {
       let isActive = true;
       analytics().logScreenView({
-      screen_name: 'Sueños (Main)',
-      screen_class: 'SuenosScreen',
-    });
+        screen_name: 'Sueños (Main)',
+        screen_class: 'SuenosScreen',
+      });
       const loadAndRefresh = async () => {
         if (!isActive) return;
         const shouldShowSpinner = dreamHistory.length === 0;
@@ -334,51 +295,40 @@ export default function SuenosScreen() {
       setMagicAlert({ visible: true, title: "Luna escucha", message: "Cuéntame tu sueño primero.", icon: "moon" });
       return;
     }
-   
+
     if (!isPremium && credits < 1) {
       setMagicAlert({ visible: true, title: "Poca Energía", message: "¿Recargar en la tienda?", icon: "flash" });
       return;
     }
     setLoading(true);
 
-
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      // SERVER-SIDE LOGIC NOW
+      // We do not call spendEnergy() locally anymore. The server validates and spends.
 
+      const response = await interpretDream(dreamText, { name: userName, zodiac: userZodiac }, false);
 
-      if (!isPremium) {
-        const success = await spendEnergy(1);
-        if (!success) {
-           setLoading(false);
-           setMagicAlert({ visible: true, title: "Error", message: "Error de saldo. Intenta recargar.", icon: "flash" });
-           return;
-        }
+      // Update credits from server response if available
+      if (response.remaining_credits !== undefined) {
+        // Force refresh logic or just trust the next fetch
+        refreshStatus();
       }
 
+      const { interpretation, entry } = response;
 
-      const aiResponse = await interpretDream(dreamText, { name: userName, zodiac: userZodiac });
-     
-      const { data, error } = await supabase.from('interpretations').insert({
-          user_id: user.id,
-          dream_text: dreamText,
-          interpretation_text: aiResponse,
-          chat_history: [],
-          created_at: new Date().toISOString()
-        }).select().single();
+      if (entry) {
+        setCurrentDreamId(entry.id);
+        // Add to local list immediately for UX
+        setDreamHistory(prev => [entry, ...prev]);
+      }
 
-
-      if (error) throw error;
-      if (data) setCurrentDreamId(data.id);
-     
       const msgDream: Message = { id: 'dream', text: dreamText, sender: 'user', isDream: true };
-      const msgLuna: Message = { id: 'luna-1', text: aiResponse, sender: 'luna' };
-     
+      const msgLuna: Message = { id: 'luna-1', text: interpretation, sender: 'luna' };
+
       setMessages([msgDream, msgLuna]);
       setDreamText('');
       setMode('chat');
-      loadData(false);
-
+      // loadData(false); // No need to reload whole list if we updated state
 
       // --- SMART PUSH STRATEGY ---
       setTimeout(async () => {
@@ -393,10 +343,10 @@ export default function SuenosScreen() {
         }
       }, 3500);
 
-
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      Alert.alert("Error", "La conexión cósmica falló.");
+      const msg = e.message === 'No tienes suficiente energía.' ? "Sin energía mística." : "La conexión cósmica falló.";
+      Alert.alert("Error", msg);
     } finally {
       setLoading(false);
     }
@@ -410,46 +360,37 @@ export default function SuenosScreen() {
       return;
     }
 
-
     const userMsgText = chatInputText;
     setChatInputText('');
     setLoading(true);
 
-
     try {
-      if (!isPremium) {
-         const success = await spendEnergy(1);
-         if (!success) {
-            setLoading(false);
-            setMagicAlert({ visible: true, title: "Poca Energía", message: "¿Recargar?", icon: "flash" });
-            return;
-         }
-      }
-
-
+      // Server handles energy deduction
       const newUserMsg: Message = { id: Date.now().toString(), text: userMsgText, sender: 'user' };
       const newMessagesLocal = [...messages, newUserMsg];
       setMessages(newMessagesLocal);
 
-
       const contextString = messages.map(m => `${m.sender === 'user' ? 'USUARIO' : 'LUNA'}: ${m.text}`).join('\n');
       const fullPrompt = `HISTORIAL:\n${contextString}\nNUEVO:\n${userMsgText}\nResponde como Luna en Español.`;
 
+      // Call interpretDream with isChat=true
+      const response = await interpretDream(fullPrompt, { name: userName, zodiac: userZodiac }, true);
+      const aiReplyText = response.interpretation;
 
-      const aiReplyText = await interpretDream(fullPrompt, { name: userName, zodiac: userZodiac });
-     
+      if (response.remaining_credits !== undefined) refreshStatus();
+
       const newLunaMsg: Message = { id: (Date.now() + 1).toString(), text: aiReplyText, sender: 'luna' };
       const finalMessages = [...newMessagesLocal, newLunaMsg];
       setMessages(finalMessages);
 
-
       if (currentDreamId) {
+        // CLIENT updates history because the server didn't insert a new row (isChat=true)
         const historyToSave = finalMessages.filter(m => m.id !== 'dream' && m.id !== 'luna-1').map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }));
         await supabase.from('interpretations').update({ chat_history: historyToSave }).eq('id', currentDreamId);
       }
 
-
     } catch (e) {
+      console.error(e);
       Alert.alert("Error", "Magia interrumpida...");
     } finally {
       setLoading(false);
@@ -490,7 +431,7 @@ export default function SuenosScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#0f0c29', '#1a1a2e']} style={StyleSheet.absoluteFill} />
-     
+
       {/* HEADER: Расположен вне KeyboardAvoidingView */}
       <View style={[styles.header, { paddingTop: insets.top + 10, paddingHorizontal: 20 }]}>
         <View style={styles.headerTextContainer}>
@@ -501,12 +442,21 @@ export default function SuenosScreen() {
             </TouchableOpacity>
           ) : (
             <>
-              <Text style={styles.greeting}>¡Hola, {userName}!</Text>
-              <Text style={styles.zodiacText}>{userZodiac || '...'}</Text>
+              {authLoading ? (
+                <View style={{ gap: 8 }}>
+                  <View style={{ width: 140, height: 28, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 6 }} />
+                  <View style={{ width: 80, height: 20, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 4 }} />
+                </View>
+              ) : (
+                <>
+                  <Text style={styles.greeting}>¡Hola, {userName}!</Text>
+                  <Text style={styles.zodiacText}>{userZodiac || '...'}</Text>
+                </>
+              )}
             </>
           )}
         </View>
-       
+
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <TouchableOpacity onPress={() => router.push('/energy')} style={styles.energyBadge}>
             <Ionicons name="sparkles" size={16} color="#FFD700" style={{ marginRight: 6 }} />
@@ -556,13 +506,13 @@ export default function SuenosScreen() {
 
 
             <View style={{ height: 20 }} />
-           
+
             <View style={styles.diaryHeader}>
               <Ionicons name="book-outline" size={20} color="#ffd700" />
               <Text style={styles.diaryTitle}>DIARIO DE SUEÑOS</Text>
               <View style={styles.diaryCount}><Text style={styles.diaryCountText}>{dreamHistory.length}</Text></View>
             </View>
-           
+
             {loadingHistory ? (
               <ActivityIndicator size="small" color="#ffd700" style={{ marginTop: 20 }} />
             ) : dreamHistory.length > 0 ? (
@@ -652,8 +602,8 @@ export default function SuenosScreen() {
         icon={magicAlert.icon as any}
         confirmText={magicAlert.title === "Poca Energía" ? "Ir a Tienda" : "Aceptar"}
         onConfirm={() => {
-           if (magicAlert.title === "Poca Energía") router.push('/energy');
-           setMagicAlert({ ...magicAlert, visible: false });
+          if (magicAlert.title === "Poca Energía") router.push('/energy');
+          setMagicAlert({ ...magicAlert, visible: false });
         }}
         onCancel={() => setMagicAlert({ ...magicAlert, visible: false })}
       />
